@@ -6,7 +6,7 @@ on:
 
 jobs:
   release:
-    runs-on: [self-hosted, ci]
+    # runs-on: [self-hosted, ci]
     concurrency: release
     steps:
       - name: Checkout PR branch
