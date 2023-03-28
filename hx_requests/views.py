@@ -1,11 +1,8 @@
 import importlib
 import inspect
-import json
 from typing import Any, Dict
 
 from django.apps import apps
-from django.conf import settings
-from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -30,6 +27,7 @@ class HtmxVIewMixin(View):
             hx_request = self.get_hx_request(request)
             hx_request.view = self
             kwargs = self.get_extra_kwargs(request)
+            hx_request.setup_hx_request(request)
             return hx_request.get(request, *args, **kwargs)
         return super().get(request, *args, **kwargs)
 
@@ -40,6 +38,7 @@ class HtmxVIewMixin(View):
             hx_request = self.get_hx_request(request)
             hx_request.view = self
             kwargs = self.get_extra_kwargs(request)
+            hx_request.setup_hx_request(request)
             return hx_request.post(request, *args, **kwargs)
         return super().post(request, *args, **kwargs)
 
@@ -55,7 +54,7 @@ class HtmxVIewMixin(View):
 
     @classmethod
     def _get_hx_reqeust_classes(cls):
-        from .hx_requests import HXRequest
+        from .hx_requests import BaseHXRequest
 
         # If the hx_requests are already set don't need to do the whole collection.
         if getattr(cls, "hx_requests", None):
@@ -71,7 +70,7 @@ class HtmxVIewMixin(View):
         for module in modules:
             clsmembers = inspect.getmembers(module, inspect.isclass)
             for _, obj in clsmembers:
-                if issubclass(obj, HXRequest) and getattr(obj, "name", None):
+                if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
                     hx_request_classes[obj.name] = obj
         cls.hx_requests = hx_request_classes
 
@@ -81,34 +80,3 @@ class HtmxVIewMixin(View):
             kwargs[key] = request.GET.get(key)
 
         return deserialize_kwargs(**kwargs)
-
-
-class MessagesMixin:
-    show_messages: bool = getattr(settings, "HX_REQUESTS_SHOW_MESSAGES", False)
-    success_message: str = ""
-    error_message: str = ""
-
-    def get_success_message(self, request, **kwargs) -> str:
-        return self.success_message
-
-    def get_error_message(self, request, **kwargs) -> str:
-        return self.error_message
-
-    def get_POST_headers(self, **kwargs) -> Dict:
-        headers = {}
-        message = kwargs.get("message")
-        level = kwargs.get("level")
-
-        if self.refresh_page == True:
-            if level == "success":
-                messages.success(self.request, message)
-            elif level == "danger":
-                messages.error(self.request, message)
-            else:
-                messages.info(self.request, message)
-            return {}
-        elif self.show_messages:
-            headers["HX-Trigger"] = json.dumps(
-                {"showMessages": {"message": message, "level": level}}
-            )
-        return headers
