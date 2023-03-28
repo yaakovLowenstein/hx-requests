@@ -1,5 +1,6 @@
 import json
 from typing import Dict
+from django.utils.html import strip_tags
 
 from django.apps import apps
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.contrib import messages
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 
 class BaseHXRequest:
@@ -127,7 +129,6 @@ class HXRequestPOST(BaseHXRequest):
         messages.success(self.request, self.message)
 
 
-# TODO add synchronous error message in this class with error also
 class FormHXRequest(HXRequestGET, HXRequestPOST):
     """
     Adds in form to context.
@@ -139,6 +140,7 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
     """
 
     form_class: Form = None
+    add_form_errors_to_error_message: bool = False
 
     def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
@@ -168,6 +170,15 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
 
     def form_invalid(self, **kwargs) -> str:
         return self.get_GET_response(**kwargs)
+
+    def get_GET_headers(self, **kwargs) -> Dict:
+        """
+        For when the form is invalid
+        """
+        headers = super().get_GET_headers()
+        if self.request.method == "POST":
+            headers.update(self.get_message_headers(**kwargs))
+        return headers
 
     def get_form_kwargs(self, **kwargs):
         """Return the keyword arguments for instantiating the form."""
@@ -200,7 +211,15 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
             if self.hx_object
             else "Did not save successfully"
         )
+        if self.add_form_errors_to_error_message:
+            message += mark_safe("</br>") + self.get_form_errors(**kwargs)
         return message
+
+    def get_form_errors(self, **kwargs) -> str:
+        errors = ""
+        for k, v in self.form.errors.items():
+            errors += f"{k}: {strip_tags(v)}" if k != "__all__" else strip_tags(v)
+        return errors
 
 
 class DeleteHXRequest(HXRequestPOST):
