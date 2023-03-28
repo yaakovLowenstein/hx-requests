@@ -1,0 +1,35 @@
+name: CD
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: [self-hosted, ci]
+    concurrency: release
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.ADMIN_TOKEN}}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - uses: Gr1N/setup-poetry@v8
+
+      - name: Install semantic release
+        run: |
+          pip install -U pip
+          pip install python-semantic-release
+
+      - name: Generate version and commit / tag
+        run: semantic-release publish
+        env:
+          GH_TOKEN: ${{secrets.ADMIN_TOKEN}}
+
+      - name: Publish package to pypi
+        run: poetry publish --build -u yalow -p ${{secrets.PYPI_PASSWORD}} || echo
