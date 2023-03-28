@@ -12,7 +12,7 @@ from hx_requests.utils import deserialize_kwargs, is_htmx_request
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class HtmxVIewMixin(View):
+class HtmxViewMixin(View):
     """
     Mixin to be added to views that are using HXRequests.
     Hijacks the get and post to route them to the proper
