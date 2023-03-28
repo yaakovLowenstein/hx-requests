@@ -17,7 +17,7 @@ A package to simplify the usage of HTMX with Django. Easily add HTMX reuqests wi
 
 - Avoid cluttering up urls with endpoints for HTMX
 - Reduce clutter in views by avoiding if/elses that are checking if the incoming request is an HTMX request
-- Built in functionality for HTMX requests that handle forms
+- Built in functionality for HTMX requests that handle forms.
 
 <br>
 
