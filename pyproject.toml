@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "hx-requests"
+version = "1.0.1"
+description = "Facilitates the usage of HTMX with Django"
+authors = ["yaakovLowenstein <lowensteinyaakov@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/yaakovLowenstein/hx-requests"
+keywords = ["django", "htmx"]
+    classifiers=[
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "Operating System :: OS Independent",
+        "Framework :: Django",
+        "Framework :: Django :: 3.2",
+        "Framework :: Django :: 4.0",
+        "Framework :: Django :: 4.1",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+]
+include = [
+    "LICENSE"
+]
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = ">= 3.2"
+
+[tool.poetry.dev-dependencies]
+python-semantic-release = "^7.31.2"
+black = "^23.1.0"
+djlint = "^1.19.16"
+isort = "^5.12.0"
+pre-commit = "^3.2.1"
+
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

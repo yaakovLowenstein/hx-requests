@@ -1,0 +1,39 @@
+<div style="position: fixed;
+            top: 20px;
+            right: 15px;
+            z-index:99999"
+     id="hx_messages">
+    <div class="toast mt-3 d-none"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+        <div class="toast-body">
+            <span id ="toast_message"></span>
+            <small>
+                <button type="button"
+                        class="btn-close pull-right"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </small>
+        </div>
+    </div>
+</div>
+<script>
+const hx_messages = document.getElementById("hx_messages")
+const toastBody = hx_messages.querySelector(".toast-body")
+const toastMessage = hx_messages.querySelector("#toast_message")
+
+htmx.on("showMessages", (e) => {
+    hx_messages.querySelector(".toast").classList.remove("d-none")
+    toastMessage.innerHTML = e.detail.message
+    removeClassByPrefix(toastBody,"alert")
+    toastBody.classList.add('alert-'+e.detail.level)
+    $(".toast").toast("show");
+ })
+
+function removeClassByPrefix(el, prefix) {
+    var regx = new RegExp('\\b' + prefix + '.*?\\b', 'g');
+    el.className = el.className.replace(regx, '');
+    return el;
+}
+</script>
