@@ -27,6 +27,7 @@ jobs:
           pip install python-semantic-release
 
       - name: Generate version and commit / tag
+        uses: fregante/setup-git-user@v2
         run: semantic-release publish
         env:
           GH_TOKEN: ${{secrets.ADMIN_TOKEN}}
