@@ -1,6 +1,5 @@
 import json
 from typing import Dict
-from django.utils.html import strip_tags
 
 from django.apps import apps
 from django.conf import settings
@@ -8,6 +7,7 @@ from django.contrib import messages
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 
@@ -244,3 +244,36 @@ class DeleteHXRequest(HXRequestPOST):
             else "Deleted successfully"
         )
         return message
+
+
+class HXModal(HXRequestGET):
+    name = "hx_modal"
+    modal_template = getattr(
+        settings, "HX_REQUSTS_MODAL_TEMPLATE", "hx_requests/modal.html"
+    )
+    GET_template = ""
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if self.GET_template != self.modal_template:
+            self.body = self.GET_template
+            self.GET_template = self.modal_template
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        body = kwargs.get("body", self.body)
+        context["title"] = kwargs.get("title", self.hx_object)
+        context["modal_wrapper_id"] = getattr(
+            settings, "HX_REQUSTS_MODAL_WRAPPER_ID", "hx_modal_wrapper"
+        )
+        context["body"] = (
+            render_to_string(body, context=context)
+            if body.split(".")[-1] == "html"
+            else body
+        )
+        return context
+
+
+class HXFormModal(HXModal, FormHXRequest):
+    pass

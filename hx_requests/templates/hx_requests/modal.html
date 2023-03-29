@@ -1,0 +1,39 @@
+<div id="{{ HX_REQUSTS_MODAL_WRAPPER_ID }}">
+    <div id="modal-backdrop"
+         class="modal-backdrop fade show"
+         style="display:block"></div>
+    <div id="modal"
+         class="modal fade show"
+         tabindex="-1"
+         style="display:block">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ title }}</h5>
+                </div>
+                <div class="modal-body">
+                    <p>{{ body }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeHXModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function closeHXModal() {
+    var container = document.getElementById('{{HX_REQUSTS_MODAL_WRAPPER_ID}}')
+    var backdrop = document.getElementById("modal-backdrop")
+    var modal = document.getElementById("modal")
+
+    modal.classList.remove("show")
+    backdrop.classList.remove("show")
+
+    setTimeout(function () {
+        container.removeChild(backdrop)
+        container.removeChild(modal)
+    }, 200)
+}
+
+</script>
