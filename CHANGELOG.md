@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2023-03-29)
+### Feature
+* Add HXRequestModal ([`919cc74`](https://github.com/yaakovLowenstein/hx-requests/commit/919cc74ec55866c60640f6584b58506b8acb5cf5))
+
+### Fix
+* Rename templates folder to hx_requests ([`c63adfb`](https://github.com/yaakovLowenstein/hx-requests/commit/c63adfb82350068277c954576b8d152bd614b780))
+
 ## v0.1.2 (2023-03-29)
 ### Fix
 * Add skip actions for semantic relesase commits ([`bd290f6`](https://github.com/yaakovLowenstein/hx-requests/commit/bd290f6abd7d6340521a3a64320b72ba4c63ce3f))
