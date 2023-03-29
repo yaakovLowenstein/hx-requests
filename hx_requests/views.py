@@ -62,11 +62,10 @@ class HtmxViewMixin(View):
         modules = []
         hx_request_classes = {}
         for app in apps.get_app_configs():
-            if app.label != __package__:
-                try:
-                    modules.append(importlib.import_module(f"{app.label}.hx_requests"))
-                except ModuleNotFoundError:
-                    pass
+            try:
+                modules.append(importlib.import_module(f"{app.label}.hx_requests"))
+            except ModuleNotFoundError:
+                pass
         for module in modules:
             clsmembers = inspect.getmembers(module, inspect.isclass)
             for _, obj in clsmembers:
