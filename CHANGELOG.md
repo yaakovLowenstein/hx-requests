@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.2 (2023-03-29)
+### Fix
+* Add skip actions for semantic relesase commits ([`bd290f6`](https://github.com/yaakovLowenstein/hx-requests/commit/bd290f6abd7d6340521a3a64320b72ba4c63ce3f))
+
 ## v0.1.1 (2023-03-29)
 ### Fix
 * Fig bug with conflicting versions ([`51bd499`](https://github.com/yaakovLowenstein/hx-requests/commit/51bd49904f7a98a47988585717dcbd97a1cb6996))
