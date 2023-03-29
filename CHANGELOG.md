@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2023-03-29)
+### Fix
+* Fig bug with conflicting versions ([`51bd499`](https://github.com/yaakovLowenstein/hx-requests/commit/51bd49904f7a98a47988585717dcbd97a1cb6996))
+* Add proper settings to toml for semantic-release ([`1a00018`](https://github.com/yaakovLowenstein/hx-requests/commit/1a000189bf97698acc4c8461dd59a7f5d359fd73))
+
 ## v0.1.0 (2023-03-28)
 ### Feature
 * Add option for form errors to be added to error message ([`766bddd`](https://github.com/yaakovLowenstein/hx-requests/commit/766bddd6db82210eed3b5c6492324619b91d0461))
