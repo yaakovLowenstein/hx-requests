@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2023-03-29)
+### Fix
+* Fix bug in modal template ([`6c0425d`](https://github.com/yaakovLowenstein/hx-requests/commit/6c0425d60a8229fd4c789978a73e9a9c466fd876))
+
 ## v0.2.0 (2023-03-29)
 ### Feature
 * Add HXRequestModal ([`919cc74`](https://github.com/yaakovLowenstein/hx-requests/commit/919cc74ec55866c60640f6584b58506b8acb5cf5))
