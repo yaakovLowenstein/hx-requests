@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.2 (2023-03-29)
+### Fix
+* Remove check from views if the app is this package ([`ff7623c`](https://github.com/yaakovLowenstein/hx-requests/commit/ff7623c1b2f953161c57c6953eab140a424a4b8e))
+
 ## v0.2.1 (2023-03-29)
 ### Fix
 * Fix bug in modal template ([`6c0425d`](https://github.com/yaakovLowenstein/hx-requests/commit/6c0425d60a8229fd4c789978a73e9a9c466fd876))
