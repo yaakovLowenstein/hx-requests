@@ -24,3 +24,10 @@ repos:
         entry: djlint --profile=django --quiet --reformat
         language: system
         types: [html]
+
+
+-   repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.1.1
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
