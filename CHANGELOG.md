@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.3 (2023-03-30)
+### Fix
+* Bold the top line of the error message ([`e14cb7d`](https://github.com/yaakovLowenstein/hx-requests/commit/e14cb7d56209b9c22a479185a5ca63149975bccf))
+
 ## v0.2.2 (2023-03-29)
 ### Fix
 * Remove check from views if the app is this package ([`ff7623c`](https://github.com/yaakovLowenstein/hx-requests/commit/ff7623c1b2f953161c57c6953eab140a424a4b8e))
