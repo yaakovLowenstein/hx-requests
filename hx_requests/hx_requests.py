@@ -207,13 +207,13 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
 
     def get_error_message(self, **kwargs) -> str:
         message = self.message or (
-            f"{self.hx_object_to_str()} did not save  successfully."
+            f"<b>{self.hx_object_to_str()} did not save  successfully.</b>"
             if self.hx_object
-            else "Did not save successfully"
+            else "<b>Did not save successfully</b>"
         )
         if self.add_form_errors_to_error_message:
             message += mark_safe("</br>") + self.get_form_errors(**kwargs)
-        return message
+        return mark_safe(message)
 
     def get_form_errors(self, **kwargs) -> str:
         errors = ""
