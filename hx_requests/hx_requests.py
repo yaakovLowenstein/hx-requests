@@ -74,6 +74,7 @@ class HXRequestPOST(BaseHXRequest):
     POST_template: str = ""
     refresh_page: bool = False
     redirect: str = None
+    return_empty: bool = False
     show_messages: bool = getattr(settings, "HX_REQUESTS_SHOW_MESSAGES", False)
     message: str = ""
     level = "success"
@@ -106,13 +107,13 @@ class HXRequestPOST(BaseHXRequest):
         if self.hx_object and self.hx_object.pk:
             self.hx_object.refresh_from_db()
 
+        if self.return_empty:
+            return HttpResponse("", headers=self.get_POST_headers(**kwargs))
+
         html = render_to_string(
             self.POST_template, self.get_POST_context_data(**kwargs), self.request
         )
-        return HttpResponse(
-            html,
-            headers=self.get_POST_headers(**kwargs),
-        )
+        return HttpResponse(html, headers=self.get_POST_headers(**kwargs))
 
     def get_success_message(self, **kwargs) -> str:
         return self.message
