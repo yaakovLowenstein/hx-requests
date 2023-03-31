@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2023-03-31)
+### Feature
+* Add option HXRequestPOST to return empty ([`69f43df`](https://github.com/yaakovLowenstein/hx-requests/commit/69f43dfffab583185e632dcede7654263eb7d810))
+
 ## v0.2.3 (2023-03-30)
 ### Fix
 * Bold the top line of the error message ([`e14cb7d`](https://github.com/yaakovLowenstein/hx-requests/commit/e14cb7d56209b9c22a479185a5ca63149975bccf))
