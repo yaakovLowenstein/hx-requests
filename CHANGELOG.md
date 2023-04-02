@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.5 (2023-04-02)
+### Fix
+* Fix show_messages bool not being used when form is invalid ([`a16c21c`](https://github.com/yaakovLowenstein/hx-requests/commit/a16c21c96dbf2c74d8df93320c6a7d3e4c1f509c))
+
 ## v0.4.4 (2023-04-02)
 ### Fix
 * Fix bug in messages.html was appening alert twice ([`e5db88f`](https://github.com/yaakovLowenstein/hx-requests/commit/e5db88f493b133471bf2cbce0210e73d1e74a614))
