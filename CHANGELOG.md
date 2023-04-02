@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.3 (2023-04-02)
+### Fix
+* Fix bug in init of HXMessages ([`7f9367d`](https://github.com/yaakovLowenstein/hx-requests/commit/7f9367da9c093ca220f956b52ed3d1ee33997095))
+
 ## v0.4.2 (2023-04-02)
 ### Fix
 * 🐛 in trying to use dynamic functions for types of messages ([`56a5604`](https://github.com/yaakovLowenstein/hx-requests/commit/56a5604ca5f35d8459717970096193e321bfab84))
