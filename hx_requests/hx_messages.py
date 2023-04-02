@@ -16,7 +16,7 @@ class HXMessages:
     tags: Dict[int, str]
     # TODO USE json script tag (and use include template for this) and would also need context processr
 
-    def init__(self) -> None:
+    def __init__(self) -> None:
         self.messages = []
         self.settings_dict = getattr(settings, "HX_REQUESTS_HX_MESSAGES", {})
         self.set_tags()
