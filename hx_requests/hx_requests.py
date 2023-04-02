@@ -10,6 +10,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
+from hx_requests.hx_messages import HXMessages
+
 
 class BaseHXRequest:
     """
@@ -18,6 +20,7 @@ class BaseHXRequest:
 
     name: str = ""
     hx_object_name: str = "hx_object"
+    messages: HXMessages
 
     def get_context_data(self, **kwargs) -> Dict:
         context = self.view.get_context_data()
@@ -36,6 +39,7 @@ class BaseHXRequest:
 
     def setup_hx_request(self, request):
         self.request = request
+        self.messages = HXMessages()
 
         # TODO maybe remove this line (why is it there?)
         if not hasattr(self, "hx_object"):
@@ -75,13 +79,10 @@ class HXRequestPOST(BaseHXRequest):
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
-    show_messages: bool = getattr(settings, "HX_REQUESTS_SHOW_MESSAGES", False)
-    message: str = ""
-    level = "success"
+    _use_hx_messages: bool = getattr(settings, "HX_REQUESTS_SHOW_MESSAGES", False)
+    show_messages: bool = True
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.message = self.get_success_message(**kwargs)
-        self.level = "success"
         return self.get_POST_response(**kwargs)
 
     def get_POST_context_data(self, **kwargs) -> dict:
@@ -94,13 +95,13 @@ class HXRequestPOST(BaseHXRequest):
             headers["HX-Refresh"] = "true"
         elif self.redirect:
             headers["HX-Redirect"] = self.redirect
-        if self.show_messages:
+        if self._use_hx_messages:
             headers.update(self.get_message_headers(**kwargs))
         return headers
 
     def get_POST_response(self, **kwargs):
         if self.refresh_page or self.redirect:
-            if self.show_messages:
+            if self._use_hx_messages:
                 self.set_synchronous_messages(**kwargs)
             return HttpResponse(headers=self.get_POST_headers(**kwargs))
 
@@ -115,19 +116,17 @@ class HXRequestPOST(BaseHXRequest):
         )
         return HttpResponse(html, headers=self.get_POST_headers(**kwargs))
 
-    def get_success_message(self, **kwargs) -> str:
-        return self.message
-
     def get_message_headers(self, **kwargs) -> Dict:
         headers = {}
 
         headers["HX-Trigger"] = json.dumps(
-            {"showMessages": {"message": self.message, "level": self.level}}
+            {"showMessages": {"message": self.messages[0], "level": self.messages[1]}}
         )
         return headers
 
     def set_synchronous_messages(self, **kwargs):
-        messages.success(self.request, self.message)
+        # TODO this should really match what message type it is (might need 2nd part of tuple to be tuple of actual tag and then class)
+        messages.success(self.request, self.messages[0])
 
 
 class FormHXRequest(HXRequestGET, HXRequestPOST):
@@ -156,13 +155,11 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
         if self.form.is_valid():
-            self.message = self.get_success_message(**kwargs)
-            self.level = "success"
+            self.messages.success(self.get_success_message(**kwargs))
             return self.form_valid(**kwargs)
 
         else:
-            self.message = self.get_error_message(**kwargs)
-            self.level = "danger"
+            self.messages.error(self.get_error_message(**kwargs))
             return self.form_invalid(**kwargs)
 
     def form_valid(self, **kwargs) -> str:
@@ -199,7 +196,7 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
         return {}
 
     def get_success_message(self, **kwargs) -> str:
-        message = self.message or (
+        message = (
             f"{self.hx_object_to_str()} Saved Successfully."
             if self.hx_object
             else "Saved Successfully"
@@ -207,7 +204,7 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
         return message
 
     def get_error_message(self, **kwargs) -> str:
-        message = self.message or (
+        message = (
             f"<b>{self.hx_object_to_str()} did not save  successfully.</b>"
             if self.hx_object
             else "<b>Did not save successfully</b>"
@@ -230,7 +227,7 @@ class DeleteHXRequest(HXRequestPOST):
     """
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.message = self.get_success_message(**kwargs)
+        self.messages.success(self.get_success_message(**kwargs))
         self.level = "success"
         return self.handle_delete(**kwargs)
 
@@ -239,7 +236,7 @@ class DeleteHXRequest(HXRequestPOST):
         return self.get_POST_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
-        message = self.message or (
+        message = (
             f"{self.hx_object_to_str()} deleted successfully."
             if self.hx_object
             else "Deleted successfully"
