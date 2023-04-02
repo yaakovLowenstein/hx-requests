@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-04-02)
+### Feature
+* Use HXMessages in HXRequests ([`abefebc`](https://github.com/yaakovLowenstein/hx-requests/commit/abefebc288889fda550b047093f2793eb3a514d0))
+* Add hx_messages ([`d3d6100`](https://github.com/yaakovLowenstein/hx-requests/commit/d3d6100653513735b7ba339284feabcaaf848ada))
+
+### Fix
+* Rename seting for hx_messages ([`616f36c`](https://github.com/yaakovLowenstein/hx-requests/commit/616f36c78fc3922a6fef89d3496598db99187669))
+* Rename setting for using messages ([`c7750f0`](https://github.com/yaakovLowenstein/hx-requests/commit/c7750f0b15dfe8536f2cadcffaae555d344a5bc8))
+
 ## v0.3.0 (2023-03-31)
 ### Feature
 * Add option HXRequestPOST to return empty ([`69f43df`](https://github.com/yaakovLowenstein/hx-requests/commit/69f43dfffab583185e632dcede7654263eb7d810))
