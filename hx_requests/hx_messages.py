@@ -44,7 +44,7 @@ class HXMessages:
 
         if not self.tags:
             raise Exception(
-                "HX_MESSAGE_TAGS must be defined in settings to use messages with hx-requests."
+                "HX_MESSAGE_TAGS must be defined in settings to use messages with hx-requests, or set USE_DJANGO_MESSAGE_TAGS to 'True'."
             )
 
     def get_message(self):
