@@ -19,7 +19,7 @@ class HXMessages:
 
     def init__(self) -> None:
         self.messages = []
-        self.settings_dict = getattr(settings, "HX_MESSAGES", {})
+        self.settings_dict = getattr(settings, "HX_REQUESTS_HX_MESSAGES", {})
         tags_mapping = self.get_tags_mapping()
 
         for tag in self.tags:
