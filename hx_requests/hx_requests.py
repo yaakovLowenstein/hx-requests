@@ -95,7 +95,7 @@ class HXRequestPOST(BaseHXRequest):
             headers["HX-Refresh"] = "true"
         elif self.redirect:
             headers["HX-Redirect"] = self.redirect
-        if self._use_hx_messages:
+        if self._use_hx_messages and self.show_messages:
             headers.update(self.get_message_headers(**kwargs))
         return headers
 
