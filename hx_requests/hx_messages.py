@@ -51,7 +51,6 @@ class HXMessages:
             elif key == 40:
                 new_mapping["error"] = value
 
-    def __new__(cls):
-        if len(cls.messages) == 0:
-            return (None, None)
-        return cls.messages[-1]
+    def get_message(self):
+        if self.messages:
+            return self.messages[-1]

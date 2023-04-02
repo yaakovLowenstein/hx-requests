@@ -120,13 +120,18 @@ class HXRequestPOST(BaseHXRequest):
         headers = {}
 
         headers["HX-Trigger"] = json.dumps(
-            {"showMessages": {"message": self.messages[0], "level": self.messages[1]}}
+            {
+                "showMessages": {
+                    "message": self.messages.get_message()[0],
+                    "level": self.messages.get_message()[1],
+                }
+            }
         )
         return headers
 
     def set_synchronous_messages(self, **kwargs):
         # TODO this should really match what message type it is (might need 2nd part of tuple to be tuple of actual tag and then class)
-        messages.success(self.request, self.messages[0])
+        messages.success(self.request, self.messages.get_message()[0])
 
 
 class FormHXRequest(HXRequestGET, HXRequestPOST):
