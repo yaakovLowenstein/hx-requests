@@ -179,7 +179,11 @@ class FormHXRequest(HXRequestGET, HXRequestPOST):
         For when the form is invalid
         """
         headers = super().get_GET_headers()
-        if self.request.method == "POST":
+        if (
+            self.request.method == "POST"
+            and self._use_hx_messages
+            and self.show_messages
+        ):
             headers.update(self.get_message_headers(**kwargs))
         return headers
 
