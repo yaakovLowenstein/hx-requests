@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2023-04-02)
+### Fix
+* Fix bug in hx_messages ([`9006a89`](https://github.com/yaakovLowenstein/hx-requests/commit/9006a89c08782be0c5439d709007ba78a6c9f338))
+
 ## v0.4.0 (2023-04-02)
 ### Feature
 * Use HXMessages in HXRequests ([`abefebc`](https://github.com/yaakovLowenstein/hx-requests/commit/abefebc288889fda550b047093f2793eb3a514d0))
