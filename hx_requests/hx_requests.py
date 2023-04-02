@@ -79,7 +79,7 @@ class HXRequestPOST(BaseHXRequest):
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
-    _use_hx_messages: bool = getattr(settings, "HX_REQUESTS_SHOW_MESSAGES", False)
+    _use_hx_messages: bool = getattr(settings, "HX_REQUESTS_USE_HX_MESSAGES", False)
     show_messages: bool = True
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
