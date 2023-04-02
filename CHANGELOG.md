@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.4 (2023-04-02)
+### Fix
+* Fix bug in messages.html was appening alert twice ([`e5db88f`](https://github.com/yaakovLowenstein/hx-requests/commit/e5db88f493b133471bf2cbce0210e73d1e74a614))
+* Fix bug in hx_requests that not checking self.show_messages ([`3749519`](https://github.com/yaakovLowenstein/hx-requests/commit/37495191d3c52b634cb0c2e8b7295edb4fb7facc))
+* Add to error message for not having message_tags defined ([`59cb447`](https://github.com/yaakovLowenstein/hx-requests/commit/59cb447f6307ff32a7e783a012b6783fe2a127fa))
+
 ## v0.4.3 (2023-04-02)
 ### Fix
 * Fix bug in init of HXMessages ([`7f9367d`](https://github.com/yaakovLowenstein/hx-requests/commit/7f9367da9c093ca220f956b52ed3d1ee33997095))
