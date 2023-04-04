@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2023-04-04)
+### Fix
+* Fix ternary in messages_alerts js ([`ca05b00`](https://github.com/yaakovLowenstein/hx-requests/commit/ca05b00bfd029622e78c2dfc2590783318cb80f0))
+* Fix 🐛 in messages_alerts js ([`e95605b`](https://github.com/yaakovLowenstein/hx-requests/commit/e95605bb5773d0c5d2cf799dc94f3cc170272b0c))
+
 ## v0.5.0 (2023-04-04)
 ### Feature
 * Add new messages template for alerts ([`daa774f`](https://github.com/yaakovLowenstein/hx-requests/commit/daa774fba5015f64b5b3d8b39b478e76ccfe087f))
