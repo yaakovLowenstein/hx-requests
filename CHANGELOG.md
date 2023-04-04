@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.3 (2023-04-04)
+### Fix
+* Fix bug in js ([`21be816`](https://github.com/yaakovLowenstein/hx-requests/commit/21be816444d1b4984f0c93d32afcdd8ec3ecc08b))
+
 ## v0.5.2 (2023-04-04)
 ### Fix
 * Remove extra '?' ([`bbdf063`](https://github.com/yaakovLowenstein/hx-requests/commit/bbdf063cd23f11f70fc9139a059c9908f34a42d9))
