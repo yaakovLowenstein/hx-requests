@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.6 (2023-04-04)
+### Fix
+* Move js vars in messages so that they are not global ([`a9e0370`](https://github.com/yaakovLowenstein/hx-requests/commit/a9e0370de1535b9fa404f746891495493efc02a4))
+* Change level to tag in hx messages ([`7111e22`](https://github.com/yaakovLowenstein/hx-requests/commit/7111e22dc87debde68b9448213cfe80be5384c69))
+* Remove nested hx messages settings ([`046e8e2`](https://github.com/yaakovLowenstein/hx-requests/commit/046e8e2059a68b590ebe7a4832da4f800ea8b628))
+
 ## v0.4.5 (2023-04-02)
 ### Fix
 * Fix show_messages bool not being used when form is invalid ([`a16c21c`](https://github.com/yaakovLowenstein/hx-requests/commit/a16c21c96dbf2c74d8df93320c6a7d3e4c1f509c))
