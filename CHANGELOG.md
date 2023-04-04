@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-04-04)
+### Feature
+* Add new messages template for alerts ([`daa774f`](https://github.com/yaakovLowenstein/hx-requests/commit/daa774fba5015f64b5b3d8b39b478e76ccfe087f))
+
 ## v0.4.6 (2023-04-04)
 ### Fix
 * Move js vars in messages so that they are not global ([`a9e0370`](https://github.com/yaakovLowenstein/hx-requests/commit/a9e0370de1535b9fa404f746891495493efc02a4))
