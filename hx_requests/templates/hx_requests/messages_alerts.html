@@ -6,9 +6,9 @@ htmx.on("showMessages", (e) => {
     const hx_messages = document.getElementById("hx_messages")
 
     hx_messages.classList.remove("d-none")
-    hx_messages.firstChild.innerHTML = e.detail.message
+    hx_messages.querySelector('li').innerHTML = e.detail.message
     removeClassByPrefix(hx_messages.firstChild,"alert")
-    hx_messages.firstChild.classList.add(e.detail.tag)
+    hx_messages.querySelector('li').classList.add(e.detail.tag)
  })
 
 function removeClassByPrefix(el, prefix) {
