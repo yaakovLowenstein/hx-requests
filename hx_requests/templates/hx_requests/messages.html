@@ -19,11 +19,13 @@
     </div>
 </div>
 <script>
-const hx_messages = document.getElementById("hx_messages")
-const toastBody = hx_messages.querySelector(".toast-body")
-const toastMessage = hx_messages.querySelector("#toast_message")
+
 
 htmx.on("showMessages", (e) => {
+    const hx_messages = document.getElementById("hx_messages")
+    const toastBody = hx_messages.querySelector(".toast-body")
+    const toastMessage = hx_messages.querySelector("#toast_message")
+
     hx_messages.querySelector(".toast").classList.remove("d-none")
     toastMessage.innerHTML = e.detail.message
     removeClassByPrefix(toastBody,"alert")
