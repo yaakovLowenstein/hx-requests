@@ -13,7 +13,7 @@ htmx.on("showMessages", (e) => {
 
 function removeClassByPrefix(el, prefix) {
     var regx = new RegExp('\\b' + prefix + '.*?\\b', 'g');
-    el.className = ?el.className? el.className.replace(regx, '') :'';
+    el.className = el.className ? el.className.replace(regx, '') : '';
     return el;
 }
 </script>
