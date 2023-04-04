@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.2 (2023-04-04)
+### Fix
+* Remove extra '?' ([`bbdf063`](https://github.com/yaakovLowenstein/hx-requests/commit/bbdf063cd23f11f70fc9139a059c9908f34a42d9))
+
 ## v0.5.1 (2023-04-04)
 ### Fix
 * Fix ternary in messages_alerts js ([`ca05b00`](https://github.com/yaakovLowenstein/hx-requests/commit/ca05b00bfd029622e78c2dfc2590783318cb80f0))
