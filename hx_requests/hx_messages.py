@@ -35,10 +35,10 @@ class HXMessages:
         self.messages.append((message, self.tags.get(40)))
 
     def set_tags(self):
-        if getattr(settings, "USE_DJANGO_MESSAGE_TAGS") is True:
+        if getattr(settings, "HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS") is True:
             self.tags = getattr(settings, "MESSAGE_TAGS")
         else:
-            self.tags = getattr(settings, "HX_MESSAGE_TAGS")
+            self.tags = getattr(settings, "HX_REQUESTS_HX_MESSAGE_TAGS")
 
         if not self.tags:
             raise Exception(
