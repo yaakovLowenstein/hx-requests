@@ -14,11 +14,9 @@ class HXMessageTags:
 class HXMessages:
     messages: List[Tuple[str, str]]
     tags: Dict[int, str]
-    # TODO USE json script tag (and use include template for this) and would also need context processr
 
     def __init__(self) -> None:
         self.messages = []
-        self.settings_dict = getattr(settings, "HX_REQUESTS_HX_MESSAGES", {})
         self.set_tags()
 
     def debug(self, message):
@@ -37,10 +35,10 @@ class HXMessages:
         self.messages.append((message, self.tags.get(40)))
 
     def set_tags(self):
-        if self.settings_dict.get("USE_DJANGO_MESSAGE_TAGS"):
+        if getattr(settings, "USE_DJANGO_MESSAGE_TAGS") is True:
             self.tags = getattr(settings, "MESSAGE_TAGS")
         else:
-            self.tags = self.settings_dict.get("HX_MESSAGE_TAGS")
+            self.tags = getattr(settings, "HX_MESSAGE_TAGS")
 
         if not self.tags:
             raise Exception(
