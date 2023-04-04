@@ -1,0 +1,19 @@
+<ul id="hx_messages" class="d-none">
+    <li></li>
+</ul>
+<script>
+htmx.on("showMessages", (e) => {
+    const hx_messages = document.getElementById("hx_messages")
+
+    hx_messages.classList.remove("d-none")
+    hx_messages.firstChild.innerHTML = e.detail.message
+    removeClassByPrefix(hx_messages.firstChild,"alert")
+    hx_messages.firstChild.classList.add(e.detail.tag)
+ })
+
+function removeClassByPrefix(el, prefix) {
+    var regx = new RegExp('\\b' + prefix + '.*?\\b', 'g');
+    el.className = el.className.replace(regx, '');
+    return el;
+}
+</script>
