@@ -27,7 +27,7 @@ htmx.on("showMessages", (e) => {
     hx_messages.querySelector(".toast").classList.remove("d-none")
     toastMessage.innerHTML = e.detail.message
     removeClassByPrefix(toastBody,"alert")
-    toastBody.classList.add(e.detail.level)
+    toastBody.classList.add(e.detail.tag)
     $(".toast").toast("show");
  })
 

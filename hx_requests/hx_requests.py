@@ -123,7 +123,7 @@ class HXRequestPOST(BaseHXRequest):
             {
                 "showMessages": {
                     "message": self.messages.get_message()[0],
-                    "level": self.messages.get_message()[1],
+                    "tag": self.messages.get_message()[1],
                 }
             }
         )
@@ -237,7 +237,6 @@ class DeleteHXRequest(HXRequestPOST):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         self.messages.success(self.get_success_message(**kwargs))
-        self.level = "success"
         return self.handle_delete(**kwargs)
 
     def handle_delete(self, **kwargs) -> str:
