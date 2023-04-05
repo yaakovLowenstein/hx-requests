@@ -283,3 +283,21 @@ class HXModal(HXRequestGET):
 
 class HXFormModal(HXModal, FormHXRequest):
     pass
+
+
+class HXMessagesRequest(HXRequestGET):
+    name = "hx_messages"
+    GET_template = getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE")
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not self.GET_template:
+            raise Exception(
+                "HX_REQUESTS_HX_MESSAGES_TEMPLATE is not set in settings.py. Define a template to be used for messages."
+            )
+        return super().get(request, *args, **kwargs)
+
+    def get_GET_context_data(self, **kwargs) -> dict:
+        context = super().get_GET_context_data(**kwargs)
+        context["message"] = self.request.GET.get("message")
+        context["tag"] = self.request.GET.get("tag")
+        return context
