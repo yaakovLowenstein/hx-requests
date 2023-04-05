@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2023-04-05)
+### Feature
+* Change the way messages are handled ([`360beac`](https://github.com/yaakovLowenstein/hx-requests/commit/360beac06c0b838b68b761d762e92cfa2e89708b))
+
 ## v0.5.3 (2023-04-04)
 ### Fix
 * Fix bug in js ([`21be816`](https://github.com/yaakovLowenstein/hx-requests/commit/21be816444d1b4984f0c93d32afcdd8ec3ecc08b))
