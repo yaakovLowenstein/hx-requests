@@ -292,7 +292,7 @@ class HXFormModal(HXModal, FormHXRequest):
         headers = super().get_GET_headers(**kwargs)
         if self.request.method == "POST":
             headers["HX-Retarget"] = getattr(
-                settings, "HX_REQUSTS_MODAL_BODY_SELECTOR", "hx_modal_wrapper"
+                settings, "HX_REQUSTS_MODAL_BODY_SELECTOR", ".modal-body"
             )
         return headers
 
