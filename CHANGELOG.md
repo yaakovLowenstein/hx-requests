@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.2 (2023-04-09)
+### Fix
+* Add default for modal body selector ([`1196807`](https://github.com/yaakovLowenstein/hx-requests/commit/119680745e14f55551fcaf7980a524c231554bbc))
+
 ## v0.6.1 (2023-04-09)
 ### Fix
 * Fix bugs in modal ([`7bcc85a`](https://github.com/yaakovLowenstein/hx-requests/commit/7bcc85a6e1c4b8acc2debb74b09e7d84bff1a8fe))
