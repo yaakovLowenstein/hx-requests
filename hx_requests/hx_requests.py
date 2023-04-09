@@ -257,22 +257,15 @@ class HXModal(HXRequestGET):
     modal_template = getattr(
         settings, "HX_REQUSTS_MODAL_TEMPLATE", "hx_requests/modal.html"
     )
-    GET_template = ""
+    modal_wrapper_id = getattr(
+        settings, "HX_REQUSTS_MODAL_WRAPPER_ID", "hx_modal_wrapper"
+    )
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        if self.GET_template != self.modal_template:
-            self.body = self.GET_template
-            self.GET_template = self.modal_template
-
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs) -> Dict:
+    def get_GET_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
-        body = kwargs.get("body", self.body)
+        body = kwargs.get("body", self.GET_template)
         context["title"] = kwargs.get("title", self.hx_object)
-        context["modal_wrapper_id"] = getattr(
-            settings, "HX_REQUSTS_MODAL_WRAPPER_ID", "hx_modal_wrapper"
-        )
+        context["modal_wrapper_id"] = self.modal_wrapper_id
         context["body"] = (
             render_to_string(body, context=context)
             if body.split(".")[-1] == "html"
@@ -280,9 +273,34 @@ class HXModal(HXRequestGET):
         )
         return context
 
+    def get_GET_response(self, **kwargs):
+        if self.GET_template != self.modal_template:
+            self.body = self.GET_template
+
+        html = render_to_string(
+            self.modal_template, self.get_GET_context_data(**kwargs), self.request
+        )
+
+        return HttpResponse(
+            html,
+            headers=self.get_GET_headers(**kwargs),
+        )
+
 
 class HXFormModal(HXModal, FormHXRequest):
-    pass
+    def get_GET_headers(self, **kwargs) -> Dict:
+        headers = super().get_GET_headers(**kwargs)
+        if self.request.method == "POST":
+            headers["HX-Retarget"] = getattr(
+                settings, "HX_REQUSTS_MODAL_BODY_SELECTOR", "hx_modal_wrapper"
+            )
+        return headers
+
+    def get_POST_headers(self, **kwargs) -> Dict:
+        headers = super().get_POST_headers(**kwargs)
+        if self.form.is_valid():
+            headers["HX-Trigger"] = "modalFormValid"
+        return headers
 
 
 class HXMessagesRequest(HXRequestGET):
