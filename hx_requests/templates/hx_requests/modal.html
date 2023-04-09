@@ -21,7 +21,7 @@
 </div>
 <script>
     function closeHXModal() {
-        const container = document.getElementById('{{modal_wrapper_id}}')
+        const container = document.getElementById('hx_modal_wrapper')
         const backdrop = document.getElementById("modal-backdrop")
         const modal = document.getElementById("modal")
 
@@ -29,9 +29,10 @@
         backdrop.classList.remove("show")
 
         setTimeout(function () {
-            container.removeChild(backdrop)
-            container.removeChild(modal)
+            container.innerHTML = ''
         }, 200)
 }
+       document.addEventListener('modalFormValid',closeHXModal)
+
 
 </script>
