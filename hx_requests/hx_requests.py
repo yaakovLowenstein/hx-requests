@@ -81,6 +81,7 @@ class HXRequestPOST(BaseHXRequest):
     return_empty: bool = False
     _use_hx_messages: bool = getattr(settings, "HX_REQUESTS_USE_HX_MESSAGES", False)
     show_messages: bool = True
+    no_swap = False
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         return self.get_POST_response(**kwargs)
@@ -95,6 +96,8 @@ class HXRequestPOST(BaseHXRequest):
             headers["HX-Refresh"] = "true"
         elif self.redirect:
             headers["HX-Redirect"] = self.redirect
+        if self.no_swap:
+            headers["HX-Reswap"] = "none"
         if self._use_hx_messages and self.show_messages:
             headers.update(self.get_message_headers(**kwargs))
         return headers
