@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2023-04-09)
+### Fix
+* Fix bugs in modal ([`7bcc85a`](https://github.com/yaakovLowenstein/hx-requests/commit/7bcc85a6e1c4b8acc2debb74b09e7d84bff1a8fe))
+* Refactor close modal js ([`8dcfd46`](https://github.com/yaakovLowenstein/hx-requests/commit/8dcfd46de3e774edcbaeed7dba23074bc2d49b0a))
+
 ## v0.6.0 (2023-04-05)
 ### Feature
 * Change the way messages are handled ([`360beac`](https://github.com/yaakovLowenstein/hx-requests/commit/360beac06c0b838b68b761d762e92cfa2e89708b))
