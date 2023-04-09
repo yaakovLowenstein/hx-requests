@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2023-04-09)
+### Feature
+* Add ability to not do a swap in Post request ([`5838114`](https://github.com/yaakovLowenstein/hx-requests/commit/5838114b59ff79c8d1b083818f7ca6f3456167d3))
+
 ## v0.6.2 (2023-04-09)
 ### Fix
 * Add default for modal body selector ([`1196807`](https://github.com/yaakovLowenstein/hx-requests/commit/119680745e14f55551fcaf7980a524c231554bbc))
