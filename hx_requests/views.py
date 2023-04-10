@@ -23,22 +23,15 @@ class HtmxViewMixin(View):
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if is_htmx_request(request):
-            super().get(request, *args, **kwargs)
-            hx_request = self.get_hx_request(request)
-            hx_request.view = self
+            hx_request = self._setup_hx_request(request, *args, **kwargs)
             kwargs = self.get_extra_kwargs(request)
-            hx_request.setup_hx_request(request)
             return hx_request.get(request, *args, **kwargs)
         return super().get(request, *args, **kwargs)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if is_htmx_request(request):
-            # Call get to setup neccessary parts for the context
-            super().get(request, *args, **kwargs)
-            hx_request = self.get_hx_request(request)
-            hx_request.view = self
+            hx_request = self._setup_hx_request(request, *args, **kwargs)
             kwargs = self.get_extra_kwargs(request)
-            hx_request.setup_hx_request(request)
             return hx_request.post(request, *args, **kwargs)
         return super().post(request, *args, **kwargs)
 
@@ -84,3 +77,11 @@ class HtmxViewMixin(View):
             kwargs[key] = request.GET.get(key)
 
         return deserialize_kwargs(**kwargs)
+
+    def _setup_hx_request(self, request, *args, **kwargs):
+        # Call get even on post to setup neccessary parts for the context
+        super().get(request, *args, **kwargs)
+        hx_request = self.get_hx_request(request)
+        hx_request.view = self
+        hx_request.setup_hx_request(request)
+        return hx_request
