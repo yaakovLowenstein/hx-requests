@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2023-04-10)
+### Feature
+* Clean up code in views ([`5fdfc65`](https://github.com/yaakovLowenstein/hx-requests/commit/5fdfc650926f16a27e53a5df1b5fce54f302e31c))
+
 ## v0.8.0 (2023-04-10)
 ### Feature
 * Add better exception message for not finding an hx_request ([`d8da795`](https://github.com/yaakovLowenstein/hx-requests/commit/d8da7954c98aaa2b36ca73519336f8809ce90a6f))
