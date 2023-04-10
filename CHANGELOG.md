@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.2 (2023-04-10)
+### Fix
+* Fix issue with no_swap when form is invalid ([`a9e0ae1`](https://github.com/yaakovLowenstein/hx-requests/commit/a9e0ae1332ccfa53a9ed2761ff6b6b9b40e12a5e))
+
 ## v0.7.1 (2023-04-10)
 ### Fix
 * Updates to modal ([`be36e2f`](https://github.com/yaakovLowenstein/hx-requests/commit/be36e2f03ef4495f0974b398da11b1cc8b6b46ba))
