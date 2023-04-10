@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2023-04-10)
+### Feature
+* Add better exception message for not finding an hx_request ([`d8da795`](https://github.com/yaakovLowenstein/hx-requests/commit/d8da7954c98aaa2b36ca73519336f8809ce90a6f))
+
 ## v0.7.2 (2023-04-10)
 ### Fix
 * Fix issue with no_swap when form is invalid ([`a9e0ae1`](https://github.com/yaakovLowenstein/hx-requests/commit/a9e0ae1332ccfa53a9ed2761ff6b6b9b40e12a5e))
