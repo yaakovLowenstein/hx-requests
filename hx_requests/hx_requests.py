@@ -260,15 +260,15 @@ class HXModal(HXRequestGET):
     modal_template = getattr(
         settings, "HX_REQUSTS_MODAL_TEMPLATE", "hx_requests/modal.html"
     )
-    modal_wrapper_id = getattr(
-        settings, "HX_REQUSTS_MODAL_WRAPPER_ID", "hx_modal_wrapper"
+    modal_container_id = getattr(
+        settings, "HX_REQUSTS_MODAL_CONTAINER_ID", "hx_modal_container"
     )
 
     def get_GET_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
         body = kwargs.get("body", self.GET_template)
         context["title"] = kwargs.get("title", self.hx_object)
-        context["modal_wrapper_id"] = self.modal_wrapper_id
+        context["modal_container_id"] = self.modal_container_id
         context["body"] = (
             render_to_string(body, context=context)
             if body.split(".")[-1] == "html"
