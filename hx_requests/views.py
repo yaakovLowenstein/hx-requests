@@ -45,11 +45,16 @@ class HtmxViewMixin(View):
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
         self._get_hx_reqeust_classes()
-        hx_request = next(
-            hx_request
-            for name, hx_request in self.hx_requests.items()
-            if name == hx_request_name
-        )
+        try:
+            hx_request = next(
+                hx_request
+                for name, hx_request in self.hx_requests.items()
+                if name == hx_request_name
+            )
+        except StopIteration:
+            raise Exception(
+                f"No HXRequest found with the name {hx_request_name}. Are you sure it's spelled correctly?"
+            )
         return hx_request()
 
     @classmethod
