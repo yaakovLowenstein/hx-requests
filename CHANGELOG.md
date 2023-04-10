@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.1 (2023-04-10)
+### Fix
+* Updates to modal ([`be36e2f`](https://github.com/yaakovLowenstein/hx-requests/commit/be36e2f03ef4495f0974b398da11b1cc8b6b46ba))
+* Fix 🐛 that was not usign modal wrapper id in close modal js ([`4d2ab88`](https://github.com/yaakovLowenstein/hx-requests/commit/4d2ab88f2b387157cda685e28b287f32a7825f50))
+
 ## v0.7.0 (2023-04-09)
 ### Feature
 * Add ability to not do a swap in Post request ([`5838114`](https://github.com/yaakovLowenstein/hx-requests/commit/5838114b59ff79c8d1b083818f7ca6f3456167d3))
