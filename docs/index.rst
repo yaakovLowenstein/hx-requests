@@ -13,6 +13,21 @@ with htmx, and many other awesome features.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Guide
 
-   installation
+   guide/installation
+   guide/startup_guide
+   guide/hx_requests
+   guide/messages
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference Documentation
+
+   reference/HXRequestGET
+   reference/HXRequestPOST
+   reference/FormHXRequest
+   reference/DeleteHXRequest
+   reference/HXModal
+   reference/HXFormModal
