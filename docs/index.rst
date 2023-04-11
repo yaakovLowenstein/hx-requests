@@ -3,18 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to hx-requests's documentation!
-=======================================
+hx-requests
+===========
+
+Hx-requests is a package to simplify the usage of htmx with Django.
+It enables an application to make asyncronous requests without clogging up
+views and urls with extra code. It simplifies making django forms post asyncronously
+with htmx, and many other awesome features.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   installation
