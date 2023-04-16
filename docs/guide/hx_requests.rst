@@ -1,2 +1,2 @@
-HX Requests
-===========
+Other HX Requests
+=================

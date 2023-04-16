@@ -16,8 +16,10 @@ with htmx, and many other awesome features.
    :caption: Guide
 
    guide/installation
-   guide/startup_guide
+   guide/quickstart
+   guide/forms
    guide/hx_requests
+   guide/hx_tags
    guide/messages
 
 
