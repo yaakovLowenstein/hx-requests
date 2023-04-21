@@ -38,9 +38,10 @@ The HTML markup
         Click Me
     </button>
 
-- The 'get' in the :code:`render_hx` template tag signifies that it's an :code:`hx-get`
-- The goal of this :code:`hx-get` is to render a user info card into the empty div.
-- The :code:`render_hx` template tag will be discussed in depth later.
+Notes:
+    - The 'get' in the :code:`render_hx` template tag signifies that it's an :code:`hx-get`
+    - The goal of this :code:`hx-get` is to render a user info card into the empty div.
+    - The :code:`render_hx` template tag will be discussed in depth later.
 
 
 Create the HXRequest
@@ -64,7 +65,10 @@ Create an :code:`hx_requests.py` file
         name = "get_user_info"
         GET_template = "user_info_card.html"
 
-:code:`GetUserInfo` will return the HTML from the :code:`GET_template` (:code:`user_info_card.html`)
+Notes:
+    - :code:`GetUserInfo` will return the HTML from the :code:`GET_template` (:code:`user_info_card.html`)
+
+*user_info_card.html*
 
 .. code-block:: html
 
@@ -123,9 +127,10 @@ The HTML markup
         Save
     </button>
 
-- The 'post' in the :code:`render_hx` template tag signifies that it's an :code:`hx-post`
-- The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input and display the email in the div.
-- The :code:`render_hx` template tag will be discussed in depth later.
+Notes:
+    - The 'post' in the :code:`render_hx` template tag signifies that it's an :code:`hx-post`
+    - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input and display the email in the div.
+    - The :code:`render_hx` template tag will be discussed in depth later.
 
 
 Create the HXRequest
@@ -155,7 +160,10 @@ Create an :code:`hx_requests.py` file
             user.save()
             return super().post(request, *args, **kwargs)
 
-:code:`ChangeEmail` will return the HTML from the :code:`POST_template` (:code:`email.html`)
+Notes:
+    - :code:`ChangeEmail` will return the HTML from the :code:`POST_template` (:code:`email.html`)
+
+*email.html*
 
 .. code-block:: html
 

@@ -56,7 +56,7 @@ Notes:
     - An :code:`include` is used so that it can be reused below as the :code:`POST_template` in the :code:`HXRequest`.
     - The user in :code:`user_info.html` comes from the context of the view.
 
-.. note::
+.. tip::
 
     :code:`includes` are very helpful when using htmx, because it gives an easy way to load part of the html.
 
@@ -93,8 +93,8 @@ Notes:
 Setting Form Kwargs
 -------------------
 
-To add kwargs to the form, override :code:`get_form_kwargs`.
-To set initial values of form fields, override :code:`get_initial`.
+|To add kwargs to the form, override :code:`get_form_kwargs`.
+|To set initial values of form fields, override :code:`get_initial`.
 
 .. code-block:: python
 
@@ -125,7 +125,7 @@ Setting :ref:`Messages`
 
     See :ref:`Messages` for more details and for config settings.
 
-At a high level, success and error messages can be set by overriding :code:`get_success_message` and :code:`get_error_message`
+In a :code:`FormHXRequest` success and error messages can be set by overriding :code:`get_success_message` and :code:`get_error_message`
 
 .. code-block:: python
 
@@ -144,7 +144,7 @@ Notes:
 
 .. note::
 
-    Messages can be set in any :code:`HXRequest` at any point:
+    Messages can be set in any :code:`HXRequest` at any point like this:
 
     .. code-block:: python
 
@@ -152,7 +152,55 @@ Notes:
 
     Message types are: debug, info, success, warning and error.
 
-section on form modal
-maybe section on table row form
-maybe section on refresh and redirect (though really part of post hx )
-Possible edit quickstart to look like django with block of code and then notes
+Forms in Modals
+---------------
+
+:code:`hx-requests` has a built in form modal, :ref:`HXFormModal`
+
+A few things need to be setup to use modals with :code:`HXRequests`. See (put link here to other hx types to  modal)
+
+The page HTML
+
+.. code-block:: html
+
+    <button {% render_hx 'edit_user_modal' 'get' object=request.user %}
+            hx-trigger="click"
+            hx-target="#hx_modal_container"
+            _="on htmx:afterOnLoad wait 10ms then add .show to #hx_modal then add .show to #hx_modal_backdrop">
+            Open Modal
+    </button>
+
+Notes:
+    - Hyperscript is used here to load the modal, it can be done using JavaScript, but it's recommended to use Hyperscript
+    -  :code:`hx_modal_container`, :code:`hx_modal_backdrop`, and :code:`hx_modal` are the ids when using the modal provided by :code:`hx-requests`. If you are not using the default modal and you change the ids, these values would need to reflect that.
+
+*form.html*
+
+.. code-block:: html
+
+    {% load hx_tags %}
+    <div>
+        {{ # Render fom fields }}
+            <button hx-include="closest div"
+                    {% render_hx 'edit_user_modal' 'post' hx_object %}
+                    hx-swap="outerHTML">
+                Save
+            </button>
+        </td>
+    </div>
+
+Notes:
+    - The object is in this context as :code:`hx_object` because :code:`hx_object_name` is not set in the :code:`HXRequest` below
+
+
+.. code-block:: python
+
+    class EditUserModal(HXFormModal):
+        name = "edit_user_modal"
+        form_class = UserInfoForm
+        GET_template = 'form.html' # Used as the body of the modal
+        POST_template = '...' # This works the same as the basic form above
+
+Notes:
+    - When the form is valid the modal will close
+    - When the form is invalid the modal will stay open and contain the validation errors

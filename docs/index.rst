@@ -33,3 +33,4 @@ with htmx, and many other awesome features.
    reference/DeleteHXRequest
    reference/HXModal
    reference/HXFormModal
+   reference/settings
