@@ -18,9 +18,10 @@ with htmx, and many other awesome features.
    guide/installation
    guide/quickstart
    guide/forms
-   guide/hx_requests
-   guide/hx_tags
+   guide/delete
+   guide/modals
    guide/messages
+   guide/hx_tags
 
 
 .. toctree::

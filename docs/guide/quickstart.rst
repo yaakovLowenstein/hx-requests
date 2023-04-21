@@ -5,9 +5,10 @@ The idea of hx-requests is that :code:`HXRequests` absorb all htmx requests.
 Define an :code:`HXRequest` (we'll get into how to do that in just a sec) and
 observe the magic of :code:`hx-requests`.
 
-- No need to define extra urls
-- No need to add anything extra in the view
+- No need to define extra urls to handle these requests
+- No need to add anything extra in views
 - Reusable :code:`HXRequests` across views
+- Built in :code:`HXReuqests` to reduce boilerplate code
 
 Setting up a GET Request (hx-get)
 ---------------------------------
