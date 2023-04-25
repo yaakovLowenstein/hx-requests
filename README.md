@@ -20,6 +20,8 @@ observe the magic of `hx-requests`.
 - Reusable `HXRequests` across views
 - Built in `HXReuqests` to reduce boilerplate code
 
+See full documentation here: https://hx-requests.readthedocs.io/en/latest/#
+
 # Installation
 
 ```python
@@ -36,6 +38,7 @@ INSTALLED_APPS = (
 **Note**
 It's assumed that htmx is already included in the base html file. It's also recommended to include hyperscript.
 Htmx: `<script src="https://unpkg.com/htmx.org@1.8.6"></script>`
+</br>
 Hyperscript: `<script src="https://unpkg.com/hyperscript.org@0.9.8"></script>`
 
 # Contributing to this repository
