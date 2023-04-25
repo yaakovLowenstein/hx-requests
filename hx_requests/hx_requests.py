@@ -264,7 +264,7 @@ class HXModal(HXRequestGET):
     )
 
     def get_GET_context_data(self, **kwargs) -> Dict:
-        context = super().get_context_data(**kwargs)
+        context = super().get_GET_context_data(**kwargs)
         body = kwargs.get("body", self.GET_template)
         context["title"] = kwargs.get("title", self.hx_object)
         context["modal_container_id"] = self.modal_container_id

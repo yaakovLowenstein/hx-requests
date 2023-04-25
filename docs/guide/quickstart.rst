@@ -40,9 +40,8 @@ The HTML markup
     </button>
 
 Notes:
-    - The 'get' in the :code:`render_hx` template tag signifies that it's an :code:`hx-get`
+    - The 'get' in the :ref:`render_hx <HX Tags>` template tag signifies that it's an :code:`hx-get`
     - The goal of this :code:`hx-get` is to render a user info card into the empty div.
-    - The :code:`render_hx` template tag will be discussed in depth later.
 
 
 Create the HXRequest
@@ -129,9 +128,8 @@ The HTML markup
     </button>
 
 Notes:
-    - The 'post' in the :code:`render_hx` template tag signifies that it's an :code:`hx-post`
+    - The 'post' in the :ref:`render_hx <HX Tags>` template tag signifies that it's an :code:`hx-post`
     - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input and display the email in the div.
-    - The :code:`render_hx` template tag will be discussed in depth later.
 
 
 Create the HXRequest

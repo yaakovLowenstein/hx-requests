@@ -22,6 +22,8 @@ with htmx, and many other awesome features.
    guide/modals
    guide/messages
    guide/hx_tags
+   guide/tips_and_tricks
+
 
 
 .. toctree::
@@ -35,3 +37,10 @@ with htmx, and many other awesome features.
    reference/HXModal
    reference/HXFormModal
    reference/settings
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Other
+
+   other/contributing
