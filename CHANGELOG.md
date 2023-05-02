@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2023-05-02)
+### Fix
+* Move sphinx to a dev dependency ([`a47885c`](https://github.com/yaakovLowenstein/hx-requests/commit/a47885c701f3de3ed1819c5e7dc6cd426dccc19e))
+
 ## v0.10.0 (2023-05-02)
 ### Feature
 * Merge HXRequestsGET and HXRequestPOST into one base class ([`9557070`](https://github.com/yaakovLowenstein/hx-requests/commit/95570704acc4428bcd9865320aaba3a9505fe721))
