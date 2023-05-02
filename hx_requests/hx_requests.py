@@ -17,7 +17,29 @@ from hx_requests.hx_messages import HXMessages
 
 class BaseHXRequest:
     """
-    HXRequest is the base class for Htmx requests.
+    Base class for HXRequests. Class to be used for basic GET and POST requests.
+
+    Attributes
+    ----------
+    name : str
+         Unique name that needs to be matched in the template tag rendering the HXRequest
+    hx_object_name : str, optional
+        Name that the hx_object is passed into the context with
+    GET_template : str, optional
+        Template rendered for a GET request
+    POST_template : str, optional
+        Template rendered for a POST request
+    refresh_page : bool
+        If True the page will refresh after a POST request
+    redirect : str, optional
+        URL to redirect to after a POST request
+    return_empty : bool
+        If True, returns an empty HTTPResponse after a POST request
+    no_swap : bool
+        If True, does not do a swap
+    show_messages: bool
+        If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
+        then the set message is displayed
     """
 
     name: str = ""
@@ -28,11 +50,14 @@ class BaseHXRequest:
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
-    show_messages: bool = True
     no_swap = False
+    show_messages: bool = True
 
     @cached_property
     def is_post_request(self):
+        """
+        **Property** : Returns True if it is a POST request
+        """
         return self.request.method == "POST"
 
     @cached_property
@@ -43,28 +68,37 @@ class BaseHXRequest:
         )
 
     def get_context_data(self, **kwargs) -> Dict:
+        """ "
+        Adds the context from the view and additionally adds:
+            | kwargs as hx_kwargs
+            | hx_object as {self.hx_object_name} (default is hx_object)
+            | self as hx_request
+        """
         context = self.view.get_context_data()
         context["hx_kwargs"] = kwargs
 
+        # TODO move the next 2 lines to either form valid or somewhere else..
         if self.hx_object and self.hx_object.pk:
             self.hx_object.refresh_from_db()
+
         context[self.hx_object_name] = self.hx_object
 
         context["request"] = self.request
         context["hx_request"] = self
         if self.is_post_request:
             context.update(self.get_post_context_data(**kwargs))
-        else:
-            context.update(self.get_get_context_data(**kwargs))
         return context
 
     def get_post_context_data(self, **kwargs):
-        return {}
-
-    def get_get_context_data(self, **kwargs):
+        """
+        Adds extra context to the context data only on POST.
+        """
         return {}
 
     def get_hx_object(self, request):
+        """
+        If an 'object' was passed in, deserialize it.
+        """
         if request.GET.get("object"):
             serialized_hx_object = request.GET.get("object")
             app_label, model, pk = serialized_hx_object.split("_")
@@ -83,7 +117,10 @@ class BaseHXRequest:
             self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
         )
 
-    def get_headers(self, **kwargs):
+    def get_headers(self, **kwargs) -> Dict:
+        """
+        Prepare the headers for the response.
+        """
         headers = {}
         if self.is_post_request:
             if self.refresh_page:
@@ -96,7 +133,10 @@ class BaseHXRequest:
             headers.update(self.get_message_headers(**kwargs))
         return headers
 
-    def get_response_html(self, **kwargs):
+    def get_response_html(self, **kwargs) -> str:
+        """
+        Prepare the HTML for the response.
+        """
         if self.is_post_request:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
@@ -114,6 +154,9 @@ class BaseHXRequest:
         return html
 
     def get_response(self, **kwargs):
+        """
+        Gets the response.
+        """
         html = self.get_response_html(**kwargs)
         return HttpResponse(
             html,
@@ -138,9 +181,15 @@ class BaseHXRequest:
         messages.success(self.request, self.messages.get_message()[0])
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Method that all GET requests hit.
+        """
         return self.get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Method that all POST requests hit.
+        """
         return self.get_response(**kwargs)
 
 

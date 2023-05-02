@@ -10,7 +10,7 @@ observe the magic of :code:`hx-requests`.
 - Reusable :code:`HXRequests` across views
 - Built in :code:`HXReuqests` to reduce boilerplate code
 
-Setting up a GET Request (hx-get)
+Making up a GET Request (hx-get)
 ---------------------------------
 
 The View
@@ -59,9 +59,9 @@ Create an :code:`hx_requests.py` file
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import HXRequestGET
+    from hx_requests.hx_requests import BaseHXRequest
 
-    class GetUserInfo(HXRequestGET):
+    class GetUserInfo(BaseHXRequest):
         name = "get_user_info"
         GET_template = "user_info_card.html"
 
@@ -90,10 +90,10 @@ Summary
 
 
 
-Setting up a POST Request (hx-post)
+Making up a POST Request (hx-post)
 ---------------------------------
 
-Very similar to the :code:`GET` request above.
+Alomost exactly the same as the :code:`GET` request above.
 
 .. note::
 
@@ -147,9 +147,9 @@ Create an :code:`hx_requests.py` file
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import HXRequestPOST
+    from hx_requests.hx_requests import BaseHXRequest
 
-    class ChangeEmail(HXRequestPOST):
+    class ChangeEmail(BaseHXRequest):
         name = "change_email"
         POST_template = "email.html"
 
