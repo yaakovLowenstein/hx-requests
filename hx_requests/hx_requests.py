@@ -68,7 +68,7 @@ class BaseHXRequest:
         )
 
     def get_context_data(self, **kwargs) -> Dict:
-        """ "
+        """
         Adds the context from the view and additionally adds:
             | kwargs as hx_kwargs
             | hx_object as {self.hx_object_name} (default is hx_object)
@@ -76,13 +76,7 @@ class BaseHXRequest:
         """
         context = self.view.get_context_data()
         context["hx_kwargs"] = kwargs
-
-        # TODO move the next 2 lines to either form valid or somewhere else..
-        if self.hx_object and self.hx_object.pk:
-            self.hx_object.refresh_from_db()
-
         context[self.hx_object_name] = self.hx_object
-
         context["request"] = self.request
         context["hx_request"] = self
         if self.is_post_request:
@@ -93,7 +87,13 @@ class BaseHXRequest:
         """
         Adds extra context to the context data only on POST.
         """
-        return {}
+        context = {}
+        # Refresh the object in case it was updated.
+        if self.hx_object and self.hx_object.pk:
+            self.hx_object.refresh_from_db()
+        context[self.hx_object_name] = self.hx_object
+
+        return context
 
     def get_hx_object(self, request):
         """
