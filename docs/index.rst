@@ -30,8 +30,7 @@ with htmx, and many other awesome features.
    :maxdepth: 2
    :caption: Reference Documentation
 
-   reference/HXRequestGET
-   reference/HXRequestPOST
+   reference/BaseHXRequest
    reference/FormHXRequest
    reference/DeleteHXRequest
    reference/HXModal

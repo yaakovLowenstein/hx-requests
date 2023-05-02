@@ -13,7 +13,7 @@ author = "Yaakov Lowenstein"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autosectionlabel"]
+extensions = ["sphinx.ext.autosectionlabel", "sphinx.ext.autodoc"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -26,3 +26,6 @@ root_doc = "index"
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+import os
+import sys
