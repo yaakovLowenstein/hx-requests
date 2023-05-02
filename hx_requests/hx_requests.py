@@ -328,7 +328,7 @@ class FormHXRequest(BaseHXRequest):
 
     def get_form_errors(self, **kwargs) -> str:
         """
-        Concatonates the form errors into an easily readable string.
+        concatenates the form errors into an easily readable string.
         """
         errors = ""
         for k, v in self.form.errors.items():
@@ -338,19 +338,32 @@ class FormHXRequest(BaseHXRequest):
 
 class DeleteHXRequest(BaseHXRequest):
     """
-    HXRequest for deleting objects. Can override handle_delete
-    for custom behavior.
+    HXRequest for deleting objects.
+
+    The object passed into a DeleteHXRequest is deleted.
+    Override handle_delete for custom behavior.
     """
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Sets success message and calls handle_delete
+        """
         self.messages.success(self.get_success_message(**kwargs))
         return self.handle_delete(**kwargs)
 
     def handle_delete(self, **kwargs) -> str:
+        """
+        Called on POST. Deletes the hx_object.
+        Override to add custom behavior.
+        """
         self.hx_object.delete()
         return self.get_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
+        """
+        Message set when the object is deleted. Override to set
+        a custom message.
+        """
         message = (
             f"{self.hx_object_to_str()} deleted successfully."
             if self.hx_object
