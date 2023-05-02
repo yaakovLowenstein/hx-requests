@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2023-05-02)
+### Fix
+* Update lock file based on changes to toml ([`deb6f79`](https://github.com/yaakovLowenstein/hx-requests/commit/deb6f796ca186836dbc2fd3ea11a9b26a524784f))
+
 ## v0.10.1 (2023-05-02)
 ### Fix
 * Move sphinx to a dev dependency ([`a47885c`](https://github.com/yaakovLowenstein/hx-requests/commit/a47885c701f3de3ed1819c5e7dc6cd426dccc19e))
