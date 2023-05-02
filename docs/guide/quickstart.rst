@@ -10,7 +10,7 @@ observe the magic of :code:`hx-requests`.
 - Reusable :code:`HXRequests` across views
 - Built in :code:`HXReuqests` to reduce boilerplate code
 
-Making up a GET Request (hx-get)
+Making a GET Request (hx-get)
 ---------------------------------
 
 The View
@@ -90,7 +90,7 @@ Summary
 
 
 
-Making up a POST Request (hx-post)
+Making a POST Request (hx-post)
 ---------------------------------
 
 Alomost exactly the same as the :code:`GET` request above.
