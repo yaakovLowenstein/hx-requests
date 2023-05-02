@@ -2,6 +2,29 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2023-05-02)
+### Feature
+* Merge HXRequestsGET and HXRequestPOST into one base class ([`9557070`](https://github.com/yaakovLowenstein/hx-requests/commit/95570704acc4428bcd9865320aaba3a9505fe721))
+
+### Fix
+* Move resfresh object into get_post_context_data ([`77c0621`](https://github.com/yaakovLowenstein/hx-requests/commit/77c06217158747c3d48d9521b9c134469d7f6af7))
+
+### Documentation
+* Update docs for merging of get and post into one base class ([`37b8b4c`](https://github.com/yaakovLowenstein/hx-requests/commit/37b8b4cb833f93c067585d780d951e16147c0d32))
+* Add section on hx tags ([`325eecb`](https://github.com/yaakovLowenstein/hx-requests/commit/325eecb711d5f87ab1fbc6d157039f100a8c675c))
+* Add section on messages ([`85076f8`](https://github.com/yaakovLowenstein/hx-requests/commit/85076f8f70a91fa0af576cef1811153e64c95b69))
+* Fix up README ([`47feddc`](https://github.com/yaakovLowenstein/hx-requests/commit/47feddc521281fd4a0cc6431ed1508b34886b676))
+* Update README ([`a8a0b54`](https://github.com/yaakovLowenstein/hx-requests/commit/a8a0b54e8da1cd4bdfc34bcd17d618698bacfa49))
+* Finish up modal docs ([`135bd23`](https://github.com/yaakovLowenstein/hx-requests/commit/135bd23644e54f821a3d183e6e77e7e7febe3627))
+* Add docs on deleting ([`4bb7100`](https://github.com/yaakovLowenstein/hx-requests/commit/4bb71007e649048c5938de8f9eaf8bfce74512e9))
+* Finish up Using Forms and add stub for settings ([`fccadb0`](https://github.com/yaakovLowenstein/hx-requests/commit/fccadb055eea9ec2e113c17711a28cb68dee269d))
+* Start on forms documentation ([`8e51494`](https://github.com/yaakovLowenstein/hx-requests/commit/8e5149415499ac0ce09d956257ea5cc777e1e8ce))
+* Write up quickstart docs ([`411dc14`](https://github.com/yaakovLowenstein/hx-requests/commit/411dc14474b160e7ae0ac01163cbc433dfe69d93))
+* Outline the docs ([`bf37ef4`](https://github.com/yaakovLowenstein/hx-requests/commit/bf37ef4f2c58739c85af8484aec1d84fe7c516fe))
+* Add docs on installation ([`6c472da`](https://github.com/yaakovLowenstein/hx-requests/commit/6c472da66ce92aa5edd48b45da5ed209ae0b7724))
+* Change theme to sphinx_rtd_theme ([`d81d9ca`](https://github.com/yaakovLowenstein/hx-requests/commit/d81d9ca422b9ed7116f3295123ff77734328ad97))
+* Run sphinx quickstart to start off documentation ([`01180ee`](https://github.com/yaakovLowenstein/hx-requests/commit/01180eeed1d0582a15f24a3b55e5c02104189080))
+
 ## v0.9.0 (2023-04-10)
 ### Feature
 * Clean up code in views ([`5fdfc65`](https://github.com/yaakovLowenstein/hx-requests/commit/5fdfc650926f16a27e53a5df1b5fce54f302e31c))
