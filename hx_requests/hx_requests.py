@@ -195,27 +195,53 @@ class BaseHXRequest:
 
 class FormHXRequest(BaseHXRequest):
     """
-    Adds in form to context.
-    On POST if the form is valid returns form_valid OR the POST_template.
-    If the form is invalid returns form_invalid or the GET_template.
+    HXRequests class to be used for forms. It helps with some of the
+    boiler plate. It's loosely based on Django's FormView and UpdateView.
 
-    form_invalid and form_valid can be overriden for custom behavior.
-    Can override get_template_kwargs to add custom kwargs into the form.
+    Every FormHXRequest must have a form associated with it. The form is
+    passed into the context and is also accessible within the class as
+    self.form.
+
+    Override form_valid to form_invalid to inject custom behavior. By
+    default form_valid saves the form and sets a success message. By
+    default form_invalid sets an error message.
+
+    Add kwargs into the form using get_form_kwargs
+
+    If there is an hx_object it is passed into the form as the form
+    instance.
+
+    Attributes
+    ----------
+    form_class : Form
+        Class of the form attached to the FormHXRequest
+    add_form_errors_to_error_message : bool
+        If True adds the form's validation errors to the error message on form_invalid
     """
 
     form_class: Form = None
     add_form_errors_to_error_message: bool = False
 
     def get_context_data(self, **kwargs) -> Dict:
+        """
+        Additionally adds the form into the context.
+        """
         context = super().get_context_data(**kwargs)
         context["form"] = self.form
         return context
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Instantiates the form.
+        """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
         return self.get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        If the form is valid sets a success message and calls form_valid.
+        If invalid sets an error message and calls form_invalid.
+        """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
         if self.form.is_valid():
@@ -227,13 +253,24 @@ class FormHXRequest(BaseHXRequest):
             return self.form_invalid(**kwargs)
 
     def form_valid(self, **kwargs) -> str:
+        """
+        Saves the form and returns get_response. Override to add custom behavior.
+        """
         self.form.save()
         return self.get_response(**kwargs)
 
     def form_invalid(self, **kwargs) -> str:
+        """
+        Returns get_response. Override to add custom behavior.
+        """
         return self.get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
+        """
+        On POST if the form is invalid instead of returning the
+        POST_tempalte the GET_template is returned (the form
+        now contains the validation errors.)
+        """
         if self.is_post_request and self.form.is_valid() is False:
             return render_to_string(
                 self.GET_template, self.get_context_data(**kwargs), self.request
@@ -241,7 +278,10 @@ class FormHXRequest(BaseHXRequest):
         return super().get_response_html(**kwargs)
 
     def get_form_kwargs(self, **kwargs):
-        """Return the keyword arguments for instantiating the form."""
+        """
+        Return the keyword arguments for instantiating the form.
+        Override to add more kwargs into the form.
+        """
         form_kwargs = {"initial": self.get_initial(**kwargs)}
         if self.request.method in ("POST", "PUT"):
             form_kwargs.update(
@@ -255,9 +295,16 @@ class FormHXRequest(BaseHXRequest):
         return form_kwargs
 
     def get_initial(self, **kwargs):
+        """
+        Override to set initial values in the form.
+        """
         return {}
 
     def get_success_message(self, **kwargs) -> str:
+        """
+        Message set when the form is valid. Override to set
+        a custom message.
+        """
         message = (
             f"{self.hx_object_to_str()} Saved Successfully."
             if self.hx_object
@@ -266,6 +313,10 @@ class FormHXRequest(BaseHXRequest):
         return message
 
     def get_error_message(self, **kwargs) -> str:
+        """
+        Message set when the form is invalid. Override to set
+        a custom message.
+        """
         message = (
             f"<b>{self.hx_object_to_str()} did not save  successfully.</b>"
             if self.hx_object
@@ -276,6 +327,9 @@ class FormHXRequest(BaseHXRequest):
         return mark_safe(message)
 
     def get_form_errors(self, **kwargs) -> str:
+        """
+        Concatonates the form errors into an easily readable string.
+        """
         errors = ""
         for k, v in self.form.errors.items():
             errors += f"{k}: {strip_tags(v)}" if k != "__all__" else strip_tags(v)
