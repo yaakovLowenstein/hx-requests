@@ -70,6 +70,7 @@ class BaseHXRequest:
     def get_context_data(self, **kwargs) -> Dict:
         """
         Adds the context from the view and additionally adds:
+
             | kwargs as hx_kwargs
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request

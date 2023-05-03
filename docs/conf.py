@@ -9,10 +9,9 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath("../"))
-sys.path.insert(0, os.path.abspath("../hx_requests/"))
-sys.path.append(os.path.abspath("_themes"))
+# sys.path.insert(0, os.path.abspath("."))
+# sys.path.insert(0, os.path.abspath("../"))
+# sys.path.insert(0, os.path.abspath("../hx_requests/"))
 
 project = "hx-requests"
 copyright = "2023, Yaakov Lowenstein"
@@ -21,7 +20,7 @@ author = "Yaakov Lowenstein"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autosectionlabel", "sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.autosectionlabel", "sphinx.ext.autodoc", "autoapi.extension"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -34,3 +33,5 @@ root_doc = "index"
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+autoapi_dirs = ["../hx_requests"]
