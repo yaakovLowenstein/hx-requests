@@ -11,8 +11,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
-sys.path.insert(0, os.path.abspath("../hx_requests"))
-
+sys.path.insert(0, os.path.abspath("../hx_requests/"))
+sys.path.append(os.path.abspath("_themes"))
 
 project = "hx-requests"
 copyright = "2023, Yaakov Lowenstein"
