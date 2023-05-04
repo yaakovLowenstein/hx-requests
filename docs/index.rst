@@ -32,6 +32,9 @@ with htmx, and many other awesome features.
    :caption: Reference Documentation
 
    autoapi/hx_requests/hx_requests/index
+   reference/BaseHXRequest
+   reference/FormHXRequest
+   reference/DeleteHXRequest
 
 
 
