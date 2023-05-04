@@ -33,6 +33,8 @@ with htmx, and many other awesome features.
    autoapi/hx_requests/hx_requests/index
    reference/BaseHXRequest
    reference/FormHXRequest
+   reference/DeleteHXRequest
+
 
 
 
