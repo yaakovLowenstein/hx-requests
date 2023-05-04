@@ -35,3 +35,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 autoapi_dirs = ["../hx_requests"]
+# autoapi_root = "reference/"
+autoapi_add_toctree_entry = False
+autoapi_keep_files = True
+# autoapi_generate_api_docs = False
