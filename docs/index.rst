@@ -30,12 +30,9 @@ with htmx, and many other awesome features.
    :maxdepth: 2
    :caption: Reference Documentation
 
+   autoapi/hx_requests/hx_requests/index
    reference/BaseHXRequest
-   reference/FormHXRequest
-   reference/DeleteHXRequest
-   reference/HXModal
-   reference/HXFormModal
-   reference/settings
+
 
 
 .. toctree::
