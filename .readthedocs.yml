@@ -4,12 +4,7 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "3.8"
-
-# Build from the docs/ directory with Sphinx
-sphinx:
-  configuration: docs/conf.py
-
-jobs:
+  jobs:
     post_create_environment:
       # Install poetry
       # https://python-poetry.org/docs/#installing-manually
@@ -20,3 +15,7 @@ jobs:
       # Install dependencies with 'docs' dependency group
       # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
       - poetry install --with dev
+
+# Build from the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
