@@ -196,8 +196,8 @@ class BaseHXRequest:
 
 class FormHXRequest(BaseHXRequest):
     """
-    HXRequests class to be used for forms. It helps with some of the
-    boiler plate. It's loosely based on Django's FormView and UpdateView.
+    HXRequests class to be used for forms that helps with some of the boiler plate.
+    It's loosely based on Django's FormView and UpdateView.
 
     Every FormHXRequest must have a form associated with it. The form is
     passed into the context and is also accessible within the class as
@@ -374,6 +374,20 @@ class DeleteHXRequest(BaseHXRequest):
 
 
 class HXModal(BaseHXRequest):
+    """
+    A generic modal that can be used without needing to create a class that inherits from this one.
+    It can be used by passing in title and body into the template tag as kwargs and passing in
+    'hx-modal' as the name.
+
+    **Note** : The body can be a string, html or a path to an html file.
+
+    Example
+    -------
+
+    ```{% render_hx 'hx_modal' 'get' body="This is a modal body" title="My First Modal" %}```
+
+    """
+
     name = "hx_modal"
 
     @cached_property
@@ -385,16 +399,26 @@ class HXModal(BaseHXRequest):
         return getattr(settings, "HX_REQUSTS_MODAL_TEMPLATE", "hx_requests/modal.html")
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Regular get method but addionally sets the modal body.
+        """
         self.set_modal_body(**kwargs)
         return super().get(request, *args, **kwargs)
 
     def set_modal_body(self, **kwargs):
+        """
+        Sets the modal body to either the kwargs 'body' or to the GET_template.
+        (the GET_template might be set if a class inherits from hx_modal)
+        """
         self.body = kwargs.get("body")
         if self.GET_template != self.modal_template:
             self.body = self.GET_template
             self.GET_template = self.modal_template
 
     def get_context_data(self, **kwargs) -> Dict:
+        """
+        Adds title and body into the context.
+        """
         context = super().get_context_data(**kwargs)
         body = getattr(self, "body", None) or kwargs.get("body", self.GET_template)
         context["title"] = kwargs.get("title", self.hx_object)
@@ -408,11 +432,24 @@ class HXModal(BaseHXRequest):
 
 
 class HXFormModal(HXModal, FormHXRequest):
+    """
+    A modal to be used with a form.
+    You need to create an HXRequest class that inherits from this one
+    and set the needed attributes for a FormHXRequest.
+
+    If the form is invalid the modal stays open and the form contains the validation
+    errors. If the form is valid the modal will close.
+    """
+
     @cached_property
     def modal_body_selector(self):
         return getattr(settings, "HX_REQUSTS_MODAL_BODY_SELECTOR", ".modal-body")
 
     def form_invalid(self, **kwargs) -> str:
+        """
+        Set the modal body (this is because the GET_template i.e. the body is
+        going to remain open since the form is invalid)
+        """
         self.set_modal_body()
         return self.get_response(**kwargs)
 
