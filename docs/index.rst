@@ -22,6 +22,7 @@ with htmx, and many other awesome features.
    guide/modals
    guide/messages
    guide/hx_tags
+   guide/config
    guide/tips_and_tricks
 
 
@@ -31,9 +32,6 @@ with htmx, and many other awesome features.
    :caption: Reference Documentation
 
    autoapi/hx_requests/hx_requests/index
-   reference/BaseHXRequest
-   reference/FormHXRequest
-   reference/DeleteHXRequest
 
 
 
