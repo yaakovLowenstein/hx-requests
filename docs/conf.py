@@ -6,12 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
-import sys
-
-# sys.path.insert(0, os.path.abspath("."))
-# sys.path.insert(0, os.path.abspath("../"))
-# sys.path.insert(0, os.path.abspath("../hx_requests/"))
 
 project = "hx-requests"
 copyright = "2023, Yaakov Lowenstein"
@@ -35,7 +29,6 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 autoapi_dirs = ["../hx_requests"]
-# autoapi_root = "reference/"
-# autoapi_add_toctree_entry = False
-# autoapi_keep_files = True
-# autoapi_generate_api_docs = False
+autoapi_add_toctree_entry = False
+autoapi_options = ["members", "show-module-summary"]
+autoapi_template_dir = "_templates/"
