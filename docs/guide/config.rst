@@ -1,2 +1,49 @@
 Configuration
 =============
+
+
+Messages Configuration
+----------------------
+
+| :code:`HX_REQUESTS_USE_HX_MESSAGES` : *Defaul=False*
+| Set this to True to use :code:`hx-requests` messaging framework. If this is False :code:`hx-requests` messages will not be displayed even if you set messages.
+
+| :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : *Default=False*
+| Set this to True to use Django's :code:`MESSAGE_TAGS` setting for tags.
+
+| :code:`HX_REQUESTS_HX_MESSAGE_TAGS` : *No Default*
+| If you are not using Django's :code:`MESSAGE_TAGS` set this to a dict of tags.
+|
+| *Example*
+
+.. code-block:: python
+
+    MESSAGE_TAGS = {
+    messages.DEBUG: "alert-info",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
+    }
+
+| :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE` : *No Default*
+|
+| Template to be used for displaying the messages. The context in this template has access to the 'message' and the 'tag'.
+
+Modal Configuration
+-------------------
+.. note::
+
+    See :ref:`Overriding the built-in Modal` for a guide on overriding the default modal template.
+
+| :code:`HX_REQUSTS_MODAL_TEMPLATE` : *Default='hx_requests/modal.html'*
+|
+| Template to be used for modals. The context in this template has access to the modal's 'title' and 'body'.
+
+| :code:`HX_REQUSTS_MODAL_CONTAINER_ID` : *Default='hx_modal_container'*
+|
+| Id of the container the modal is rendered in.
+
+| :code:`HX_REQUSTS_MODAL_BODY_SELECTOR` : *Default='.modal-body'*
+|
+| A CSS selector for the modal body. This only needs to be set if :code:`HX_REQUSTS_MODAL_TEMPLATE` is overridden and '.modal-body' is not a valid selector for it.
