@@ -130,8 +130,6 @@ class BaseHXRequest:
                 headers["HX-Redirect"] = self.redirect
         if self.no_swap:
             headers["HX-Reswap"] = "none"
-        if self.use_messages:
-            headers.update(self.get_message_headers(**kwargs))
         return headers
 
     def get_response_html(self, **kwargs) -> str:
@@ -141,8 +139,6 @@ class BaseHXRequest:
         if self.is_post_request:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
-                if self.use_messages:
-                    self.set_synchronous_messages(**kwargs)
             else:
                 html = render_to_string(
                     self.POST_template, self.get_context_data(**kwargs), self.request
@@ -152,34 +148,52 @@ class BaseHXRequest:
             html = render_to_string(
                 self.GET_template, self.get_context_data(**kwargs), self.request
             )
+
         return html
+
+    def get_messages_html(self, **kwargs) -> str:
+        if self.messages():
+            return render_to_string(
+                getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE"),
+                {"messages": self.messages},
+                self.request,
+            )
+        return ""
 
     def get_response(self, **kwargs):
         """
         Gets the response.
         """
         html = self.get_response_html(**kwargs)
+        if self.use_messages:
+            if self.refresh_page or self.redirect:
+                self.set_synchronous_messages(**kwargs)
+            else:
+                html += self.get_messages_html(**kwargs)
+
         return HttpResponse(
             html,
             headers=self.get_headers(**kwargs),
         )
 
-    def get_message_headers(self, **kwargs) -> Dict:
-        headers = {}
-        if self.messages.get_message():
-            headers["HX-Trigger"] = json.dumps(
-                {
-                    "showMessages": {
-                        "message": self.messages.get_message()[0],
-                        "tag": self.messages.get_message()[1],
-                    }
-                }
-            )
-        return headers
-
     def set_synchronous_messages(self, **kwargs):
-        # TODO this should really match what message type it is (might need 2nd part of tuple to be tuple of actual tag and then class)
-        messages.success(self.request, self.messages.get_message()[0])
+        """
+        Convert the hx_message to a Django synchronous message if the page is going to
+        be refreshd (or redirected). This is done because the asynchrounous ones will
+        not show up if the page is reloaded.
+        """
+        if self.messages():
+            for message in self.messages():
+                tag = next(
+                    (
+                        key
+                        for key, value in self.messages.tags.items()
+                        if value == message.tag
+                    )
+                )
+                messages.add_message(
+                    self.request, tag, message.body, fail_silently=True
+                )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
