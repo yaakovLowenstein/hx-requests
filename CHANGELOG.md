@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2023-05-11)
+### Fix
+* Fix bug that wasn't urlencoding the kwargs ([`acb74c2`](https://github.com/yaakovLowenstein/hx-requests/commit/acb74c26d386e2ff916803b118238a77170beea7))
+
 ## v0.11.0 (2023-05-11)
 ### Feature
 * Empty commit to bump version ([`b467c81`](https://github.com/yaakovLowenstein/hx-requests/commit/b467c81f3a4c0348afff1f8df76872cf090577b4))
