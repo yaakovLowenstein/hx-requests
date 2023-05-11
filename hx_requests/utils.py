@@ -39,7 +39,7 @@ def get_url(context, hx_request_name, object, **kwargs):
     serialized_kwargs = serialize_kwargs(**kwargs)
     extra_params = ""
     for k, v in serialized_kwargs.items():
-        extra_params += f"&{k}={quote_plus(v)}"
+        extra_params += f"&{k}={quote_plus(str(v))}"
     url += extra_params
     return url
 
