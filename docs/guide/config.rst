@@ -28,7 +28,7 @@ Messages Configuration
 
 | :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE` : *No Default*
 |
-| Template to be used for displaying the messages. The context in this template has access to the 'message' and the 'tag'.
+| Template to be used for displaying the messages. The context in this template has access to the :code:`messages`.
 
 Modal Configuration
 -------------------
