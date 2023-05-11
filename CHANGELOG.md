@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2023-05-11)
+### Feature
+* Empty commit to bump version ([`b467c81`](https://github.com/yaakovLowenstein/hx-requests/commit/b467c81f3a4c0348afff1f8df76872cf090577b4))
+
+### Documentation
+* Test again for autodoc ([#4](https://github.com/yaakovLowenstein/hx-requests/issues/4)) ([`b8c36e5`](https://github.com/yaakovLowenstein/hx-requests/commit/b8c36e51902808a2dd7977aa9587b2cba20bb874))
+* Retry autodocs ([`c9ec154`](https://github.com/yaakovLowenstein/hx-requests/commit/c9ec154760586a495c8b6a952e18b71450cc46fc))
+* Retry ([`2ebcb83`](https://github.com/yaakovLowenstein/hx-requests/commit/2ebcb8325d48ec2075f5e9c5f46dd027ef9bcce3))
+* Add sphinx-autodoc-api ([`1d28e8a`](https://github.com/yaakovLowenstein/hx-requests/commit/1d28e8aa70940ba8e143a9a778c462e12fa395bf))
+* Testing readthedocs ([`ffaf095`](https://github.com/yaakovLowenstein/hx-requests/commit/ffaf0954add15596bf5f4160b18a1099dd98bca5))
+* Trying to get readthedocs to work with docstrings ([`de14adc`](https://github.com/yaakovLowenstein/hx-requests/commit/de14adcce22ef59b6b0b0222607f815fc158905e))
+* Trying to get readthedocs to recognize docstrings ([`680fc98`](https://github.com/yaakovLowenstein/hx-requests/commit/680fc9887d35bb1c2d02274379d188a198c01559))
+* Add requirements and yml for readthedocs ([`f50a7b3`](https://github.com/yaakovLowenstein/hx-requests/commit/f50a7b3004f38c0b059328850c2669768bc92d3b))
+* Fix typo in quickstart ([`8d03c06`](https://github.com/yaakovLowenstein/hx-requests/commit/8d03c06c44f6ecbe54f462be7623961b2c02f32c))
+* Add reference documentation for DeleteHXRequest ([`58fe070`](https://github.com/yaakovLowenstein/hx-requests/commit/58fe070c30b2ee2c7d764ce64df3a8cdb72cf787))
+* Add in docstrings for FormHXRequest ([`558bac8`](https://github.com/yaakovLowenstein/hx-requests/commit/558bac8230f2ecf8d34b54544339e2664aa94352))
+* Add reference docs for FormHXRequest ([`263c533`](https://github.com/yaakovLowenstein/hx-requests/commit/263c533c1d2b166957a77c52c91c1cbf30f3a0c7))
+
 ## v0.10.2 (2023-05-02)
 ### Fix
 * Update lock file based on changes to toml ([`deb6f79`](https://github.com/yaakovLowenstein/hx-requests/commit/deb6f796ca186836dbc2fd3ea11a9b26a524784f))
