@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.2 (2023-05-11)
+### Fix
+* Cast kwarg value to string ([`8bcb072`](https://github.com/yaakovLowenstein/hx-requests/commit/8bcb072593813ec1d1a206fb78f66f409742e95b))
+
 ## v0.11.1 (2023-05-11)
 ### Fix
 * Fix bug that wasn't urlencoding the kwargs ([`acb74c2`](https://github.com/yaakovLowenstein/hx-requests/commit/acb74c26d386e2ff916803b118238a77170beea7))
