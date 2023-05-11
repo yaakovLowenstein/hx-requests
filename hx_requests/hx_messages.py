@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 from django.conf import settings
@@ -11,8 +12,14 @@ class HXMessageTags:
     ERROR = 40
 
 
+@dataclass
+class Message:
+    body: str
+    tag: str
+
+
 class HXMessages:
-    messages: List[Tuple[str, str]]
+    messages: List[Message]
     tags: Dict[int, str]
 
     def __init__(self) -> None:
@@ -20,19 +27,19 @@ class HXMessages:
         self.set_tags()
 
     def debug(self, message):
-        self.messages.append((message, self.tags.get(10)))
+        self.messages.append(Message(message, self.tags.get(10)))
 
     def info(self, message):
-        self.messages.append((message, self.tags.get(20)))
+        self.messages.append(Message(message, self.tags.get(20)))
 
     def success(self, message):
-        self.messages.append((message, self.tags.get(25)))
+        self.messages.append(Message(message, self.tags.get(25)))
 
     def warning(self, message):
-        self.messages.append((message, self.tags.get(30)))
+        self.messages.append(Message(message, self.tags.get(30)))
 
     def error(self, message):
-        self.messages.append((message, self.tags.get(40)))
+        self.messages.append(Message(message, self.tags.get(40)))
 
     def set_tags(self):
         if getattr(settings, "HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS") is True:
@@ -45,6 +52,6 @@ class HXMessages:
                 "HX_MESSAGE_TAGS must be defined in settings to use messages with hx-requests, or set USE_DJANGO_MESSAGE_TAGS to 'True'."
             )
 
-    def get_message(self):
+    def __call__(self):
         if self.messages:
-            return self.messages[-1]
+            return self.messages

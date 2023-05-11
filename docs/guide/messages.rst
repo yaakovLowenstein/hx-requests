@@ -9,20 +9,30 @@ Messages
 Setup
 -----
 
-To use :code:`hx-messages` a few settings need to be set..
+To use :code:`hx-messages` a few things need to be set...
 
-1. :code:`HX_REQUESTS_USE_HX_MESSAGES`: bool that defines whether or not :code:`hx-messages` should be used
-2. :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE`: path to a template to be used for the messages. The context in the template has access to :code:`message` and :code:`tag`
+1. :code:`HX_REQUESTS_USE_HX_MESSAGES`: bool that defines whether or not :code:`hx-messages` should be used (default is False)
+2. :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE`: path to a template to be used for the messages. The context in the template has access to :code:`messages`.
 
 *example-message-template.html*
 
 .. code-block:: html
 
-    <ul class="messages">
-        <li class="alert {{ tag }}">{{ message|safe }}</li>
-    </ul>
+    <div id="hx_messages" hx-swap-oob='true'>
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="alert {{ message.tag }}">{{ message.body|safe }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-3. :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : bool that defines whether or not :code:`hx_messages` should use Django's message tags. If set to True then there is no need to set :code:`HX_REQUESTS_HX_MESSAGE_TAGS`
+3. An empty div (or any Html element) with the same id as the one in the messages template needs to be put in your base Html file. (:code:`hx-messages` leverages Htmx's :code:`hx-swap-oob`)
+
+.. code-block:: html
+
+    <div id="hx_messages" hx-swap-oob='true'></div>
+
+3. :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : bool that defines whether or not :code:`hx_messages` should use Django's message tags. If set to True then there is no need to set :code:`HX_REQUESTS_HX_MESSAGE_TAGS` (default is False)
 4. :code:`HX_REQUESTS_HX_MESSAGE_TAGS`: dict just like Django's `message tags <https://docs.djangoproject.com/en/4.2/ref/contrib/messages/#message-tags>`_
 
 .. code-block:: python
@@ -36,6 +46,7 @@ To use :code:`hx-messages` a few settings need to be set..
         HXMessageTags.WARNING: "alert-warning",
         HXMessageTags.ERROR: "alert-danger",
     }
+
 
 Setting a Message
 -----------------
@@ -64,7 +75,7 @@ To disable messages on any :code:`HXRequest` set :code:`show_messages` to False
 
 .. code-block:: python
 
-    class MyHXRequest(HXRequestPOST):
+    class MyHXRequest(BaseHXRequest):
         ...
         show_messages = False
 
