@@ -26,7 +26,7 @@ If you change the :code:`id` of the modal container, you need to set :code:`HX_R
 
     {% load hx_tags %}
     <button
-        {% render_hx 'hx_modal' 'get' object=day.dish body='modal_body.html' title='My Modal' %}
+        {% hx_get 'hx_modal' object=day.dish body='modal_body.html' title='My Modal' %}
         hx-target="#hx_modal_container"
         _="on htmx:afterOnLoad wait 10ms then add .show to #hx_modal then add .show to #hx_modal_backdrop">
         Open Modal
@@ -105,7 +105,7 @@ The page HTML
 
 .. code-block:: html
 
-    <button {% render_hx 'edit_user_modal' 'get' object=request.user %}
+    <button {% hx_get 'edit_user_modal' object=request.user %}
             hx-trigger="click"
             hx-target="#hx_modal_container"
             _="on htmx:afterOnLoad wait 10ms then add .show to #hx_modal then add .show to #hx_modal_backdrop">
@@ -136,7 +136,7 @@ Notes:
     <div>
         {{ # Render fom fields }}
         <button hx-include="closest div"
-                {% render_hx 'edit_user_modal' 'post' hx_object %}>
+                {% hx_post 'edit_user_modal' hx_object %}>
             Save
         </button>
     </div>
