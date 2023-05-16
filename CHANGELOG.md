@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2023-05-16)
+### Feature
+* Add hx_get and hx_post templatetags ([`471ed08`](https://github.com/yaakovLowenstein/hx-requests/commit/471ed086ece3ae8a16819d8229f52896428e9650))
+
+### Fix
+* When passing in body to modal via template tag use mark_safe ([`d471261`](https://github.com/yaakovLowenstein/hx-requests/commit/d471261ad908f7001b37fc9ac03e6a0192715d56))
+
+### Documentation
+* Fix references to old methods ([`7972387`](https://github.com/yaakovLowenstein/hx-requests/commit/797238781d45f74856f1f6d64362aa3a536455f0))
+
 ## v0.11.2 (2023-05-11)
 ### Fix
 * Cast kwarg value to string ([`8bcb072`](https://github.com/yaakovLowenstein/hx-requests/commit/8bcb072593813ec1d1a206fb78f66f409742e95b))
