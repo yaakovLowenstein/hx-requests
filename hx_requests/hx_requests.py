@@ -440,7 +440,7 @@ class HXModal(BaseHXRequest):
         context["body"] = (
             render_to_string(body, context=context)
             if body.split(".")[-1] == "html"
-            else body
+            else mark_safe(body)
         )
         return context
 
