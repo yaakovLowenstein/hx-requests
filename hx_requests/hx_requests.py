@@ -398,7 +398,7 @@ class HXModal(BaseHXRequest):
     Example
     -------
 
-    ```{% render_hx 'hx_modal' 'get' body="This is a modal body" title="My First Modal" %}```
+    ```{% hx_get 'hx_modal' body="This is a modal body" title="My First Modal" %}```
 
     """
 

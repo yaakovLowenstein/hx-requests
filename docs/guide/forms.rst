@@ -34,11 +34,11 @@ HTML
     </div>
     <form method="post">
         <div hx-trigger='load'
-            {% render_hx 'user_info_form' 'get' object=request.user %}>
+            {% hx_get 'user_info_form' object=request.user %}>
         </div>
         <button type="submit"
                 hx-target="#user_info"
-                {% render_hx 'user_info_form' 'post' object=request.user %}>
+                {% hx_post 'user_info_form' object=request.user %}>
                 Submit
         </button>
     </form>

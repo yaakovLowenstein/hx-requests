@@ -21,3 +21,19 @@ def render_hx(
     return f""" hx-{method}={url}
                 hx-headers={{"X-CSRFTOKEN":"{token}"}}
             """
+
+
+@register.simple_tag(takes_context=True)
+def hx_get(context: Dict, hx_request_name: str, object=None, **kwargs) -> str:
+    """
+    Same as render_hx EXCEPT that it is specifically for 'get' requests.
+    """
+    return render_hx(context, hx_request_name, method="get", object=object, **kwargs)
+
+
+@register.simple_tag(takes_context=True)
+def hx_post(context: Dict, hx_request_name: str, object=None, **kwargs) -> str:
+    """
+    Same as render_hx EXCEPT that it is specifically for 'post' requests.
+    """
+    return render_hx(context, hx_request_name, method="post", object=object, **kwargs)

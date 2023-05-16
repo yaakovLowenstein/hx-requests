@@ -5,7 +5,7 @@ Deleting
 
 .. code-block:: html
 
-     <button {% render_hx 'delete_user' 'post' object=user  %}
+     <button {% hx_post 'delete_user' object=user  %}
             hx-trigger='confirmed'
             _="on click call Swal.fire({ text:'Are you sure you want to delete this dish?',showCancelButton: true,confirmButtonText: 'Yes'  }) if result.isConfirmed trigger confirmed">
         Delete

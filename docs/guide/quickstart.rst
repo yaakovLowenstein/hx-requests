@@ -33,15 +33,15 @@ The HTML markup
 
     {% load hx_tags %}
     <div id="user_info_target"></div>
-    <button {% render_hx 'get_user_info' 'get' %}
+    <button {% hx_get 'get_user_info' %}
             hx-target="#user_info_target"
             type="button">
         Click Me
     </button>
 
 Notes:
-    - The 'get' in the :ref:`render_hx <HX Tags>` template tag signifies that it's an :code:`hx-get`
-    - The goal of this :code:`hx-get` is to render a user info card into the empty div.
+    - Using the :ref:`hx_get <hx_get>` template tag signifies that it's an :code:`hx-get`
+    - The goal of this :code:`hx-get` is to render a user info card into the empty div
 
 
 Create the HXRequest
@@ -80,7 +80,7 @@ Notes:
 Summary
 ~~~~~~~
 
-| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`render_hx` template tag. In this example 'get_user_info'. That's how the :code:`hx-get` is routed to :code:`GetUserInfo`.
+| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`hx_get` template tag. In this example 'get_user_info'. That's how the :code:`hx-get` is routed to :code:`GetUserInfo`.
 |
 | The request returns the html of the :code:`GET_template`.
 
@@ -120,7 +120,7 @@ The HTML markup
     {% load hx_tags %}
     <div id="email_display">{{request.user.email}}</div>
     <input type="text" name="email" id='email_input'/>
-    <button {% render_hx 'change_email' 'post' %}
+    <button {% hx_post 'change_email' %}
             hx-target="#email_display"
             hx-include="#email_input"
             type="button">
@@ -128,7 +128,7 @@ The HTML markup
     </button>
 
 Notes:
-    - The 'post' in the :ref:`render_hx <HX Tags>` template tag signifies that it's an :code:`hx-post`
+    - Using the :ref:`hx_post <hx_post>` template tag signifies that it's an :code:`hx-post`
     - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input and display the email in the div.
 
 
@@ -171,7 +171,7 @@ Notes:
 Summary
 ~~~~~~~
 
-| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`render_hx` template tag. In this example 'change_email'. That's how the :code:`hx-post` is routed to :code:`ChangeEmail`.
+| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`hx_post` template tag. In this example 'change_email'. That's how the :code:`hx-post` is routed to :code:`ChangeEmail`.
 |
 | The request returns the html of the :code:`POST_template`.
 
