@@ -38,7 +38,7 @@ Modal Configuration
 
 | :code:`HX_REQUSTS_MODAL_TEMPLATE` : *Default='hx_requests/modal.html'*
 |
-| Template to be used for modals. The context in this template has access to the modal's 'title' and 'body'.
+| Template to be used for modals. There are two that :code:`hx-requests` comes with: 'modal.html' and 'bootstrap_modal.html. Additionally you can set this to any template you want. The context in this template has access to the modal's 'title' and 'body'.
 
 | :code:`HX_REQUSTS_MODAL_CONTAINER_ID` : *Default='hx_modal_container'*
 |
