@@ -414,7 +414,7 @@ class HXModal(BaseHXRequest):
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        Regular get method but addionally sets the modal body.
+        Regular get method but additionally sets the modal body.
         """
         self.set_modal_body(**kwargs)
         return super().get(request, *args, **kwargs)
