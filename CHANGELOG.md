@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2023-05-18)
+### Feature
+* Add custom modal template ([`1b42cef`](https://github.com/yaakovLowenstein/hx-requests/commit/1b42cef0412fdc603411b4e34b1761a3987c257d))
+
+### Fix
+* Fix type ([`fe56758`](https://github.com/yaakovLowenstein/hx-requests/commit/fe56758e9dd42627fdf824c5ea20654a6b6181ef))
+
+### Documentation
+* Update to docs to reflect new custom modal ([`fc8af97`](https://github.com/yaakovLowenstein/hx-requests/commit/fc8af972a947545d5025be325be566db1fa112c4))
+
 ## v0.12.0 (2023-05-16)
 ### Feature
 * Add hx_get and hx_post templatetags ([`471ed08`](https://github.com/yaakovLowenstein/hx-requests/commit/471ed086ece3ae8a16819d8229f52896428e9650))
