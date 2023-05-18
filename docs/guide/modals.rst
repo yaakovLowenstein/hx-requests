@@ -85,6 +85,7 @@ Default Modal
 ~~~~~~~~~~~~~
 
 #. Override :code:`HX_REQUSTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
+#. Set HX_REQUSTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
 #. Make sure the hyperscript for closing the modal is set correctly.
 
     - The modal's close button has hyperscript that triggers the modal to close
@@ -97,12 +98,11 @@ Default Modal
     {% load static %}
     <div id="modal"
         _="on closeModal add .closing then wait for animationend then remove me"
-        _="on modalFormValid add .closing then wait for animationend then remove me"
-    >
+        _="on modalFormValid add .closing then wait for animationend then remove me">
         <div class="modal-underlay" _="on click trigger closeModal"></div>
         <div class="modal-content">
-            <h1>{{title}}</h1>
-            {{body}}
+            <h1>{{ title }}</h1>
+            <div class="modal-body">{{ body }}</div>
             <br>
             <br>
             <button _="on click trigger closeModal">Close</button>
