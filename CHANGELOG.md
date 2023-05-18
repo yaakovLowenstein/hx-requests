@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.1 (2023-05-18)
+### Fix
+* Fix bug in modal due to no body selector ([`2512f8f`](https://github.com/yaakovLowenstein/hx-requests/commit/2512f8f1ef8c2adaf31c1be8884a3bd8c25c3961))
+
 ## v0.13.0 (2023-05-18)
 ### Feature
 * Add custom modal template ([`1b42cef`](https://github.com/yaakovLowenstein/hx-requests/commit/1b42cef0412fdc603411b4e34b1761a3987c257d))
