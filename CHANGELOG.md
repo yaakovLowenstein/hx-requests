@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.2 (2023-05-19)
+### Fix
+* Fix typo in setting name ([`71eda85`](https://github.com/yaakovLowenstein/hx-requests/commit/71eda85edd7c74602e3485b2d0bd9f210c051b45))
+
+### Documentation
+* Fix wrong path to modal ([`ab394aa`](https://github.com/yaakovLowenstein/hx-requests/commit/ab394aa07d307b36bc524e69991ad037f81e461d))
+
 ## v0.13.1 (2023-05-18)
 ### Fix
 * Fix bug in modal due to no body selector ([`2512f8f`](https://github.com/yaakovLowenstein/hx-requests/commit/2512f8f1ef8c2adaf31c1be8884a3bd8c25c3961))
