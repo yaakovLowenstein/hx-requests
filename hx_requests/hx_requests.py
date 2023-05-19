@@ -1,5 +1,6 @@
 import json
 from email import header
+from mimetypes import init
 from typing import Dict
 
 from django.apps import apps
@@ -11,8 +12,16 @@ from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
+from render_block import render_block_to_string
 
 from hx_requests.hx_messages import HXMessages
+
+
+class Renderer:
+    def render(self, template_name, block_name, context, request):
+        if block_name:
+            return render_block_to_string(template_name, block_name, context, request)
+        return render_to_string(template_name, context, request)
 
 
 class BaseHXRequest:
@@ -29,6 +38,10 @@ class BaseHXRequest:
         Template rendered for a GET request
     POST_template : str, optional
         Template rendered for a POST request
+    GET_block : str, optional
+        Block of the GET_template to be used insted of rendering the whole template
+    POST_block : str, optional
+        Block of the POST_block to be used insted of rendering the whole template
     refresh_page : bool
         If True the page will refresh after a POST request
     redirect : str, optional
@@ -47,6 +60,8 @@ class BaseHXRequest:
     messages: HXMessages
     GET_template: str = ""
     POST_template: str = ""
+    GET_block: str = ""
+    POST_block: str = ""
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
@@ -109,6 +124,7 @@ class BaseHXRequest:
     def setup_hx_request(self, request):
         self.request = request
         self.messages = HXMessages()
+        self.renderer = Renderer()
         # TODO maybe remove this line (why is it there?)
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request)
@@ -140,13 +156,19 @@ class BaseHXRequest:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
             else:
-                html = render_to_string(
-                    self.POST_template, self.get_context_data(**kwargs), self.request
+                html = self.renderer.render(
+                    self.POST_template,
+                    self.POST_block,
+                    self.get_context_data(**kwargs),
+                    self.request,
                 )
 
         else:
-            html = render_to_string(
-                self.GET_template, self.get_context_data(**kwargs), self.request
+            html = self.renderer.render(
+                self.GET_template,
+                self.GET_block,
+                self.get_context_data(**kwargs),
+                self.request,
             )
 
         return html
@@ -287,8 +309,11 @@ class FormHXRequest(BaseHXRequest):
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return render_to_string(
-                self.GET_template, self.get_context_data(**kwargs), self.request
+            return self.renderer.render(
+                self.GET_template,
+                self.GET_block,
+                self.get_context_data(**kwargs),
+                self.request,
             )
         return super().get_response_html(**kwargs)
 
