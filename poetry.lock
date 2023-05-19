@@ -413,6 +413,24 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-render-block"
+version = "0.9.2"
+description = "Render a particular block from a template to a string."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-render-block-0.9.2.tar.gz", hash = "sha256:3dde0d2abde9381685659d2ed0761b8bddf7741c48eaadec9e5b50a6c7850247"},
+    {file = "django_render_block-0.9.2-py3-none-any.whl", hash = "sha256:1768832be78476c36627b3e3a8e7d9eb0e2bc46b84daf2c51958e2f674173c40"},
+]
+
+[package.dependencies]
+django = ">=2.2"
+
+[package.extras]
+dev = ["Jinja2 (>=2.8)"]
+
+[[package]]
 name = "djlint"
 version = "1.19.16"
 description = "HTML Template Linter and Formatter"
@@ -1790,4 +1808,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "5b80fd194cce6680ac27a0b2f75a43b11c31089384c2ac885a8d0e865de5e637"
+content-hash = "b9aa1bee3174848a5c9b21d7d749998f983b53eaba65585d1037a3e00c4e1e4d"
