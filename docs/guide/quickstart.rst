@@ -8,7 +8,7 @@ observe the magic of :code:`hx-requests`.
 - No need to define extra urls to handle these requests
 - No need to add anything extra in views
 - Reusable :code:`HXRequests` across views
-- Built in :code:`HXReuqests` to reduce boilerplate code
+- Built in :code:`HXReuqests` to reduce boilerplate code (Forms, Deleting, Modals)
 
 Making a GET Request (hx-get)
 ---------------------------------
@@ -25,8 +25,8 @@ The view requires :code:`HtmxViewMixin`
     class MyView(HtmxViewMixin):
         pass
 
-The HTML markup
-~~~~~~~~~~~~~~~
+The HTML
+~~~~~~~~
 
 
 .. code-block:: html
@@ -111,9 +111,8 @@ The view requires :code:`HtmxViewMixin`
     class MyView(HtmxViewMixin):
         pass
 
-The HTML markup
-~~~~~~~~~~~~~~~
-
+The HTML
+~~~~~~~~
 
 .. code-block:: html
 
@@ -178,3 +177,66 @@ Summary
 .. note::
 
     The :code:`POST_template` has access to all of the context that is in the view.
+
+Rendering Blocks
+----------------
+
+Thanks to `django-render-block <https://github.com/clokep/django-render-block>`_ there is a way to reduce using :code:`includes`. Instead of needing to
+split out templates into includes to use them for partials, you can specify a block from the template to use and that block will be rendered by the
+:code:`HXRequest`.
+
+Example
+~~~~~~~
+
+*HXRequest*
+
+.. code-block:: python
+
+    class UpdateUser(FormHXRequest):
+        name = "update_user"
+        form_class = UpdateUserForm # Form with a username field
+        GET_template = "user_form.html"
+        POST_template = "big_template.html"
+        POST_block = "table" # This is the block that will be rendered on POST
+
+*big_template.html*
+
+.. code-block:: html
+
+    {% load hx_tags %}
+    ....
+
+    {% block table %}
+        <table>
+            <th>Username</th>
+            <tr>
+                <td>{{ request.user.username }}</td>
+                <td >
+                    <button{% hx_get 'update_user' object=request.user %}
+                    hx-target="closest tr">Edit user</button>
+                </td>
+            </tr>
+        </table>
+    {% endblock table %}
+
+    ...
+
+*user_form.html*
+
+.. code-block:: html
+
+    {% load hx_tags %}
+    <td colspan="2">
+        <form action="">
+            {{ form.username }}
+            <button {% hx_post 'update_user' object=hx_object %}
+                    hx-target="closest table">Save</button>
+        </form>
+    </td>
+
+Notes:
+
+    - This is a :code:`FormHXRequest` that replaces a row of the table with a form to edit the contents of the row (i.e. username)
+    - On post the :code:`HXRequest` will return just the table because the :code:`POST_block` was set to table and in :code:`big_template.html` that
+      block contains the table. This is helpful because the only thing on the page that should be updated on post is the table.
+    - If not for :code:`django-render-block` the table would have to be a separate include so that you could specifiy the table template as the :code:`POST_template`
