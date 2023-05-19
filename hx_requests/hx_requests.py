@@ -406,11 +406,11 @@ class HXModal(BaseHXRequest):
 
     @cached_property
     def modal_container_id(self):
-        return getattr(settings, "HX_REQUSTS_MODAL_CONTAINER_ID", "hx_modal_container")
+        return getattr(settings, "HX_REQUESTS_MODAL_CONTAINER_ID", "hx_modal_container")
 
     @cached_property
     def modal_template(self):
-        return getattr(settings, "HX_REQUSTS_MODAL_TEMPLATE", "hx_requests/modal.html")
+        return getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", "hx_requests/modal.html")
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
@@ -457,7 +457,7 @@ class HXFormModal(HXModal, FormHXRequest):
 
     @cached_property
     def modal_body_selector(self):
-        return getattr(settings, "HX_REQUSTS_MODAL_BODY_SELECTOR", ".modal-body")
+        return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
 
     def form_invalid(self, **kwargs) -> str:
         """

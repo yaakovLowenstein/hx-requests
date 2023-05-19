@@ -36,14 +36,14 @@ Modal Configuration
 
     See :ref:`Overriding the built-in Modal` for a guide on overriding the default modal template.
 
-| :code:`HX_REQUSTS_MODAL_TEMPLATE` : *Default='hx_requests/modal.html'*
+| :code:`HX_REQUESTS_MODAL_TEMPLATE` : *Default='hx_requests/modal.html'*
 |
 | Template to be used for modals. There are two that :code:`hx-requests` comes with: 'hx_requests/modal.html' and 'hx_requests/bootstrap_modal.html. Additionally you can set this to any template you want. The context in this template has access to the modal's 'title' and 'body'.
 
-| :code:`HX_REQUSTS_MODAL_CONTAINER_ID` : *Default='hx_modal_container'*
+| :code:`HX_REQUESTS_MODAL_CONTAINER_ID` : *Default='hx_modal_container'*
 |
 | Id of the container the modal is rendered in.
 
-| :code:`HX_REQUSTS_MODAL_BODY_SELECTOR` : *Default='.modal-body'*
+| :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` : *Default='.modal-body'*
 |
-| A CSS selector for the modal body. This only needs to be set if :code:`HX_REQUSTS_MODAL_TEMPLATE` is overridden and '.modal-body' is not a valid selector for it.
+| A CSS selector for the modal body. This only needs to be set if :code:`HX_REQUESTS_MODAL_TEMPLATE` is overridden and '.modal-body' is not a valid selector for it.
