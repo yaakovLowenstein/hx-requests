@@ -16,7 +16,7 @@ class HtmxViewMixin(View):
     """
     Mixin to be added to views that are using HXRequests.
     Hijacks the get and post to route them to the proper
-    HXReqeust.
+    HXRequest.
     """
 
     hx_requests: Dict = []
@@ -37,7 +37,7 @@ class HtmxViewMixin(View):
 
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
-        self._get_hx_reqeust_classes()
+        self._get_hx_request_classes()
         try:
             hx_request = next(
                 hx_request
@@ -51,7 +51,7 @@ class HtmxViewMixin(View):
         return hx_request()
 
     @classmethod
-    def _get_hx_reqeust_classes(cls):
+    def _get_hx_request_classes(cls):
         from .hx_requests import BaseHXRequest
 
         # If the hx_requests are already set don't need to do the whole collection.
