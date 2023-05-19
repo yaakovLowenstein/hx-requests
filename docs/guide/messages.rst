@@ -84,4 +84,4 @@ Tip
 
 .. tip::
 
-    Toasts are a good template to use for :code:`hx_messages`. Becasue the messages are asyncronous and the page doesn't reload, a user may not see a message banner that is set on the top of the page, but a toast that is fixed to the top right cornder of the page will always be visible.
+    Toasts are a good template to use for :code:`hx_messages`. Because the messages are asyncronous and the page doesn't reload, a user may not see a message banner that is set on the top of the page, but a toast that is fixed to the top right cornder of the page will always be visible.
