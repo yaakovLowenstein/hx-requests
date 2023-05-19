@@ -4,7 +4,7 @@ Modals
 | Modals are a very useful component when designing web pages. :code:`hx-requests` has a built in modal to reduce boilerplate code.
 | :code:`hx-requests` comes with two flavors of a modal. `A custom Htmx modal <https://htmx.org/examples/modal-custom/>`_  and a `bootstrap modal <https://htmx.org/examples/modal-bootstrap/>`_ . You can also override these and use your own modal.
 
-| To select which of the two modals to use, set :code:`HX_REQUSTS_MODAL_TEMPLATE` to 'hx_requests/modal.html' (this is the default), or to 'hx_requests/bootstrap_modal.html' or :ref:`override the modal <Overriding the built-in Modal>`
+| To select which of the two modals to use, set :code:`HX_REQUESTS_MODAL_TEMPLATE` to 'hx_requests/modal.html' (this is the default), or to 'hx_requests/bootstrap_modal.html' or :ref:`override the modal <Overriding the built-in Modal>`
 
 | The default modal and the bootstrap modal differ in how to use them and override them. Both are documented below.
 
@@ -47,7 +47,7 @@ Bootstrap Modal
 
     <div id="hx_modal_container"></div>
 
-If you change the :code:`id` of the modal container, you need to set :code:`HX_REQUSTS_MODAL_CONTAINER_ID` in settings to that :code:`id`.
+If you change the :code:`id` of the modal container, you need to set :code:`HX_REQUESTS_MODAL_CONTAINER_ID` in settings to that :code:`id`.
 
 
 .. tip::
@@ -84,8 +84,8 @@ To use a custom modal instead of the built-in one, there are a few steps that ne
 Default Modal
 ~~~~~~~~~~~~~
 
-#. Override :code:`HX_REQUSTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set HX_REQUSTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
+#. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
+#. Set HX_REQUESTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
 #. Make sure the hyperscript for closing the modal is set correctly.
 
     - The modal's close button has hyperscript that triggers the modal to close
@@ -115,8 +115,8 @@ Default Modal
 Bootstrap Modal
 ~~~~~~~~~~~~~~~
 
-#. Override :code:`HX_REQUSTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set HX_REQUSTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
+#. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
+#. Set HX_REQUESTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
 #. Set your own 'close modal' function. See below for built in modal html and JavaScript that handles the closing of the modal.
 
     - The modal's close button has onclick set to :code:`closeHXModal()`
