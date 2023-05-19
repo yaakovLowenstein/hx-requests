@@ -32,13 +32,3 @@ with htmx, and many other awesome features.
    :caption: Reference Documentation
 
    autoapi/hx_requests/hx_requests/index
-
-
-
-
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Other
-
-   other/contributing
