@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hx-requests"
-version = "0.13.2"
+version = "0.14.0"
 description = "Facilitates the usage of HTMX with Django"
 authors = ["yaakovLowenstein <lowensteinyaakov@gmail.com>"]
 license = "MIT"

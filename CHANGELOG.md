@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.0 (2023-05-19)
+### Feature
+* Using django-render-block give the option to just return a block ([`dceca31`](https://github.com/yaakovLowenstein/hx-requests/commit/dceca3197230cc5a4b0dfae05a047e62de416bdd))
+
+### Documentation
+* Remove contributing from read the docs ([`f39acce`](https://github.com/yaakovLowenstein/hx-requests/commit/f39accebd93fa9e468cc493f59671b043c620add))
+* Fix typos ([`6f90f4b`](https://github.com/yaakovLowenstein/hx-requests/commit/6f90f4bfa85c4093709ba0646b836c22a0fa0a20))
+* Add docs about rendering a block ([`204577c`](https://github.com/yaakovLowenstein/hx-requests/commit/204577cef0351cea31eb81ffdd2ced63b529c9bc))
+
 ## v0.13.2 (2023-05-19)
 ### Fix
 * Fix typo in setting name ([`71eda85`](https://github.com/yaakovLowenstein/hx-requests/commit/71eda85edd7c74602e3485b2d0bd9f210c051b45))
