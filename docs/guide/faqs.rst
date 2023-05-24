@@ -1,5 +1,5 @@
-Tips and Tricks
-===============
+FAQs
+====
 
 **How do I make the page refresh when using an HXRequest?**
 
@@ -45,7 +45,7 @@ want to return an empty :code:`HTTPResponse`. Another example is a delete where 
 
 **What is no_swap for?**
 
-When :code:`no_swap` is set no html is swapped into the DOM. An example where to use this would be a button that submits a post request.
+When :code:`no_swap` is set, no html is swapped into the DOM. An example where to use this would be a button that submits a post request.
 If there is validation and the form is valid, you may want to do a swap in the DOM to update part of the page. However,
 when the form in invalid, you may want to just set a message with the errors.
 
@@ -64,6 +64,11 @@ when the form in invalid, you may want to just set a message with the errors.
 
 Setting :code:`add_form_errors_to_error_message` to True will put the form's errors into the error message.
 
+.. code-block:: python
+
+    class MyHXRequest(FormHXRequest):
+        ...
+        add_form_errors_to_error_message = True
 
 **How do I change the name of the context variable that hx_object is passed into the context with?**
 

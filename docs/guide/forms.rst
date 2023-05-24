@@ -52,6 +52,7 @@ HTML
     {{ user.last_name }}
 
 Notes:
+    - 'user_info_form' in the template tags is the name of the :code:`HXRequest` that these requests will be routed to (see below)
     - :code:`object` is equivalent to an instance in a Django form. In the :code:`get` it's used to set the initial of the fields. In the :code:`post` it's the object that is getting updated.
     - An :code:`include` is used so that it can be reused below as the :code:`POST_template` in the :code:`HXRequest`.
     - The user in :code:`user_info.html` comes from the context of the view.
@@ -86,15 +87,16 @@ HXRequest
 
 Notes:
     - :code:`form_valid` by default calls :code:`form.save()` and returns the :code:`POST_template`
-    - :code:`form_invalid` by default returns the :code:`GET_template`. The purpose of this is to show the error messages. Because :code:`is_valid` was called (:code:`is_valid` is called in the :code:`post` method), the form now contains the errors.
-    - :code:`hx_object_name` is the name given to the object when it's passed into the context. Above in :code:`user_info.html` (the :code:`POST_template`), on :code:`POST` the user in that context is the object that was just updated.
+    - :code:`form_invalid` by default returns the :code:`GET_template`. The purpose of this is to show the error messages. Because :code:`is_valid` was called (:code:`is_valid` is called in the :code:`post` method), the form now contains the errors, which gives you asyncronous validation of the form.
+    - The :code:`GET_template` (*form.html*) has access to the form as 'form' in the context
+    - :code:`hx_object_name` is the name given to the object when it's passed into the context. Above in :code:`user_info.html` (the :code:`POST_template`), on :code:`POST` the user in that context is the object that was passed in to the :code:`hx_post` template tag (although now it was updated by the form). If :code:`hx_object_name` was not set, instead of referencing the object as 'user' in :code:`user_info.html`, it would be referenced as :code:`hx_object` (i.e. :code:`hx_object.username`)
     - The object is saved as an attribute on the :code:`HXRequest` as :code:`hx_object`, so it can be referenced anywhere in the class as :code:`self.hx_object`
 
 Setting Form Kwargs
 -------------------
 
-|To add kwargs to the form, override :code:`get_form_kwargs`.
-|To set initial values of form fields, override :code:`get_initial`.
+| To add kwargs to the form, override :code:`get_form_kwargs`.
+| To set initial values of form fields, override :code:`get_initial`.
 
 .. code-block:: python
 
@@ -131,6 +133,7 @@ In a :code:`FormHXRequest` success and error messages can be set by overriding :
 
     class MyHXRequest(FormHXRequest):
         # Set attributes
+
         def get_success_message(self, **kwargs) -> str:
             # This is not the default
             return "Form saved sucessfully"
@@ -150,7 +153,7 @@ Notes:
 
         self.messages.success("Hooray!")
 
-    Message types are: debug, info, success, warning and error.
+    Message types are: debug, info, succes  s, warning and error.
 
 Forms in Modals
 ---------------

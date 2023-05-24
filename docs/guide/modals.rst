@@ -47,7 +47,7 @@ Bootstrap Modal
 
     <div id="hx_modal_container"></div>
 
-If you change the :code:`id` of the modal container, you need to set :code:`HX_REQUESTS_MODAL_CONTAINER_ID` in settings to that :code:`id`.
+If you use an the :code:`id` other than :code:`hx_modal_container`, you need to set :code:`HX_REQUESTS_MODAL_CONTAINER_ID` in settings to that :code:`id`.
 
 
 .. tip::
@@ -85,13 +85,13 @@ Default Modal
 ~~~~~~~~~~~~~
 
 #. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set HX_REQUESTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
+#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
 #. Make sure the hyperscript for closing the modal is set correctly.
 
     - The modal's close button has hyperscript that triggers the modal to close
-    - For :ref:`Form Modals` on submit the modal only closes when the :code:`modalFormValid` event is triggered. When a form is invalid the modal stays open so the user can see the form errors. There is hyperscript that triggers the modal to close on :code:`modalFormValid`.
+    - For :ref:`Form Modals`, on submit the modal only closes when the :code:`modalFormValid` event is triggered. When a form is invalid the modal stays open so the user can see the form errors. There is hyperscript that triggers the modal to close on :code:`modalFormValid`.
 
-*modal.html*
+*hx_requests/modal.html*
 
 .. code-block:: html
 
@@ -116,13 +116,13 @@ Bootstrap Modal
 ~~~~~~~~~~~~~~~
 
 #. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set HX_REQUESTS_MODAL_BODY_SELECTOR (a :code:`css` selector for the modal body container) in settings.
+#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
 #. Set your own 'close modal' function. See below for built in modal html and JavaScript that handles the closing of the modal.
 
     - The modal's close button has onclick set to :code:`closeHXModal()`
     - For :ref:`Form Modals` on submit the modal only closes when the :code:`modalFormValid` event is triggered. When a form is invalid the modal stays open so the user can see the form errors. By default the event handler for closing the modal on :code:`modalFormValid` is set for the built-in modal. When overriding the modal, make sure to add that event handler if you want the modal to stay open when the form is invalid.
 
-*bootstrap_modal.html*
+*hx_requests/bootstrap_modal.html*
 
 .. code-block:: html
 
@@ -166,7 +166,8 @@ Bootstrap Modal
 Form Modals
 -----------
 
-:code:`hx-requests` has a built in form modal, :ref:`HXFormModal`
+:code:`hx-requests` has a built in form modal, :ref:`HXFormModal`. It takes care of the boilerplate needed to put a form in a modal.
+Additionally, it has features like keeping the modal open when the form in invalid so that the errors are displayed to the user.
 
 The page HTML
 
@@ -180,6 +181,8 @@ The page HTML
     </button>
 
 Notes:
+    - This is a button for triggering a boostrap modal
+    - The object is passed in here becasue it is the model instance of the model form and it's the instance that's used for initializing the form
     - Hyperscript is used here to load the modal, it can be done using JavaScript, but it's recommended to use Hyperscript
     - :code:`hx_modal_container`, :code:`hx_modal_backdrop`, and :code:`hx_modal` are the ids when using the modal provided by :code:`hx-requests`. If you are not using the default modal and you change the ids, these values would need to reflect that.
 
@@ -210,3 +213,4 @@ Notes:
 
 Notes:
     - The object is in this context as :code:`hx_object` because :code:`hx_object_name` is not set in the :code:`HXRequest` above
+    - The object is passed in here becasue it is the model instance of the model form and it's the instance getting updated by the form

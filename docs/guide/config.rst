@@ -1,11 +1,12 @@
 Configuration
 =============
 
+Settings that need to be set in :code:`settings.py`.
 
 Messages Configuration
 ----------------------
 
-| :code:`HX_REQUESTS_USE_HX_MESSAGES` : *Defaul=False*
+| :code:`HX_REQUESTS_USE_HX_MESSAGES` : *Default=False*
 | Set this to True to use :code:`hx-requests` messaging framework. If this is False :code:`hx-requests` messages will not be displayed even if you set messages.
 
 | :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : *Default=False*

@@ -41,6 +41,7 @@ The HTML
 
 Notes:
     - Using the :ref:`hx_get <hx_get>` template tag signifies that it's an :code:`hx-get`
+    - 'get_user_info' is the name of this :code:`HXRequest`. See below to understand what that means
     - The goal of this :code:`hx-get` is to render a user info card into the empty div
 
 
@@ -128,7 +129,7 @@ The HTML
 
 Notes:
     - Using the :ref:`hx_post <hx_post>` template tag signifies that it's an :code:`hx-post`
-    - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input and display the email in the div.
+    - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input replace the email address in the div with the updated email
 
 
 Create the HXRequest
@@ -178,65 +179,49 @@ Summary
 
     The :code:`POST_template` has access to all of the context that is in the view.
 
-Rendering Blocks
-----------------
+Adding context to the templates
+-------------------------------
 
-Thanks to `django-render-block <https://github.com/clokep/django-render-block>`_ there is a way to reduce using :code:`includes`. Instead of needing to
-split out templates into includes to use them for partials, you can specify a block from the template to use and that block will be rendered by the
-:code:`HXRequest`.
-
-Example
-~~~~~~~
-
-*HXRequest*
+Many times you may need additional context in the :code:`GET_template` or :code:`POST_template`. Luckily, there is
+a simple way to add context to them.
 
 .. code-block:: python
 
-    class UpdateUser(FormHXRequest):
-        name = "update_user"
-        form_class = UpdateUserForm # Form with a username field
-        GET_template = "user_form.html"
-        POST_template = "big_template.html"
-        POST_block = "table" # This is the block that will be rendered on POST
+    from hx_requests.hx_requests import BaseHXRequest
 
-*big_template.html*
+    class MyHXRequest(BaseHXRequest):
+        ...
 
-.. code-block:: html
+        def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            context["important_var"] = "I am important"
+            return context
 
-    {% load hx_tags %}
-    ....
+Additionally, if you only want the contex added on post (i.e. you want one of the form values in the :code:`POST_template`), you can
+instead override :code:`get_post_context_data`
 
-    {% block table %}
-        <table>
-            <th>Username</th>
-            <tr>
-                <td>{{ request.user.username }}</td>
-                <td >
-                    <button{% hx_get 'update_user' object=request.user %}
-                    hx-target="closest tr">Edit user</button>
-                </td>
-            </tr>
-        </table>
-    {% endblock table %}
+.. code-block:: python
 
-    ...
+    from hx_requests.hx_requests import BaseHXRequest
 
-*user_form.html*
+    class MyHXRequest(BaseHXRequest):
+        ...
 
-.. code-block:: html
+        def get_post_context_data(self, **kwargs):
+            context = super().get_post_context_data(**kwargs)
+            context["important_var"] = "I am important"
+            return context
 
-    {% load hx_tags %}
-    <td colspan="2">
-        <form action="">
-            {{ form.username }}
-            <button {% hx_post 'update_user' object=hx_object %}
-                    hx-target="closest table">Save</button>
-        </form>
-    </td>
 
-Notes:
+.. note::
 
-    - This is a :code:`FormHXRequest` that replaces a row of the table with a form to edit the contents of the row (i.e. username)
-    - On post the :code:`HXRequest` will return just the table because the :code:`POST_block` was set to table and in :code:`big_template.html` that
-      block contains the table. This is helpful because the only thing on the page that should be updated on post is the table.
-    - If not for :code:`django-render-block` the table would have to be a separate include so that you could specifiy the table template as the :code:`POST_template`
+    The :code:`GET_template` and the :code:`POST_template` have access to :code:`hx_obect` (or the name it's given by setting :code:`hx_object_name`)
+    and the kwargs passed into :code:`hx_get` or :code:`hx_post`.
+
+    For example:
+
+    .. code-block:: html
+
+        {% hx_get 'my_hx_request' object=object my_awesome_kwarg="I am awesome" %}
+
+    In the :code:`GET_template`, 'my_awesome_kwarg' can be accessed as :code:`hx_kwargs.my_awesome_kwarg` .

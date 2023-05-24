@@ -18,12 +18,13 @@ with htmx, and many other awesome features.
    guide/installation
    guide/quickstart
    guide/forms
+   guide/blocks
    guide/delete
    guide/modals
    guide/messages
    guide/hx_tags
    guide/config
-   guide/tips_and_tricks
+   guide/faqs
 
 
 
