@@ -1,18 +1,18 @@
 Messages
 ========
 
-:code:`hx-requests` has an asyncronous messaging framework, :code:`hx-messages` It's very convenient for notifiying the user when the form is valid/ invalid.
+:code:`hx-requests` has an asyncronous messaging framework, :code:`hx-messages`. It's very convenient for notifiying the user when the form is valid/ invalid.
 
 .. note::
 
-    :code:`hx_message` fr amework based on `Django's messages framework <https://docs.djangoproject.com/en/4.2/ref/contrib/messages/>`_
+    :code:`hx_message` framework is based on `Django's messages framework <https://docs.djangoproject.com/en/4.2/ref/contrib/messages/>`_
 Setup
 -----
 
 To use :code:`hx-messages` a few things need to be set...
 
-1. :code:`HX_REQUESTS_USE_HX_MESSAGES`: bool that defines whether or not :code:`hx-messages` should be used (default is False)
-2. :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE`: path to a template to be used for the messages. The context in the template has access to :code:`messages`.
+1. In :code:`settings.py` set :code:`HX_REQUESTS_USE_HX_MESSAGES`: bool that defines whether or not :code:`hx-messages` should be used (default is False)
+2. In :code:`settings.py` set :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE`: path to a template to be used for the messages. The context in the template has access to :code:`messages`.
 
 *example-message-template.html*
 
@@ -32,8 +32,8 @@ To use :code:`hx-messages` a few things need to be set...
 
     <div id="hx_messages" hx-swap-oob='true'></div>
 
-3. :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : bool that defines whether or not :code:`hx_messages` should use Django's message tags. If set to True then there is no need to set :code:`HX_REQUESTS_HX_MESSAGE_TAGS` (default is False)
-4. :code:`HX_REQUESTS_HX_MESSAGE_TAGS`: dict just like Django's `message tags <https://docs.djangoproject.com/en/4.2/ref/contrib/messages/#message-tags>`_
+3. In :code:`settings.py` set :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : bool that defines whether or not :code:`hx_messages` should use Django's message tags. If set to True then there is no need to set :code:`HX_REQUESTS_HX_MESSAGE_TAGS` (default is False)
+4. If  :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` is False, in :code:`settings.py` set :code:`HX_REQUESTS_HX_MESSAGE_TAGS`: dict just like Django's `message tags <https://docs.djangoproject.com/en/4.2/ref/contrib/messages/#message-tags>`_
 
 .. code-block:: python
 
@@ -70,7 +70,7 @@ Notes:
 Disabling Messages
 ------------------
 
-If :code:`HX_REQUESTS_USE_HX_MESSAGES`  is set to True, there are some basic messages set in some of the :code:`HXRequests`.
+If :code:`HX_REQUESTS_USE_HX_MESSAGES`  is set to True, there are some default messages set in some of the :code:`HXRequests`.
 To disable messages on any :code:`HXRequest` set :code:`show_messages` to False
 
 .. code-block:: python

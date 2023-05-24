@@ -7,13 +7,13 @@ Deleting
 
      <button {% hx_post 'delete_user' object=user  %}
             hx-trigger='confirmed'
-            _="on click call Swal.fire({ text:'Are you sure you want to delete this dish?',showCancelButton: true,confirmButtonText: 'Yes'  }) if result.isConfirmed trigger confirmed">
+            _="on click call Swal.fire({ text:'Are you sure you want to delete this user?',showCancelButton: true,confirmButtonText: 'Yes'  }) if result.isConfirmed trigger confirmed">
         Delete
     </button>
 
 Notes:
     - The delete button is using Hyperscript with `Sweet Alert <https://sweetalert2.github.io/>`_ to ask the user for confirmation before deleting
-    - User is an object in the context
+    - User is an object in the context coming from the view
 
 
 .. code-block:: python
@@ -30,4 +30,5 @@ Notes:
 
 Notes:
     - Very simple way to delete asyncronously.
-    - If using :ref:`Messages`, by default the message is set to '{...} deleted successfully`.
+    - Use the :code:`POST_template` to update the DOM after the deletion
+    - If using :ref:`Messages`, by default the message is set to '{model name} deleted successfully`.
