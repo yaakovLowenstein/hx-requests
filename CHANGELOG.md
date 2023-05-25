@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.2 (2023-05-25)
+### Fix
+* Group docs dependencies separately ([`e5ea4ef`](https://github.com/yaakovLowenstein/hx-requests/commit/e5ea4ef6228bf79ab44a1dfe43051ed1c07e67f2))
+
 ## v0.14.1 (2023-05-25)
 ### Fix
 * Remove stale code ([`597a13e`](https://github.com/yaakovLowenstein/hx-requests/commit/597a13e317ea47492f626e0a062a9b42c0925441))
