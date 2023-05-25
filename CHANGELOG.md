@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.1 (2023-05-25)
+### Fix
+* Remove stale code ([`597a13e`](https://github.com/yaakovLowenstein/hx-requests/commit/597a13e317ea47492f626e0a062a9b42c0925441))
+
+### Documentation
+* Documentation edits ([`b15f176`](https://github.com/yaakovLowenstein/hx-requests/commit/b15f176da3defaa77be9230c64ae49394406a6ac))
+
 ## v0.14.0 (2023-05-19)
 ### Feature
 * Using django-render-block give the option to just return a block ([`dceca31`](https://github.com/yaakovLowenstein/hx-requests/commit/dceca3197230cc5a4b0dfae05a047e62de416bdd))
