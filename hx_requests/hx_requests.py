@@ -500,21 +500,3 @@ class HXFormModal(HXModal, FormHXRequest):
             else:
                 headers["HX-Retarget"] = self.modal_body_selector
         return headers
-
-
-class HXMessagesRequest(BaseHXRequest):
-    name = "hx_messages"
-
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.GET_template = getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE")
-        if not self.GET_template:
-            raise Exception(
-                "HX_REQUESTS_HX_MESSAGES_TEMPLATE is not set in settings.py. Define a template to be used for messages."
-            )
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        context["message"] = self.request.GET.get("message")
-        context["tag"] = self.request.GET.get("tag")
-        return context
