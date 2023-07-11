@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.3 (2023-07-11)
+
+### Fix
+
+* Fix bug when no csrftoken ([`06bbfd2`](https://github.com/yaakovLowenstein/hx-requests/commit/06bbfd2ebb7c86f6dcee50cccb20000f275e18ee))
+
 ## v0.14.2 (2023-05-25)
 ### Fix
 * Group docs dependencies separately ([`e5ea4ef`](https://github.com/yaakovLowenstein/hx-requests/commit/e5ea4ef6228bf79ab44a1dfe43051ed1c07e67f2))
