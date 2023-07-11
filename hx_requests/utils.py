@@ -45,7 +45,7 @@ def get_url(context, hx_request_name, object, **kwargs):
 
 
 def get_csrf_token(context):
-    token = (
-        context["request"].headers.get("cookie").split("csrftoken=")[1].split(";")[0]
-    )
-    return token
+    cookie = context["request"].headers.get("cookie")
+    if cookie:
+        token = cookie.split("csrftoken=")[1].split(";")[0]
+        return token
