@@ -8,7 +8,7 @@ split out templates into includes to use them for partials, you can specify a bl
 Example
 -------
 
-Using the example from :ref:`forms <HTML>`, instead of using an :code:`include`, we can replace that with a block.
+Using the example from :ref:`forms <HTML>`, instead of using an :code:`include`, we can replace that with a block
 
 *user_info_page.html* (what it originally was)
 
