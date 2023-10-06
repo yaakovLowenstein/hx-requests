@@ -24,7 +24,7 @@ jobs:
       - name: Install semantic release
         run: |
           pip install -U pip
-          pip install python-semantic-release
+          pip install python-semantic-release==7.34.6
 
       - name: Setup user
         uses: fregante/setup-git-user@v2
