@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2023-10-06)
+
+### Feature
+
+* Fix semantic release by pinning version ([`af203cc`](https://github.com/yaakovLowenstein/hx-requests/commit/af203cc308f6be15c8acfb4e2d7b73be675679e8))
+* Add new attributes to FormHxRequest and FormModal ([`572ce7f`](https://github.com/yaakovLowenstein/hx-requests/commit/572ce7f6d82fb0b019a52213e3057889685c5fa9))
+
+### Fix
+
+* Version bump commit ([`66e5492`](https://github.com/yaakovLowenstein/hx-requests/commit/66e54927bfe8b6c2810a275ef9606696724fa80c))
+
 ## v0.14.3 (2023-07-11)
 
 ### Fix
