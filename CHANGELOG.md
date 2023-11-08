@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.1 (2023-11-08)
+
+### Fix
+
+* Add a way to add context to body of modal ([`5045fb4`](https://github.com/yaakovLowenstein/hx-requests/commit/5045fb4dc81525fe6a1fbcef18d89b90aaef22f2))
+
 ## v0.15.0 (2023-10-06)
 
 ### Feature
