@@ -477,10 +477,13 @@ class HXModal(BaseHXRequest):
         context["title"] = kwargs.get("title", self.hx_object)
         context["modal_container_id"] = self.modal_container_id
         context["body"] = (
-            render_to_string(body, context=context)
+            render_to_string(body, context=self.get_body_context(context, **kwargs))
             if body.split(".")[-1] == "html"
             else mark_safe(body)
         )
+        return context
+
+    def get_body_context(self, context, **kwargs):
         return context
 
 
@@ -505,14 +508,6 @@ class HXFormModal(HXModal, FormHXRequest):
     @cached_property
     def modal_body_selector(self):
         return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
-
-    def form_invalid(self, **kwargs) -> str:
-        """
-        Set the modal body (this is because the GET_template i.e. the body is
-        going to remain open since the form is invalid)
-        """
-        self.set_modal_body()
-        return self.get_response(**kwargs)
 
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
