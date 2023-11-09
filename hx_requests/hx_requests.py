@@ -254,31 +254,17 @@ class FormHXRequest(BaseHXRequest):
         Class of the form attached to the FormHXRequest
     add_form_errors_to_error_message : bool
         If True adds the form's validation errors to the error message on form_invalid
-    refresh_form : bool
-        If the form is part of the POST response and you want the form to be reset to the
-        default (to not use the POST data) set to True
     """
 
     form_class: Form = None
     add_form_errors_to_error_message: bool = False
-    refresh_form = False
 
     def get_context_data(self, **kwargs) -> Dict:
         """
         Additionally adds the form into the context.
         """
-        context = {}
+        context = super().get_context_data(**kwargs)
         context["form"] = self.form
-        context.update(super().get_context_data(**kwargs))
-        return context
-
-    def get_post_context_data(self, **kwargs):
-        context = super().get_post_context_data(**kwargs)
-        if self.refresh_form and self.form.is_valid():
-            form_kwargs = {"initial": self.get_initial(**kwargs)}
-            if getattr(self, "hx_object"):
-                form_kwargs.update({"instance": self.hx_object})
-            context["form"] = self.form_class(**form_kwargs)
         return context
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -495,15 +481,7 @@ class HXFormModal(HXModal, FormHXRequest):
 
     If the form is invalid the modal stays open and the form contains the validation
     errors. If the form is valid the modal will close.
-
-    Attributes
-    ----------
-    close_modal_on_save : bool
-        Close modal when form is valid. Set to False to keep the modal open even after
-        the form saves.
     """
-
-    close_modal_on_save = True
 
     @cached_property
     def modal_body_selector(self):
@@ -512,7 +490,7 @@ class HXFormModal(HXModal, FormHXRequest):
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
         if self.is_post_request:
-            if self.form.is_valid() and self.close_modal_on_save:
+            if self.form.is_valid():
                 headers["HX-Trigger"] = "modalFormValid"
             else:
                 headers["HX-Retarget"] = self.modal_body_selector
