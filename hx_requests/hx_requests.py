@@ -500,6 +500,6 @@ class HXFormModal(HXModal, FormHXRequest):
         if self.is_post_request:
             if self.form.is_valid() and self.close_modal_on_save:
                 headers["HX-Trigger"] = "modalFormValid"
-            else:
+            elif self.form.is_valid() is False:
                 headers["HX-Retarget"] = self.modal_body_selector
         return headers
