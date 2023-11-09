@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.0 (2023-11-09)
+
+### Feature
+
+* Revert "feat: Add new attributes to FormHxRequest and FormModal" ([`2990cf5`](https://github.com/yaakovLowenstein/hx-requests/commit/2990cf572bc654e64f728a47def5a4de1b10a19b))
+
+### Fix
+
+* Add back in close_modal_on_save ([`b4a18ab`](https://github.com/yaakovLowenstein/hx-requests/commit/b4a18ab0aebb4c7d05c41555c10d5c7094d88c76))
+
 ## v0.15.1 (2023-11-08)
 
 ### Fix
