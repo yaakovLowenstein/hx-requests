@@ -481,7 +481,15 @@ class HXFormModal(HXModal, FormHXRequest):
 
     If the form is invalid the modal stays open and the form contains the validation
     errors. If the form is valid the modal will close.
+
+    Attributes
+    ----------
+    close_modal_on_save : bool
+        Close modal when form is valid. Set to False to keep the modal open even after
+        the form saves.
     """
+
+    close_modal_on_save = True
 
     @cached_property
     def modal_body_selector(self):
@@ -490,7 +498,7 @@ class HXFormModal(HXModal, FormHXRequest):
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
         if self.is_post_request:
-            if self.form.is_valid():
+            if self.form.is_valid() and self.close_modal_on_save:
                 headers["HX-Trigger"] = "modalFormValid"
             else:
                 headers["HX-Retarget"] = self.modal_body_selector
