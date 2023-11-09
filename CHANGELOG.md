@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.1 (2023-11-09)
+
+### Fix
+
+* Fix bug in close_modal_on_save ([`2d264c5`](https://github.com/yaakovLowenstein/hx-requests/commit/2d264c535109913875c7b736457e846e2f0e2a5c))
+
 ## v0.16.0 (2023-11-09)
 
 ### Feature
