@@ -21,7 +21,7 @@ observe the magic of `hx-requests`.
 - No need to define extra urls to handle these requests
 - No need to add anything extra in views
 - Reusable `HXRequests` across views
-- Built in `HXReuqests` to reduce boilerplate code
+- Built in `HXRequests` to reduce boilerplate code
 
 See full documentation here: https://hx-requests.readthedocs.io/en/latest/#
 
