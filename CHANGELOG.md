@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.0 (2024-01-11)
+
+### Feature
+
+* Add ability for hx url to use the full path (Includes query params) ([`d500ebb`](https://github.com/yaakovLowenstein/hx-requests/commit/d500ebb1ae23b72f7b4085da4caf08a313f30bf0))
+
 ## v0.16.1 (2023-11-09)
 
 ### Fix
