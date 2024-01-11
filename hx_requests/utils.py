@@ -25,8 +25,11 @@ def deserialize_kwargs(**kwargs):
     return kwargs
 
 
-def get_url(context, hx_request_name, object, **kwargs):
+def get_url(context, hx_request_name, object, use_full_path=False, **kwargs):
     url = context["request"].path
+    if use_full_path:
+        url = context["request"].get_full_path()
+
     if not "?" in url:
         url += f"?hx_request_name={hx_request_name}"
     else:
