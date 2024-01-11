@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.0 (2024-01-11)
+
+### Feature
+
+* Default GET and POST templates to view template ([`f24c307`](https://github.com/yaakovLowenstein/hx-requests/commit/f24c30765939cf9d385d516650b8be6c229744c3))
+
+### Fix
+
+* Give default value to HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS ([`82c457c`](https://github.com/yaakovLowenstein/hx-requests/commit/82c457cf189b694c62ecd9e4f02a46b0101b9bd5))
+
 ## v0.17.0 (2024-01-11)
 
 ### Feature
