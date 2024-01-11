@@ -67,6 +67,7 @@ class BaseHXRequest:
     return_empty: bool = False
     no_swap = False
     show_messages: bool = True
+    
 
     @cached_property
     def is_post_request(self):
@@ -125,6 +126,8 @@ class BaseHXRequest:
         self.request = request
         self.messages = HXMessages()
         self.renderer = Renderer()
+        self.GET_template = self.GET_template or self.view.template_name
+        self.POST_template = self.POST_template or self.view.template_name
         # TODO maybe remove this line (why is it there?)
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request)
