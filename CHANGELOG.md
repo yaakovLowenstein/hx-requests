@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.1 (2024-01-16)
+
+### Fix
+
+* Fix issue in get_url where it would not properly handle query params ([`608195c`](https://github.com/yaakovLowenstein/hx-requests/commit/608195c37ed79ca6a52ed562c382f29723125fa5))
+
 ## v0.18.0 (2024-01-11)
 
 ### Feature
