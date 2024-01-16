@@ -35,6 +35,7 @@ jobs:
           GH_TOKEN: ${{secrets.ADMIN_TOKEN}}
 
       - name: Publish package to pypi
-        run: poetry config pypi-token.pypi ${{secrets.PYPI_API_TOKEN}}
-        run: poetry build
-        run: poetry publish
+        run: |
+          poetry config pypi-token.pypi ${{secrets.PYPI_API_TOKEN}}
+          poetry build
+          poetry publish
