@@ -21,8 +21,9 @@ The view requires :code:`HtmxViewMixin`
 .. code-block:: python
 
     from hx_requests.views import HtmxViewMixin
+    from django.views.generic.base import View
 
-    class MyView(HtmxViewMixin):
+    class MyView(HtmxViewMixin, View):
         pass
 
 The HTML
@@ -108,8 +109,9 @@ The view requires :code:`HtmxViewMixin`
 .. code-block:: python
 
     from hx_requests.views import HtmxViewMixin
+    from django.views.generic.base import View
 
-    class MyView(HtmxViewMixin):
+    class MyView(HtmxViewMixin, View):
         pass
 
 The HTML
