@@ -6,13 +6,12 @@ from django.apps import apps
 from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.generic.base import View
 
 from hx_requests.utils import deserialize_kwargs, is_htmx_request
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class HtmxViewMixin(View):
+class HtmxViewMixin:
     """
     Mixin to be added to views that are using HXRequests.
     Hijacks the get and post to route them to the proper
