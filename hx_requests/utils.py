@@ -29,12 +29,13 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     url = request.path
 
     params = {'hx_request_name': hx_request_name}
+    
+    if use_full_path:
+        params.update({k: v for k, v in request.GET.items() if k not in ['hx_request_name','object']})
 
     if obj:
         params['object'] = f"{obj._meta.app_label}_{obj._meta.model.__name__}_{obj.pk}"
 
-    if use_full_path:
-        params.update({k: v for k, v in request.GET.items() if k != 'hx_request_name'})
         
     url += f"?{urlencode(params)}"
 
