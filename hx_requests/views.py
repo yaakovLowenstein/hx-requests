@@ -20,19 +20,23 @@ class HtmxViewMixin:
 
     hx_requests: Dict = []
 
-    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if is_htmx_request(request):
-            hx_request = self._setup_hx_request(request, *args, **kwargs)
-            kwargs = self.get_extra_kwargs(request)
-            return hx_request.get(request, *args, **kwargs)
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if is_htmx_request(request):
-            hx_request = self._setup_hx_request(request, *args, **kwargs)
-            kwargs = self.get_extra_kwargs(request)
-            return hx_request.post(request, *args, **kwargs)
-        return super().post(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        # Try to dispatch to the right method; if a method doesn't exist,
+        # defer to the error handler. Also defer to the error handler if the
+        # request method isn't on the approved list.
+        if request.method.lower() in self.http_method_names:
+            handler_class = self
+            # If it's an HTMX request, use the HXRequest class to handle the request
+            # otherwise, use the view class to handle the request.
+            if is_htmx_request(request):
+                handler_class = self._setup_hx_request(request, *args, **kwargs)
+                kwargs = self.get_hx_extra_kwargs(request)
+            handler = getattr(
+                handler_class, request.method.lower(), self.http_method_not_allowed
+            )
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
@@ -70,7 +74,7 @@ class HtmxViewMixin:
                     hx_request_classes[obj.name] = obj
         cls.hx_requests = hx_request_classes
 
-    def get_extra_kwargs(self, request):
+    def get_hx_extra_kwargs(self, request):
         kwargs = {}
         for key in request.GET:
             kwargs[key] = request.GET.get(key)
