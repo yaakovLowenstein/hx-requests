@@ -29,8 +29,8 @@ class HtmxViewMixin:
             # If it's an HTMX request, use the HXRequest class to handle the request
             # otherwise, use the view class to handle the request.
             if is_htmx_request(request):
-                handler_class = self._setup_hx_request(request, *args, **kwargs)
                 kwargs.update(self.get_hx_extra_kwargs(request))
+                handler_class = self._setup_hx_request(request, *args, **kwargs)
             handler = getattr(
                 handler_class, request.method.lower(), self.http_method_not_allowed
             )
