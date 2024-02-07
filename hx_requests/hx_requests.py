@@ -1,7 +1,7 @@
 import json
 from email import header
 from mimetypes import init
-from typing import Dict
+from typing import Dict, Union
 
 from django.apps import apps
 from django.conf import settings
@@ -34,14 +34,16 @@ class BaseHXRequest:
          Unique name that needs to be matched in the template tag rendering the HXRequest
     hx_object_name : str, optional
         Name that the hx_object is passed into the context with
-    GET_template : str, optional
-        Template rendered for a GET request
-    POST_template : str, optional
-        Template rendered for a POST request
-    GET_block : str, optional
-        Block of the GET_template to be used insted of rendering the whole template
-    POST_block : str, optional
-        Block of the POST_block to be used insted of rendering the whole template
+    GET_template : str,list, optional
+        Template rendered for a GET request. If a list is passed in, all the templates are rendered
+    POST_template : str,list, optional
+        Template rendered for a POST request. If a list is passed in, all the templates are rendered
+    GET_block : str,list, optional
+        Block of the GET_template to be used instead of rendering the whole template
+        If a list is passed in, all the blocks are rendered
+    POST_block : str,list, optional
+        Block of the POST_block to be used instead of rendering the whole template
+        If a list is passed in, all the blocks are rendered
     refresh_page : bool
         If True the page will refresh after a POST request
     redirect : str, optional
@@ -53,21 +55,23 @@ class BaseHXRequest:
     show_messages: bool
         If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
         then the set message is displayed
+
+    **Note**: Cannot use blocks with a list of templates
+
     """
 
     name: str = ""
     hx_object_name: str = "hx_object"
     messages: HXMessages
-    GET_template: str = ""
-    POST_template: str = ""
-    GET_block: str = ""
-    POST_block: str = ""
+    GET_template: Union[str, list] = ""
+    POST_template: Union[str, list] = ""
+    GET_block: Union[str, list] = ""
+    POST_block: Union[str, list] = ""
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
     no_swap = False
     show_messages: bool = True
-    
 
     @cached_property
     def is_post_request(self):
@@ -159,18 +163,46 @@ class BaseHXRequest:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
             else:
-                html = self.renderer.render(
-                    self.POST_template,
-                    self.POST_block,
-                    self.get_context_data(**kwargs),
-                    self.request,
+                html = self.render_templates(
+                    self.POST_template, self.POST_block, **kwargs
                 )
 
         else:
+            html = self.render_templates(self.GET_template, self.GET_block, **kwargs)
+
+        return html
+
+    def render_templates(self, templates, blocks, **kwargs) -> str:
+        # TODO allow blocks to be dict which would map the block to the template
+
+        context = self.get_context_data(**kwargs)
+        html = ""
+
+        if isinstance(templates, list):
+            if blocks != "":
+                raise Exception("Cannot use blocks with multiple templates")
+            for template in templates:
+                html += self.renderer.render(
+                    template,
+                    None,
+                    context,
+                    self.request,
+                )
+        elif isinstance(blocks, list):
+            if isinstance(templates, list):
+                raise Exception("Cannot use multiple templates when using blocks")
+            for block in blocks:
+                html += self.renderer.render(
+                    templates,
+                    block,
+                    context,
+                    self.request,
+                )
+        else:
             html = self.renderer.render(
-                self.GET_template,
-                self.GET_block,
-                self.get_context_data(**kwargs),
+                templates,  # templates is a str not a list
+                blocks,  # blocks is a str not a list
+                context,
                 self.request,
             )
 
@@ -312,12 +344,7 @@ class FormHXRequest(BaseHXRequest):
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return self.renderer.render(
-                self.GET_template,
-                self.GET_block,
-                self.get_context_data(**kwargs),
-                self.request,
-            )
+            return self.render_templates(self.GET_template, self.GET_block, **kwargs)
         return super().get_response_html(**kwargs)
 
     def get_form_kwargs(self, **kwargs):
