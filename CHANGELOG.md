@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.2 (2024-02-07)
+
+### Fix
+
+* Remove object from persisting with use_full_path ([`043fbb0`](https://github.com/yaakovLowenstein/hx-requests/commit/043fbb070ca3d4fec697001fa7bf9c81aef6cdf5))
+
 ## v0.18.1 (2024-01-16)
 
 ### Fix
