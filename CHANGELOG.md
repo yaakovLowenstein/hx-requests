@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.3 (2024-02-08)
+
+### Fix
+
+* Exception when missing csrf ([`0c49042`](https://github.com/yaakovLowenstein/hx-requests/commit/0c49042bd723e34148cb20d64e846ebd92a574a6))
+
 ## v0.18.2 (2024-02-07)
 
 ### Fix
