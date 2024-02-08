@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.0 (2024-02-08)
+
+### Feature
+
+* Pass extra kwargs to hx request setup ([`8551bab`](https://github.com/yaakovLowenstein/hx-requests/commit/8551babc28ddd4f76923e4a5425dfdaabb0e7315))
+* Route hx request directly to hx request handler ([`a053727`](https://github.com/yaakovLowenstein/hx-requests/commit/a053727ad38b32ed7be7e4c892148c9411ac4d7c))
+
+### Fix
+
+* Update kwargs with extras instead overriding ([`392452f`](https://github.com/yaakovLowenstein/hx-requests/commit/392452fe35890aefa2556ea7a28a4e41f0f57b72))
+
 ## v0.18.4 (2024-02-08)
 
 ### Fix
