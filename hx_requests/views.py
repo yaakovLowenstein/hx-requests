@@ -1,9 +1,8 @@
 import importlib
 import inspect
-from typing import Any, Dict
+from typing import Dict
 
 from django.apps import apps
-from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
