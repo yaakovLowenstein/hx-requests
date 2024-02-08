@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.4 (2024-02-08)
+
+### Fix
+
+* Remove View inheritance from HtmxViewMixin ([`64fa163`](https://github.com/yaakovLowenstein/hx-requests/commit/64fa163fc197853e5394c6aa23e9823f69b0ccf0))
+
+### Documentation
+
+* Update view docs ([`9fa8f01`](https://github.com/yaakovLowenstein/hx-requests/commit/9fa8f0134c45d3c4d030fab5e8f2f757ece36b23))
+
 ## v0.18.3 (2024-02-08)
 
 ### Fix
