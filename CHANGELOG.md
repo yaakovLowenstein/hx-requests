@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.1 (2024-02-09)
+
+### Fix
+
+* Fix bugs in serialization and with use_full_path ([`a429e89`](https://github.com/yaakovLowenstein/hx-requests/commit/a429e89eed2897bc97a7b3515d16083b9b2d3466))
+
+### Documentation
+
+* Use html+django for syntax highlighting in html code blocks ([`7d4aca0`](https://github.com/yaakovLowenstein/hx-requests/commit/7d4aca0db6aaf0fd830ed63ca1ddf0804f2a043c))
+
 ## v0.20.0 (2024-02-09)
 
 ### Feature
