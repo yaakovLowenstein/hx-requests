@@ -30,7 +30,7 @@ The HTML
 ~~~~~~~~
 
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info_target"></div>
@@ -72,7 +72,7 @@ Notes:
 
 *user_info_card.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     <div>
         <p>Username:{{request.user.username}}</p>
@@ -117,7 +117,7 @@ The view requires :code:`HtmxViewMixin`
 The HTML
 ~~~~~~~~
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="email_display">{{request.user.email}}</div>
@@ -166,7 +166,7 @@ Notes:
 
 *email.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     <span>{{request.user.email}}</span>
 
@@ -222,7 +222,7 @@ instead override :code:`get_post_context_data`
 
     For example:
 
-    .. code-block:: html
+    .. code-block:: html+django
 
         {% hx_get 'my_hx_request' object=object my_awesome_kwarg="I am awesome" %}
 

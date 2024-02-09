@@ -26,7 +26,7 @@ HTML
 ~~~~
 *user_info_page.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info">
@@ -45,7 +45,7 @@ HTML
 
 *user_info.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {{ user.email }}
     {{ user.first_name }}

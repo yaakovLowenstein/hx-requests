@@ -8,7 +8,7 @@ hx_get
 
 *Example from quickstart*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info_target"></div>
