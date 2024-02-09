@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.0 (2024-02-09)
+
+### Feature
+
+* Allow multiple templates and blocks to be passed in ([`a48a179`](https://github.com/yaakovLowenstein/hx-requests/commit/a48a179aa894cac24f7383c95a6ff475c4032111))
+
+### Documentation
+
+* Add documentation for out-of-band ([`76a3f49`](https://github.com/yaakovLowenstein/hx-requests/commit/76a3f497a4de889ff9562c6429232c351138ffb7))
+
 ## v0.19.0 (2024-02-08)
 
 ### Feature
