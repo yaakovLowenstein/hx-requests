@@ -19,6 +19,7 @@ with htmx, and many other awesome features.
    guide/quickstart
    guide/forms
    guide/blocks
+   guide/out_of_band
    guide/delete
    guide/modals
    guide/messages
