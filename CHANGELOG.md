@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.2 (2024-02-12)
+
+### Fix
+
+* Fix bug with url kwargs ([`8b38ef6`](https://github.com/yaakovLowenstein/hx-requests/commit/8b38ef6cb91c410053dbad471e126078f8fe846e))
+
 ## v0.20.1 (2024-02-09)
 
 ### Fix
