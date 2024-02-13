@@ -245,7 +245,7 @@ class BaseHXRequest:
                     (
                         key
                         for key, value in self.messages.tags.items()
-                        if value == message.tag
+                        if value == message.tags
                     )
                 )
                 messages.add_message(

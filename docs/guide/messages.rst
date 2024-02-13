@@ -21,7 +21,7 @@ To use :code:`hx-messages` a few things need to be set...
     <div id="hx_messages" hx-swap-oob='true'>
         <ul class="messages">
             {% for message in messages %}
-                <li class="alert {{ message.tag }}">{{ message.body|safe }}</li>
+                <li class="alert {{ message.tags }}">{{ message|safe }}</li>
             {% endfor %}
         </ul>
     </div>

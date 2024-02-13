@@ -15,7 +15,10 @@ class HXMessageTags:
 @dataclass
 class Message:
     body: str
-    tag: str
+    tags: str
+
+    def __str__(self):
+        return self.body
 
 
 class HXMessages:
