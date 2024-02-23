@@ -161,7 +161,17 @@ class BaseHXRequest:
                 headers["HX-Redirect"] = self.redirect
         if self.no_swap:
             headers["HX-Reswap"] = "none"
+
+        triggers = self.get_triggers(**kwargs)
+        if triggers:
+            headers["HX-Trigger"] = ", ".join(triggers)
         return headers
+
+    def get_triggers(self, **kwargs) -> list:
+        """
+        Override to set the triggers for the response.
+        """
+        return []
 
     def get_response_html(self, **kwargs) -> str:
         """
@@ -547,11 +557,12 @@ class HXFormModal(HXModal, FormHXRequest):
     def modal_body_selector(self):
         return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
 
+    def get_triggers(self, **kwargs):
+        if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
+            return ["modalFormValid"]
+
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
-        if self.is_post_request:
-            if self.form.is_valid() and self.close_modal_on_save:
-                headers["HX-Trigger"] = "modalFormValid"
-            elif self.form.is_valid() is False:
-                headers["HX-Retarget"] = self.modal_body_selector
+        if self.is_post_request and self.form.is_valid() is False:
+            headers["HX-Retarget"] = self.modal_body_selector
         return headers
