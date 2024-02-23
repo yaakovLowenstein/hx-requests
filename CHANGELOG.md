@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.3 (2024-02-23)
+
+### Fix
+
+* Fix a couple of bugs in get_url ([`5f388d8`](https://github.com/yaakovLowenstein/hx-requests/commit/5f388d8c8741fbd639a7cd25f5c75f341f55e29e))
+
 ## v0.20.2 (2024-02-12)
 
 ### Fix
