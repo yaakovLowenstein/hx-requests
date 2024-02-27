@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.4 (2024-02-27)
+
+### Fix
+
+* Fix bug that the views kwargs were not passed to get_context_data ([`4083e5c`](https://github.com/yaakovLowenstein/hx-requests/commit/4083e5c6a17c1552ca828d5fd0dfead2291f28ec))
+
 ## v0.20.3 (2024-02-23)
 
 ### Fix
