@@ -95,7 +95,7 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
-        context = self.view.get_context_data()
+        context = self.view.get_context_data(**kwargs)
         context["hx_kwargs"] = kwargs
         context[self.hx_object_name] = self.hx_object
         context["request"] = self.request
