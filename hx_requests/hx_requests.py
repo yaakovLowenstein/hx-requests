@@ -176,6 +176,14 @@ class BaseHXRequest:
         return html
 
     def render_templates(self, templates, blocks, **kwargs) -> str:
+        """
+        Renders the templates and blocks into HTML.
+        If templates is a string and blocks is empty then it renders the template.
+        If templates is a string and blocks is a string then it renders the block from the template.
+        If templates is a list then it renders all the templates.
+        If blocks is a list then it renders all the blocks per the template defined.
+        If blocks is a dict then it renders the blocks per the templates in the dict.
+        """
         context = self.get_context_data(**kwargs)
         render_with_context = partial(self.renderer.render, context=context, request=self.request)
         html = ""
