@@ -49,20 +49,9 @@ Hyperscript: `<script src="https://unpkg.com/hyperscript.org@0.9.8"></script>`
 **Warning CI is not setup yet, but will be at a later date.**
 ## Getting setup
 
+- This project is using poetry
+- There is a dev container that can be used with vs-code
 
-```bash
-# If your system has python3.10 installed make sure the virtual environment is using 3.8
-poetry env use python3.8
-
-# Install packages
-poetry install
-
-# Install pre-commit hooks
-pre-commit install -t pre-commit -t pre-push -t commit-msg
-
-# Activate the virtual environment
-poetry shell
-```
 
 
 ## Committing
