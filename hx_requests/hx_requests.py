@@ -1,3 +1,4 @@
+from functools import partial
 import json
 from email import header
 from mimetypes import init
@@ -40,10 +41,12 @@ class BaseHXRequest:
         Template rendered for a POST request. If a list is passed in, all the templates are rendered
     GET_block : str,list, optional
         Block of the GET_template to be used instead of rendering the whole template
-        If a list is passed in, all the blocks are rendered
+        If a list is passed in, all the blocks are rendered per the GET_template
+        If a dict is passed in, the keys are the templates and the values are the blocks
     POST_block : str,list, optional
         Block of the POST_block to be used instead of rendering the whole template
-        If a list is passed in, all the blocks are rendered
+        If a list is passed in, all the blocks are rendered per the POST_template 
+        If a dict is passed in, the keys are the templates and the values are the blocks
     refresh_page : bool
         If True the page will refresh after a POST request
     redirect : str, optional
@@ -173,40 +176,45 @@ class BaseHXRequest:
         return html
 
     def render_templates(self, templates, blocks, **kwargs) -> str:
-        # TODO allow blocks to be dict which would map the block to the template
-
         context = self.get_context_data(**kwargs)
+        render_with_context = partial(self.renderer.render, context=context, request=self.request)
         html = ""
 
+        # If both are strings then its one template and possibly one block
+        if isinstance(templates, str) and isinstance(blocks, str):
+            return render_with_context(templates, blocks)
+
+        # If blocks is a dict then we are using multiple blocks with multiple templates
+        if isinstance(blocks, dict):
+            for template, block in blocks.items():
+                html += render_with_context(template, block)
+            if templates and isinstance(templates, str):
+                html += render_with_context(templates, None)
+            elif isinstance(templates, list):
+                for template in templates:
+                    html += render_with_context(template, None)
+            return html
+
+        # If templates is a list then we are using multiple templates with no blocks
         if isinstance(templates, list):
             if blocks != "":
-                raise Exception("Cannot use blocks with multiple templates")
+                raise Exception(
+                    "When using multiple blocks with multiple templates blocks must be a dict"
+                )
             for template in templates:
-                html += self.renderer.render(
-                    template,
-                    None,
-                    context,
-                    self.request,
-                )
-        elif isinstance(blocks, list):
-            if isinstance(templates, list):
-                raise Exception("Cannot use multiple templates when using blocks")
-            for block in blocks:
-                html += self.renderer.render(
-                    templates,
-                    block,
-                    context,
-                    self.request,
-                )
-        else:
-            html = self.renderer.render(
-                templates,  # templates is a str not a list
-                blocks,  # blocks is a str not a list
-                context,
-                self.request,
-            )
+                html += render_with_context(template, None)
+            return html
 
-        return html
+        # If blocks is a list then we are using multiple blocks with one template
+        if isinstance(blocks, list):
+            if isinstance(templates, list):
+                raise Exception(
+                    "When using multiple blocks with multiple templates blocks must be a dict"
+                )
+            for block in blocks:
+                html += render_with_context(templates, block)
+            return html
+
 
     def get_messages_html(self, **kwargs) -> str:
         if self.messages():
