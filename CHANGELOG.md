@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.0 (2024-02-29)
+
+### Feature
+
+* Add support for using a dict for blocks ([`eed8baf`](https://github.com/yaakovLowenstein/hx-requests/commit/eed8baf471928f0846f8136921db42d8b1a7108c))
+
+### Documentation
+
+* Update README.md contributing section ([`4e65870`](https://github.com/yaakovLowenstein/hx-requests/commit/4e6587065a4e13daf0673fe739d96cbb20c7e34b))
+* Add a docstring to the render_templates method ([`dfc8a31`](https://github.com/yaakovLowenstein/hx-requests/commit/dfc8a316d65ff9a9609b7023d987c5b085d6ee2e))
+* Add more examples for out-of-band swaps ([`88d7805`](https://github.com/yaakovLowenstein/hx-requests/commit/88d78052f446f00add9c0788b1b6354e3dc53920))
+
 ## v0.20.4 (2024-02-27)
 
 ### Fix
