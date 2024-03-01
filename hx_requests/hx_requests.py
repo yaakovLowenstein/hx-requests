@@ -1,7 +1,4 @@
 from functools import partial
-import json
-from email import header
-from mimetypes import init
 from typing import Dict, Union
 
 from django.apps import apps
@@ -45,7 +42,7 @@ class BaseHXRequest:
         If a dict is passed in, the keys are the templates and the values are the blocks
     POST_block : str,list, optional
         Block of the POST_block to be used instead of rendering the whole template
-        If a list is passed in, all the blocks are rendered per the POST_template 
+        If a list is passed in, all the blocks are rendered per the POST_template
         If a dict is passed in, the keys are the templates and the values are the blocks
     refresh_page : bool
         If True the page will refresh after a POST request
@@ -98,6 +95,7 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
+        kwargs.update(self.extra_context)
         context = self.view.get_context_data(**kwargs)
         context["hx_kwargs"] = kwargs
         context[self.hx_object_name] = self.hx_object
@@ -185,7 +183,9 @@ class BaseHXRequest:
         If blocks is a dict then it renders the blocks per the templates in the dict.
         """
         context = self.get_context_data(**kwargs)
-        render_with_context = partial(self.renderer.render, context=context, request=self.request)
+        render_with_context = partial(
+            self.renderer.render, context=context, request=self.request
+        )
         html = ""
 
         # If both are strings then its one template and possibly one block
@@ -222,7 +222,6 @@ class BaseHXRequest:
             for block in blocks:
                 html += render_with_context(templates, block)
             return html
-
 
     def get_messages_html(self, **kwargs) -> str:
         if self.messages():

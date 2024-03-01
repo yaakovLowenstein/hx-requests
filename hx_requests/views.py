@@ -3,6 +3,8 @@ import inspect
 from typing import Dict
 
 from django.apps import apps
+from django.conf import settings
+from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -81,9 +83,31 @@ class HtmxViewMixin:
         return deserialize_kwargs(**kwargs)
 
     def _setup_hx_request(self, request, *args, **kwargs):
-        # Call get even on post to setup neccessary parts for the context
-        super().get(request, *args, **kwargs)
+        extra_context = self._setup_views_get(request, *args, **kwargs)
         hx_request = self.get_hx_request(request)
+        hx_request.extra_context = extra_context
         hx_request.view = self
         hx_request.setup_hx_request(request)
         return hx_request
+
+    def _setup_views_get(self, request, *args, **kwargs):
+        custom_setup_views = getattr(settings, "HX_REQUESTS_CUSTOM_VIEWS_SETUP", {})
+        extra_context = {}
+        setup_views = {
+            "django.views.generic.list.BaseListView": "hx_requests.django_views.list_view_get",
+            "django.views.generic.edit.BaseUpdateView": "hx_requests.django_views.update_view_get",
+            "django.views.generic.edit.BaseCreateView": "hx_requests.django_views.create_view_get",
+            "django.views.generic.detail.BaseDetailView": "hx_requests.django_views.detail_view_get",
+            "django.views.generic.edit.BaseDeleteView": "hx_requests.django_views.delete_view_get",
+            **custom_setup_views,
+        }
+        for parent_class in self.__class__.mro():
+            class_identifier = f"{parent_class.__module__}.{parent_class.__name__}"
+            if class_identifier in setup_views:
+                module_string = setup_views[class_identifier].rsplit(".", 1)[0]
+                module = importlib.import_module(module_string)
+                func = getattr(module, setup_views[class_identifier].rsplit(".", 1)[1])
+                context = func(self, request, *args, **kwargs)
+                if context:
+                    extra_context.update(context)
+        return extra_context
