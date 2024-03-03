@@ -72,6 +72,7 @@ class BaseHXRequest:
     return_empty: bool = False
     no_swap = False
     show_messages: bool = True
+    get_views_context: bool = True
 
     @cached_property
     def is_post_request(self):
@@ -96,7 +97,9 @@ class BaseHXRequest:
             | self as hx_request
         """
         kwargs.update(self.extra_context)
-        context = self.view.get_context_data(**kwargs)
+        context = {}
+        if self.get_views_context:
+            context = self.view.get_context_data(**kwargs)
         context["hx_kwargs"] = kwargs
         context[self.hx_object_name] = self.hx_object
         context["request"] = self.request
