@@ -98,7 +98,7 @@ class BaseHXRequest:
         """
         kwargs.update(self.extra_context)
         context = {}
-        if self.get_views_context:
+        if hasattr(self.view, "get_context_data") and self.get_views_context:
             context = self.view.get_context_data(**kwargs)
         context["hx_kwargs"] = kwargs
         context[self.hx_object_name] = self.hx_object
