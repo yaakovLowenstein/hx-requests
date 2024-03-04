@@ -55,6 +55,10 @@ class BaseHXRequest:
     show_messages: bool
         If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
         then the set message is displayed
+    get_views_context: bool
+        If True, the context from the view is added to the context of the HXRequest
+        If False, only the context from the HXRequest is used, potentially improving performance
+        by not needing to call the view's get_context_data method.
 
     **Note**: Cannot use blocks with a list of templates
 
