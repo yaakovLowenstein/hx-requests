@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.22.0 (2024-03-04)
+
+### Feature
+
+* Only call get_context_data if the view defines one ([`d904b12`](https://github.com/yaakovLowenstein/hx-requests/commit/d904b12c846b1b8befa9bc85a4762b9ff71af463))
+* Add opt-out for views context `get_views_context` ([`9df3c17`](https://github.com/yaakovLowenstein/hx-requests/commit/9df3c17e5b223cad9010f879d482c5e6d0155cb7))
+* Change the way 'gets' are handled ([`881b596`](https://github.com/yaakovLowenstein/hx-requests/commit/881b596ad53dec40ee78bd311fc71693493ae214))
+
+### Documentation
+
+* Add documentation for get_views_context ([`df4e689`](https://github.com/yaakovLowenstein/hx-requests/commit/df4e689282e019dc41f91cbfa002b8df2f62f168))
+* Add documentation about setting up views' gets ([`857e522`](https://github.com/yaakovLowenstein/hx-requests/commit/857e522366e589f94af612ea41fc5ad937b666ab))
+
 ## v0.21.0 (2024-02-29)
 
 ### Feature
