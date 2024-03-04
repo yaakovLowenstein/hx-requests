@@ -3,6 +3,16 @@ Configuration
 
 Settings that need to be set in :code:`settings.py`.
 
+| :code:`HX_REQUESTS_CUSTOM_VIEWS_SETUP` : *Default=None*
+| Dict of custom views to a corrensponding get function that mimics the view's get EXCEPT that it does not return a response (see :ref:`Context setup by get`.)
+| For example:
+
+.. code-block:: python
+
+    HX_REQUESTS_CUSTOM_VIEWS_SETUP = {
+        'my_app.views.my_custom_view': 'my_app.view_get_functions.custom_view_get',
+    }
+
 Messages Configuration
 ----------------------
 
