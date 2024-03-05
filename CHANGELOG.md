@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.0 (2024-03-05)
+
+### Feature
+
+* Change message tag to tags and add __str__ method to Message ([`c006405`](https://github.com/yaakovLowenstein/hx-requests/commit/c006405ab5b77e4b4bc6705ec73c7c39fc1ebac8))
+
 ## v0.22.0 (2024-03-04)
 
 ### Feature
