@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.24.0 (2024-03-11)
+
+### Feature
+
+* Add method to set HX-Trigger ([`a66efcf`](https://github.com/yaakovLowenstein/hx-requests/commit/a66efcf94665256fe20696e25e5ee15ef902c28e))
+
 ## v0.23.1 (2024-03-11)
 
 ### Fix
