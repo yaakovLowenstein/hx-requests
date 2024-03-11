@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from render_block import render_block_to_string
 
 from hx_requests.hx_messages import HXMessages
+from hx_requests.utils import deserialize
 
 
 class Renderer:
@@ -129,10 +130,7 @@ class BaseHXRequest:
         If an 'object' was passed in, deserialize it.
         """
         if request.GET.get("object"):
-            serialized_hx_object = request.GET.get("object")
-            app_label, model, pk = serialized_hx_object.split("_")
-            model = apps.get_model(app_label, model)
-            return model.objects.get(pk=pk)
+            return deserialize(request.GET.get("object"))
 
     def setup_hx_request(self, request):
         self.request = request
