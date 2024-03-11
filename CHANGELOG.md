@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.25.0 (2024-03-11)
+
+### Feature
+
+* Add option to set initial in form from kwargs ([`b140786`](https://github.com/yaakovLowenstein/hx-requests/commit/b140786b26167ee5c257c2f6d7ec431c794a66f2))
+
 ## v0.24.0 (2024-03-11)
 
 ### Feature
