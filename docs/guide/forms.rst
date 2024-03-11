@@ -119,6 +119,31 @@ Setting Form Kwargs
             initial['created_by'] = self.request.user
             return initial
 
+You can also set the initial from the kwargs by setting :code:`set_initial_from_kwargs` to :code:`True`.
+This setting allows the initial value to be automatically populated from the kwargs.
+As long as the key in the kwargs matches the name of a field in the form, it will be assigned as the initial value for that field.
+
+.. code-block:: python
+
+    from hx_requests.hx_requests import FormHXRequest
+
+    class MyForm(forms.ModelForm):
+
+        class Meta:
+            model = MyModel
+            fields = ['field1', 'field2']
+
+    class MyHXRequest(FormHXRequest):
+        name='my_hx_request'
+        set_initial_from_kwargs = True
+
+
+.. code-block:: html+django
+
+        <button {% hx_get 'my_hx_request' field1="Cool Initial Value" %}></button>
+
+Notes:
+    - The initial value of :code:`field1` will be set to :code:`"Cool Initial Value"`
 
 Setting :ref:`Messages`
 -----------------------

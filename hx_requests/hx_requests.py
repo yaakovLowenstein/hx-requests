@@ -319,10 +319,14 @@ class FormHXRequest(BaseHXRequest):
         Class of the form attached to the FormHXRequest
     add_form_errors_to_error_message : bool
         If True adds the form's validation errors to the error message on form_invalid
+    set_initial_from_kwargs : bool
+        If True sets the initial values in the form from the kwargs as long as the key
+        matches a field in the form
     """
 
     form_class: Form = None
     add_form_errors_to_error_message: bool = False
+    set_initial_from_kwargs: bool = False
 
     def get_context_data(self, **kwargs) -> Dict:
         """
@@ -398,7 +402,15 @@ class FormHXRequest(BaseHXRequest):
         """
         Override to set initial values in the form.
         """
-        return {}
+        initial = {}
+
+        if self.set_initial_from_kwargs:
+            form_fields = self.form_class.base_fields
+            for key, value in kwargs.items():
+                if key in form_fields:
+                    initial[key] = value
+
+        return initial
 
     def get_success_message(self, **kwargs) -> str:
         """
