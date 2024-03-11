@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.1 (2024-03-11)
+
+### Fix
+
+* Fix the way serialization is being done ([`f510a53`](https://github.com/yaakovLowenstein/hx-requests/commit/f510a531c36a283bb9dfdba7a62e2f398f7d0e9d))
+
 ## v0.23.0 (2024-03-05)
 
 ### Feature
