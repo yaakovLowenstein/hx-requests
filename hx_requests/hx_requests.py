@@ -525,18 +525,16 @@ class HXModal(BaseHXRequest):
 
         return super().get(request, *args, **kwargs)
 
-
-
     def get_context_data(self, **kwargs) -> Dict:
         """
         Adds title and body into the context.
         """
         context = super().get_context_data(**kwargs)
         context["title"] = kwargs.get("title", self.title)
-        context["modal_body_classes"] = kwargs.get("modal_body_classes", self.modal_body_classes)
-        return context
-
-    def get_body_context(self, context, **kwargs):
+        context["modal_body_classes"] = kwargs.get(
+            "modal_body_classes", self.modal_body_classes
+        )
+        context["body"] = self.body_template
         return context
 
 
