@@ -85,7 +85,7 @@ Default Modal
 ~~~~~~~~~~~~~
 
 #. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
+#. Set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body container) in settings.
 #. Make sure the hyperscript for closing the modal is set correctly.
 
     - The modal's close button has hyperscript that triggers the modal to close
@@ -116,7 +116,7 @@ Bootstrap Modal
 ~~~~~~~~~~~~~~~
 
 #. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
+#. Set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body container) in settings.
 #. Set your own 'close modal' function. See below for built in modal html and JavaScript that handles the closing of the modal.
 
     - The modal's close button has onclick set to :code:`closeHXModal()`
