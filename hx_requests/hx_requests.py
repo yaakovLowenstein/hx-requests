@@ -572,7 +572,7 @@ class HXFormModal(HXModal, FormHXRequest):
 
     @cached_property
     def modal_body_selector(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
+        return getattr(settings, "HX_REQUESTS_MODAL_BODY_ID", "#hx_modal_body")
 
     def get_triggers(self, **kwargs):
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:

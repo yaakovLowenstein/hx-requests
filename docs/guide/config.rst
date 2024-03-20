@@ -55,6 +55,6 @@ Modal Configuration
 |
 | Id of the container the modal is rendered in.
 
-| :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` : *Default='.modal-body'*
+| :code:`HX_REQUESTS_MODAL_BODY_ID` : *Default='#hx_modal_body'*
 |
 | A CSS selector for the modal body. This only needs to be set if :code:`HX_REQUESTS_MODAL_TEMPLATE` is overridden and '.modal-body' is not a valid selector for it.
