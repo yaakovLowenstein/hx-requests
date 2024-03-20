@@ -497,7 +497,10 @@ class HXModal(BaseHXRequest):
     It can be used by passing in title and body into the template tag as kwargs and passing in
     'hx-modal' as the name.
 
-    **Note** : The body can be a string, html or a path to an html file.
+    Attributes
+    ----------
+    body_template : str
+        Template used as the modal body
 
     Example
     -------
@@ -507,6 +510,7 @@ class HXModal(BaseHXRequest):
     """
 
     name = "hx_modal"
+    body_template: str = ""
 
     @cached_property
     def modal_container_id(self):
@@ -520,18 +524,13 @@ class HXModal(BaseHXRequest):
         """
         Regular get method but additionally sets the modal body.
         """
-        self.set_modal_body(**kwargs)
+        self.GET_template = self.modal_template
+        if not self.body_template:
+            raise Exception("body_template is required when using HXModal")
+
         return super().get(request, *args, **kwargs)
 
-    def set_modal_body(self, **kwargs):
-        """
-        Sets the modal body to either the kwargs 'body' or to the GET_template.
-        (the GET_template might be set if a class inherits from hx_modal)
-        """
-        self.body = kwargs.get("body")
-        if self.GET_template != self.modal_template:
-            self.body = self.GET_template
-            self.GET_template = self.modal_template
+
 
     def get_context_data(self, **kwargs) -> Dict:
         """
@@ -583,3 +582,16 @@ class HXFormModal(HXModal, FormHXRequest):
         if self.is_post_request and self.form.is_valid() is False:
             headers["HX-Retarget"] = self.modal_body_selector
         return headers
+
+    def get_response_html(self, **kwargs):
+        """
+        On POST if the form is invalid instead of returning the
+        POST_template the GET_template is returned (the form
+        now contains the validation errors.)
+
+        Overrides the get_response_html method from FormHXRequest
+        to use the body_template instead of the GET_template.
+        """
+        if self.is_post_request and self.form.is_valid() is False:
+            return self.render_templates(self.body_template, self.GET_block, **kwargs)
+        return super().get_response_html(**kwargs)
