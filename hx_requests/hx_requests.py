@@ -504,6 +504,8 @@ class HXModal(BaseHXRequest):
 
     name = "hx_modal"
     body_template: str = ""
+    title: str = ""
+    modal_size_classes: str = ""
 
     @cached_property
     def modal_container_id(self):
@@ -530,14 +532,8 @@ class HXModal(BaseHXRequest):
         Adds title and body into the context.
         """
         context = super().get_context_data(**kwargs)
-        body = getattr(self, "body", None) or kwargs.get("body", self.GET_template)
-        context["title"] = kwargs.get("title", self.hx_object)
-        context["modal_container_id"] = self.modal_container_id
-        context["body"] = (
-            render_to_string(body, context=self.get_body_context(context, **kwargs))
-            if body.split(".")[-1] == "html"
-            else mark_safe(body)
-        )
+        context["title"] = kwargs.get("title", self.title)
+        context["modal_body_classes"] = kwargs.get("modal_body_classes", self.modal_body_classes)
         return context
 
     def get_body_context(self, context, **kwargs):
