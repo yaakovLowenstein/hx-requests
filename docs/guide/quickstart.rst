@@ -226,7 +226,7 @@ instead override :code:`get_post_context_data`
 
         {% hx_get 'my_hx_request' object=object my_awesome_kwarg="I am awesome" %}
 
-    In the :code:`GET_template`, 'my_awesome_kwarg' can be accessed as :code:`hx_kwargs.my_awesome_kwarg` .
+    In the :code:`GET_template`, 'my_awesome_kwarg' can be accessed as :code:`my_awesome_kwarg` unless :code:`kwargs_as_context` is set to False then it can be accessed as :code:`{{ hx_kwargs.my_awesome_kwarg }}`
 
 Context setup by get
 --------------------
