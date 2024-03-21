@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.26.0 (2024-03-21)
+
+### Feature
+
+* Add kwargs_as_context option to BaseHXRequest ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
+
+### Breaking
+
+* kwargs will now be added to the context directly by default. If you do not want this, you can set kwargs_as_context to False. Any code that relies on kwargs being in the hx_kwargs context variable will need to be updated to use the new context. For example, if you were doing `hx_kwargs.some_key` in the template you will need to change it to `some_key` OR set kwargs_as_context to False. ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
+
+### Documentation
+
+* Update docs ([`13ce5fd`](https://github.com/yaakovLowenstein/hx-requests/commit/13ce5fd94e37fa8d8fc5fec3f8b3f86735de6437))
+
 ## v0.25.0 (2024-03-11)
 
 ### Feature
