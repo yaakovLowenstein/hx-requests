@@ -60,6 +60,10 @@ class BaseHXRequest:
         If True, the context from the view is added to the context of the HXRequest
         If False, only the context from the HXRequest is used, potentially improving performance
         by not needing to call the view's get_context_data method.
+    kwargs_as_context: bool
+        If True, the kwargs are added into the context directly.
+        If False, the kwargs are added into the context as hx_kwargs.
+
 
     **Note**: Cannot use blocks with a list of templates
 
@@ -78,6 +82,7 @@ class BaseHXRequest:
     no_swap = False
     show_messages: bool = True
     get_views_context: bool = True
+    kwargs_as_context: bool = True
 
     @cached_property
     def is_post_request(self):
@@ -105,7 +110,12 @@ class BaseHXRequest:
         context = {}
         if hasattr(self.view, "get_context_data") and self.get_views_context:
             context = self.view.get_context_data(**kwargs)
-        context["hx_kwargs"] = kwargs
+
+        if self.kwargs_as_context:
+            context.update(kwargs)
+        else:
+            context["hx_kwargs"] = kwargs
+
         context[self.hx_object_name] = self.hx_object
         context["request"] = self.request
         context["hx_request"] = self
