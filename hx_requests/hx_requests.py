@@ -520,7 +520,9 @@ class HXModal(BaseHXRequest):
 
     @cached_property
     def modal_template(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", "hx_requests/modal.html")
+        modal_template =  getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
+        if not modal_template:
+            raise Exception("HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal")
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
