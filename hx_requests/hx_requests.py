@@ -501,15 +501,12 @@ class HXModal(BaseHXRequest):
     ----------
     body_template : str
         Template used as the modal body
-
-    Example
-    -------
-
-    ```{% hx_get 'hx_modal' body="This is a modal body" title="My First Modal" %}```
-
+    title : str
+        Title of the modal, can be passed in as a kwarg and the kwarg will override this attribute
+    modal_size_classes : str
+        Classes to set the size of the modal, can be passed in as a kwarg and the kwarg will override this attribute
     """
 
-    name = "hx_modal"
     body_template: str = ""
     title: str = ""
     modal_size_classes: str = ""
@@ -520,9 +517,11 @@ class HXModal(BaseHXRequest):
 
     @cached_property
     def modal_template(self):
-        modal_template =  getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
+        modal_template = getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
         if not modal_template:
-            raise Exception("HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal")
+            raise Exception(
+                "HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal"
+            )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
