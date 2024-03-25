@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.26.1 (2024-03-25)
+
+### Fix
+
+* Fix issue with extra_context overriding regular context ([`cd955c7`](https://github.com/yaakovLowenstein/hx-requests/commit/cd955c70223efa13e96ed5a8d68d23ad8fb2ff04))
+
 ## v0.26.0 (2024-03-21)
 
 ### Feature
