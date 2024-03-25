@@ -106,16 +106,13 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
-        kwargs.update(self.extra_context)
-        context = {}
+        context = {**self.extra_context}
         if hasattr(self.view, "get_context_data") and self.get_views_context:
-            context = self.view.get_context_data(**kwargs)
-
+            context.update(self.view.get_context_data(**kwargs, **self.extra_context))
         if self.kwargs_as_context:
             context.update(kwargs)
         else:
             context["hx_kwargs"] = kwargs
-
         context[self.hx_object_name] = self.hx_object
         context["request"] = self.request
         context["hx_request"] = self
