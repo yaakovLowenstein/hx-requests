@@ -71,7 +71,7 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     else:
         url += "?"  # Otherwise, start with "?"
 
-    url += urlencode(params)
+    url += urlencode(params, doseq=True)
 
     serialized_kwargs = serialize_kwargs(**kwargs)
     url += "".join(f"&{k}={quote_plus(str(v))}" for k, v in serialized_kwargs.items())
