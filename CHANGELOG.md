@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.26.2 (2024-03-26)
+
+### Fix
+
+* Fix issue with lists in GET params ([`a83fada`](https://github.com/yaakovLowenstein/hx-requests/commit/a83fadaeb24b9b2a9b6ede94cc5cec2cb8a43f3e))
+
 ## v0.26.1 (2024-03-25)
 
 ### Fix
