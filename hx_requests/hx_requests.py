@@ -497,16 +497,19 @@ class HXModal(BaseHXRequest):
     It can be used by passing in title and body into the template tag as kwargs and passing in
     'hx-modal' as the name.
 
-    **Note** : The body can be a string, html or a path to an html file.
-
-    Example
-    -------
-
-    ```{% hx_get 'hx_modal' body="This is a modal body" title="My First Modal" %}```
-
+    Attributes
+    ----------
+    body_template : str
+        Template used as the modal body
+    title : str
+        Title of the modal, can be passed in as a kwarg and the kwarg will override this attribute
+    modal_size_classes : str
+        Classes to set the size of the modal, can be passed in as a kwarg and the kwarg will override this attribute
     """
 
-    name = "hx_modal"
+    body_template: str = ""
+    title: str = ""
+    modal_size_classes: str = ""
 
     @cached_property
     def modal_container_id(self):
@@ -514,41 +517,32 @@ class HXModal(BaseHXRequest):
 
     @cached_property
     def modal_template(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", "hx_requests/modal.html")
+        modal_template = getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
+        if not modal_template:
+            raise Exception(
+                "HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal"
+            )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Regular get method but additionally sets the modal body.
         """
-        self.set_modal_body(**kwargs)
-        return super().get(request, *args, **kwargs)
+        self.GET_template = self.modal_template
+        if not self.body_template:
+            raise Exception("body_template is required when using HXModal")
 
-    def set_modal_body(self, **kwargs):
-        """
-        Sets the modal body to either the kwargs 'body' or to the GET_template.
-        (the GET_template might be set if a class inherits from hx_modal)
-        """
-        self.body = kwargs.get("body")
-        if self.GET_template != self.modal_template:
-            self.body = self.GET_template
-            self.GET_template = self.modal_template
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> Dict:
         """
         Adds title and body into the context.
         """
         context = super().get_context_data(**kwargs)
-        body = getattr(self, "body", None) or kwargs.get("body", self.GET_template)
-        context["title"] = kwargs.get("title", self.hx_object)
-        context["modal_container_id"] = self.modal_container_id
-        context["body"] = (
-            render_to_string(body, context=self.get_body_context(context, **kwargs))
-            if body.split(".")[-1] == "html"
-            else mark_safe(body)
+        context["title"] = kwargs.get("title", self.title)
+        context["modal_body_classes"] = kwargs.get(
+            "modal_body_classes", self.modal_body_classes
         )
-        return context
-
-    def get_body_context(self, context, **kwargs):
+        context["body"] = self.body_template
         return context
 
 
@@ -572,7 +566,7 @@ class HXFormModal(HXModal, FormHXRequest):
 
     @cached_property
     def modal_body_selector(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
+        return getattr(settings, "HX_REQUESTS_MODAL_BODY_ID", "#hx_modal_body")
 
     def get_triggers(self, **kwargs):
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
@@ -583,3 +577,16 @@ class HXFormModal(HXModal, FormHXRequest):
         if self.is_post_request and self.form.is_valid() is False:
             headers["HX-Retarget"] = self.modal_body_selector
         return headers
+
+    def get_response_html(self, **kwargs):
+        """
+        On POST if the form is invalid instead of returning the
+        POST_template the GET_template is returned (the form
+        now contains the validation errors.)
+
+        Overrides the get_response_html method from FormHXRequest
+        to use the body_template instead of the GET_template.
+        """
+        if self.is_post_request and self.form.is_valid() is False:
+            return self.render_templates(self.body_template, self.GET_block, **kwargs)
+        return super().get_response_html(**kwargs)
