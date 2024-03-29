@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.0 (2024-03-29)
+
+### Feature
+
+* Remove modal templates ([`c27e317`](https://github.com/yaakovLowenstein/hx-requests/commit/c27e3174fb7063829175c46942668017d262ecdf))
+* Add the ability to set the modal title and body classes ([`e8037ba`](https://github.com/yaakovLowenstein/hx-requests/commit/e8037ba2188faf37f2778ea22111ec259cd20504))
+
+### Fix
+
+* Use body_template instead of GET_template for HXModal ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* Change HX_REQUESTS_MODAL_BODY_SELECTOR to HX_REQUESTS_MODAL_BODY_ID ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
+
+### Breaking
+
+* The default modal templates have been removed. You will need to create your own modal templates if you want to use the modal functionality. See the docs for more information. ([`c27e317`](https://github.com/yaakovLowenstein/hx-requests/commit/c27e3174fb7063829175c46942668017d262ecdf))
+* The GET_template is no longer used for the HXModal. Instead the body_template is used. What was previously set as GET_template should now be set as body_template. ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* HX_REQUESTS_MODAL_BODY_SELECTOR is now HX_REQUESTS_MODAL_BODY_ID and the default is now #hx_modal_body. (set hx_modal_body as the html id on the modal body) ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
+
+### Documentation
+
+* Update docs for modals ([`25ce372`](https://github.com/yaakovLowenstein/hx-requests/commit/25ce372535bcff29643809182cca0e1ab42a9875))
+
 ## v0.26.2 (2024-03-26)
 
 ### Fix
