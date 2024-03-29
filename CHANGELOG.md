@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.2 (2024-03-29)
+
+### Fix
+
+* Fix bug with modal_template ([`6924cdc`](https://github.com/yaakovLowenstein/hx-requests/commit/6924cdc64f58de9e8dedc3708e8e174c6f4a1528))
+
 ## v0.27.1 (2024-03-29)
 
 ### Fix
