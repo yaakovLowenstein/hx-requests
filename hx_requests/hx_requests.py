@@ -539,8 +539,8 @@ class HXModal(BaseHXRequest):
         """
         context = super().get_context_data(**kwargs)
         context["title"] = kwargs.get("title", self.title)
-        context["modal_body_classes"] = kwargs.get(
-            "modal_body_classes", self.modal_body_classes
+        context["modal_size_classes"] = kwargs.get(
+            "modal_size_classes", self.modal_size_classes
         )
         context["body"] = self.body_template
         return context
