@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.1 (2024-03-29)
+
+### Fix
+
+* Fix bug with misnamed variable ([`154a119`](https://github.com/yaakovLowenstein/hx-requests/commit/154a119fe43e37c5a80c061bd3564c05655e3616))
+
 ## v0.27.0 (2024-03-29)
 
 ### Feature
