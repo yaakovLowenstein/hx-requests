@@ -522,6 +522,7 @@ class HXModal(BaseHXRequest):
             raise Exception(
                 "HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal"
             )
+        return modal_template
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
