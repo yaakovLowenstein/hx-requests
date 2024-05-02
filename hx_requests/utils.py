@@ -3,6 +3,7 @@ from urllib.parse import quote_plus, urlencode, urlparse
 
 from django.apps import apps
 from django.db import models
+from django.core.serializers.json import DjangoJSONEncoder
 
 MODEL_INSTANCE_PREFIX = "model_instance__"
 KWARG_PREFIX = "___"
@@ -12,7 +13,7 @@ __ = "__"
 def serialize(value):
     if isinstance(value, models.Model):
         return f"{MODEL_INSTANCE_PREFIX}{value._meta.app_label}{__}{value._meta.model_name}{__}{value.pk}"
-    return json.dumps(value)
+    return json.dumps(value, cls=DjangoJSONEncoder)
 
 
 def deserialize(value):
