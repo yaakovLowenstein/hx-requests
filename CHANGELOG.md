@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.28.0 (2024-05-02)
+
+### Feature
+
+* Json serialize date, datetime, decimal ([`8a4db23`](https://github.com/yaakovLowenstein/hx-requests/commit/8a4db236eee07e8594014ff16fd67f0358b40faf))
+
 ## v0.27.2 (2024-03-29)
 
 ### Fix
