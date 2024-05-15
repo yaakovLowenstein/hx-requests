@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.28.1 (2024-05-15)
+
+### Fix
+
+* Fix get_triggers method in HXFormModal class when form is invalid ([`df23c7a`](https://github.com/yaakovLowenstein/hx-requests/commit/df23c7a528e834277c86da29d396c5703ba3cdce))
+
 ## v0.28.0 (2024-05-02)
 
 ### Feature
