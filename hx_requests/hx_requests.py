@@ -569,9 +569,11 @@ class HXFormModal(HXModal, FormHXRequest):
     def modal_body_selector(self):
         return getattr(settings, "HX_REQUESTS_MODAL_BODY_ID", "#hx_modal_body")
 
-    def get_triggers(self, **kwargs):
+    def get_triggers(self, **kwargs) -> list:
+        triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
-            return ["modalFormValid"]
+            return triggers.append("modalFormValid")
+        return triggers
 
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
