@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.29.0 (2024-07-10)
+
+### Feature
+
+* Move view's get call to the hx_request ([`7e79422`](https://github.com/yaakovLowenstein/hx-requests/commit/7e794225694ff2b2b2cae479dd17f4a2417554fc))
+
+### Breaking
+
+* Everything should work as before, however it is breaking because the setup_hx_request function now has parameters for *args and **kwargs. These are the view's args and kwargs and are needed to setup the view from the hx_request ([`7e79422`](https://github.com/yaakovLowenstein/hx-requests/commit/7e794225694ff2b2b2cae479dd17f4a2417554fc))
+
 ## v0.28.1 (2024-05-15)
 
 ### Fix
