@@ -139,7 +139,12 @@ class BaseHXRequest:
         if request.GET.get("object"):
             return deserialize(request.GET.get("object"))
 
-    def setup_hx_request(self, request):
+    def setup_view(self, request, *args, **kwargs):
+        extra_context = self.view._setup_views_get(request, *args, **kwargs)
+        self.extra_context = extra_context
+
+    def setup_hx_request(self, request, *args, **kwargs):
+        self.setup_view(request, *args, **kwargs)
         self.request = request
         self.messages = HXMessages()
         self.renderer = Renderer()
