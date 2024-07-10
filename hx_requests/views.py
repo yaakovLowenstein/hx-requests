@@ -83,11 +83,9 @@ class HtmxViewMixin:
         return deserialize_kwargs(**kwargs)
 
     def _setup_hx_request(self, request, *args, **kwargs):
-        extra_context = self._setup_views_get(request, *args, **kwargs)
         hx_request = self.get_hx_request(request)
-        hx_request.extra_context = extra_context
         hx_request.view = self
-        hx_request.setup_hx_request(request)
+        hx_request.setup_hx_request(request, *args, **kwargs)
         return hx_request
 
     def _setup_views_get(self, request, *args, **kwargs):
