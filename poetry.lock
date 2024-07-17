@@ -402,17 +402,17 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-render-block"
-version = "0.9.2"
+version = "0.10"
 description = "Render a particular block from a template to a string."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "django-render-block-0.9.2.tar.gz", hash = "sha256:3dde0d2abde9381685659d2ed0761b8bddf7741c48eaadec9e5b50a6c7850247"},
-    {file = "django_render_block-0.9.2-py3-none-any.whl", hash = "sha256:1768832be78476c36627b3e3a8e7d9eb0e2bc46b84daf2c51958e2f674173c40"},
+    {file = "django_render_block-0.10-py3-none-any.whl", hash = "sha256:4deeec70a360aa90385443aeae1213ffb2acbfe2b5fb09d4afe47e75a29240c3"},
+    {file = "django_render_block-0.10.tar.gz", hash = "sha256:23fbc9cfed17aac47e936e65f0c29ae186765a41234cdc8dbf88d4a9377fdd76"},
 ]
 
 [package.dependencies]
-django = ">=2.2"
+django = ">=3.2"
 
 [package.extras]
 dev = ["Jinja2 (>=2.8)"]
@@ -1586,4 +1586,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "e99a8732e44bf0be90bad2b9cc70327e4fcc3f8a6111e8908246078eba3dc62b"
+content-hash = "f91526a09da3488b2b8182e6dbab7f81606d3a02a504a13cf681d5875b7e6bb7"
