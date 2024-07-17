@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.29.1 (2024-07-17)
+
+### Fix
+
+* Update django-render-block to 0.10 ([`4084ccc`](https://github.com/yaakovLowenstein/hx-requests/commit/4084ccc2e341c3f8e7351f132d76c78233cc1a4f))
+
 ## v0.29.0 (2024-07-10)
 
 ### Feature
