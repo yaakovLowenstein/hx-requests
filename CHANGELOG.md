@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.29.2 (2024-07-18)
+
+### Fix
+
+* Reset swap type when form invalid ([`0f51bf4`](https://github.com/yaakovLowenstein/hx-requests/commit/0f51bf42f7d5f6e9e4c8a5216b13a4c362185d8d))
+
 ## v0.29.1 (2024-07-17)
 
 ### Fix
