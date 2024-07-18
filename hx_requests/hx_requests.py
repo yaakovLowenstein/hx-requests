@@ -108,7 +108,8 @@ class BaseHXRequest:
         """
         context = {**self.extra_context}
         if hasattr(self.view, "get_context_data") and self.get_views_context:
-            context.update(self.view.get_context_data(**kwargs, **self.extra_context))
+            context.update(self.view.get_context_data(
+                **kwargs, **self.extra_context))
         if self.kwargs_as_context:
             context.update(kwargs)
         else:
@@ -196,7 +197,8 @@ class BaseHXRequest:
                 )
 
         else:
-            html = self.render_templates(self.GET_template, self.GET_block, **kwargs)
+            html = self.render_templates(
+                self.GET_template, self.GET_block, **kwargs)
 
         return html
 
@@ -584,6 +586,7 @@ class HXFormModal(HXModal, FormHXRequest):
         headers = super().get_headers(**kwargs)
         if self.is_post_request and self.form.is_valid() is False:
             headers["HX-Retarget"] = self.modal_body_selector
+            headers["HX-Reswap"] = "innerHTML"
         return headers
 
     def get_response_html(self, **kwargs):
