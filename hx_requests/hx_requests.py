@@ -108,8 +108,7 @@ class BaseHXRequest:
         """
         context = {**self.extra_context}
         if hasattr(self.view, "get_context_data") and self.get_views_context:
-            context.update(self.view.get_context_data(
-                **kwargs, **self.extra_context))
+            context.update(self.view.get_context_data(**kwargs, **self.extra_context))
         if self.kwargs_as_context:
             context.update(kwargs)
         else:
@@ -197,8 +196,7 @@ class BaseHXRequest:
                 )
 
         else:
-            html = self.render_templates(
-                self.GET_template, self.GET_block, **kwargs)
+            html = self.render_templates(self.GET_template, self.GET_block, **kwargs)
 
         return html
 
@@ -579,7 +577,7 @@ class HXFormModal(HXModal, FormHXRequest):
     def get_triggers(self, **kwargs) -> list:
         triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
-            return triggers.append("modalFormValid")
+            triggers.append("modalFormValid")
         return triggers
 
     def get_headers(self, **kwargs) -> Dict:
