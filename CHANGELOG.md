@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.29.3 (2024-07-25)
+
+### Fix
+
+* Fix bug with triggers ([`44e9edf`](https://github.com/yaakovLowenstein/hx-requests/commit/44e9edfa63473efb3fa1a833e9d965985c8eb8a5))
+
 ## v0.29.2 (2024-07-18)
 
 ### Fix
