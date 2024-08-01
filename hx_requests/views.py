@@ -87,25 +87,3 @@ class HtmxViewMixin:
         hx_request.view = self
         hx_request.setup_hx_request(request, *args, **kwargs)
         return hx_request
-
-    def _setup_views_get(self, request, *args, **kwargs):
-        custom_setup_views = getattr(settings, "HX_REQUESTS_CUSTOM_VIEWS_SETUP", {})
-        extra_context = {}
-        setup_views = {
-            "django.views.generic.list.BaseListView": "hx_requests.django_views.list_view_get",
-            "django.views.generic.edit.BaseUpdateView": "hx_requests.django_views.update_view_get",
-            "django.views.generic.edit.BaseCreateView": "hx_requests.django_views.create_view_get",
-            "django.views.generic.detail.BaseDetailView": "hx_requests.django_views.detail_view_get",
-            "django.views.generic.edit.BaseDeleteView": "hx_requests.django_views.delete_view_get",
-            **custom_setup_views,
-        }
-        for parent_class in self.__class__.mro():
-            class_identifier = f"{parent_class.__module__}.{parent_class.__name__}"
-            if class_identifier in setup_views:
-                module_string = setup_views[class_identifier].rsplit(".", 1)[0]
-                module = importlib.import_module(module_string)
-                func = getattr(module, setup_views[class_identifier].rsplit(".", 1)[1])
-                context = func(self, request, *args, **kwargs)
-                if context:
-                    extra_context.update(context)
-        return extra_context
