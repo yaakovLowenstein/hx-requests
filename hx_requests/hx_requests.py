@@ -105,9 +105,9 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
-        context = {**self.extra_context}
-        if hasattr(self.view, "get_context_data") and self.get_views_context:
-            context.update(self.view.get_context_data(**kwargs, **self.extra_context))
+        context = {}
+        if hasattr(self.view_response, "context_data") and self.get_views_context:
+            context.update(self.view_response.context_data)
         if self.kwargs_as_context:
             context.update(kwargs)
         else:
@@ -147,12 +147,9 @@ class BaseHXRequest:
         if request.GET.get("object"):
             return deserialize(request.GET.get("object"))
 
-    def setup_view(self, request, *args, **kwargs):
-        extra_context = self.view._setup_views_get(request, *args, **kwargs)
-        self.extra_context = extra_context
-
     def setup_hx_request(self, request, *args, **kwargs):
-        self.setup_view(request, *args, **kwargs)
+        if self.get_views_context:
+            self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
         self.messages = HXMessages()
         self.renderer = Renderer()
