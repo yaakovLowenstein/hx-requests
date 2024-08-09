@@ -58,26 +58,31 @@ class HtmxViewMixin:
     def _get_hx_request_classes(cls):
         from .hx_requests import BaseHXRequest
 
-        # If the hx_requests are already set don't need to do the whole collection.
+        # If the hx_requests are already set, don't need to do the whole collection.
         if getattr(cls, "hx_requests", None):
             return
-        modules = []
+
+        processed_classes = set()  # Keep track of processed classes
         hx_request_classes = {}
+
         for app in apps.get_app_configs():
             try:
-                modules.append(importlib.import_module(f"{app.label}.hx_requests"))
+                module = importlib.import_module(f"{app.label}.hx_requests")
+                clsmembers = inspect.getmembers(module, inspect.isclass)
+                for _, obj in clsmembers:
+                    # Check if the class has already been processed
+                    if obj in processed_classes:
+                        continue
+                    processed_classes.add(obj)
+
+                    if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
+                        if obj.name in hx_request_classes:
+                            raise Exception(
+                                f"Duplicate HXRequest name found: {obj.name}. Please ensure all HXRequests have unique names."
+                            )
+                        hx_request_classes[obj.name] = obj
             except ModuleNotFoundError:
                 pass
-        for module in modules:
-            clsmembers = inspect.getmembers(module, inspect.isclass)
-            for _, obj in clsmembers:
-                if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
-                    if obj.name in hx_request_classes:
-                        raise Exception(
-                            f"Duplicate HXRequest name found: {obj.name}. Please ensure all HXRequests have unique names."
-                        )
-                    hx_request_classes[obj.name] = obj
-        cls.hx_requests = hx_request_classes
 
     def get_hx_extra_kwargs(self, request):
         kwargs = {}
