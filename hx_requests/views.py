@@ -72,6 +72,10 @@ class HtmxViewMixin:
             clsmembers = inspect.getmembers(module, inspect.isclass)
             for _, obj in clsmembers:
                 if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
+                    if obj.name in hx_request_classes:
+                        raise Exception(
+                            f"Duplicate HXRequest name found: {obj.name}. Please ensure all HXRequests have unique names."
+                        )
                     hx_request_classes[obj.name] = obj
         cls.hx_requests = hx_request_classes
 
