@@ -1,7 +1,6 @@
 from functools import partial
 from typing import Dict, Union
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.forms import Form
@@ -118,8 +117,17 @@ class BaseHXRequest:
         context["hx_request"] = self
         if self.is_post_request:
             context.update(self.get_post_context_data(**kwargs))
+        else:
+            context.update(self.get_context_on_GET(**kwargs))
         return context
 
+    def get_context_on_GET(self, **kwargs) -> Dict:
+        """
+        Adds extra context to the context data only on GET.
+        """
+        return {}
+
+    # TODO: Rename this for consistency
     def get_post_context_data(self, **kwargs):
         """
         Adds extra context to the context data only on POST.
