@@ -457,9 +457,9 @@ class DeleteHXRequest(BaseHXRequest):
         Sets success message and calls handle_delete
         """
         messages.success(request, self.get_success_message(**kwargs))
-        return self.handle_delete(**kwargs)
+        return self.delete(**kwargs)
 
-    def handle_delete(self, **kwargs) -> str:
+    def delete(self, **kwargs) -> str:
         """
         Called on POST. Deletes the hx_object.
         Override to add custom behavior.
