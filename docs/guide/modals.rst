@@ -38,7 +38,7 @@ To customize a modal, there are a few steps that need to be followed.
 #. Set the id of you modal to :code:`hx_modal_body` or set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body) in settings.
 #. Use an include for the body and add the title and modal_size_classes to the template. See the example below.
 #. Set a way for the modal to open when the modal template is rendered. See the modal example below.
-#. Set a way for the modal to close using the :code:`modalFormValid` event. See the modal example below
+#. Set a way for the modal to close using the :code:`closeHxModal` event. See the modal example below
 #. Set a div with the id :code:`hx_modal_container` in the body of the page, this is where the modal will be rendered (the :code:`hx-target` of the request)
 
 .. tip::
@@ -52,7 +52,7 @@ Custom Modal Example
 
     <div class="modal fade"
         {% comment %} Using Alpine.js for close, but vanilla JS can be used as well to do this {% endcomment %}
-        x-on:modal-form-valid.camel="$('#hx_modal').modal('hide')"
+        x-on:close-hx-modal.camel="$('#hx_modal').modal('hide')"
         id="hx_modal"
         tabindex="-1"
         role="dialog"

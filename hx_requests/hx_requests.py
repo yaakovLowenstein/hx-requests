@@ -561,7 +561,7 @@ class HXFormModal(HXModal, FormHXRequest):
     def get_triggers(self, **kwargs) -> list:
         triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
-            triggers.append("modalFormValid")
+            triggers.append("closeHxModal")
         return triggers
 
     def get_headers(self, **kwargs) -> Dict:
