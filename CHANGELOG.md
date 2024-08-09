@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.30.0 (2024-08-09)
+
+### Feature
+
+* Add get_context_on_GET ([`d31f4e6`](https://github.com/yaakovLowenstein/hx-requests/commit/d31f4e67bfe0a58e57394d5ef8af01a37f8f631e))
+
 ## v0.29.3 (2024-07-25)
 
 ### Fix
