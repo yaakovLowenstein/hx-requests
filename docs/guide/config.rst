@@ -17,29 +17,11 @@ Messages Configuration
 ----------------------
 
 | :code:`HX_REQUESTS_USE_HX_MESSAGES` : *Default=False*
-| Set this to True to use :code:`hx-requests` messaging framework. If this is False :code:`hx-requests` messages will not be displayed even if you set messages.
-
-| :code:`HX_REQUESTS_USE_DJANGO_MESSAGE_TAGS` : *Default=False*
-| Set this to True to use Django's :code:`MESSAGE_TAGS` setting for tags.
-
-| :code:`HX_REQUESTS_HX_MESSAGE_TAGS` : *No Default*
-| If you are not using Django's :code:`MESSAGE_TAGS` set this to a dict of tags.
-|
-| *Example*
-
-.. code-block:: python
-
-    MESSAGE_TAGS = {
-    messages.DEBUG: "alert-info",
-    messages.INFO: "alert-info",
-    messages.SUCCESS: "alert-success",
-    messages.WARNING: "alert-warning",
-    messages.ERROR: "alert-danger",
-    }
+| Set this to True to use messages in :code:`hx-requests`. If this is False :code:`hx-requests` messages will not be displayed even if you set messages.
 
 | :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE` : *No Default*
 |
-| Template to be used for displaying the messages. The context in this template has access to the :code:`messages`.
+| Template to be used for displaying the messages. The context in this template has access to the :code:`messages`. Same as Django's `Messages <https://docs.djangoproject.com/en/5.0/ref/contrib/messages/#displaying-messages>`_.
 
 Modal Configuration
 -------------------

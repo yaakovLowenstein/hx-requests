@@ -3,6 +3,7 @@ from typing import Dict, Union
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
@@ -11,7 +12,6 @@ from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from render_block import render_block_to_string
 
-from hx_requests.hx_messages import HXMessages
 from hx_requests.utils import deserialize
 
 
@@ -70,7 +70,6 @@ class BaseHXRequest:
 
     name: str = ""
     hx_object_name: str = "hx_object"
-    messages: HXMessages
     GET_template: Union[str, list] = ""
     POST_template: Union[str, list] = ""
     GET_block: Union[str, list] = ""
@@ -151,7 +150,6 @@ class BaseHXRequest:
         if self.get_views_context:
             self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
-        self.messages = HXMessages()
         self.renderer = Renderer()
         self.GET_template = self.GET_template or self.view.template_name
         self.POST_template = self.POST_template or self.view.template_name
@@ -256,10 +254,12 @@ class BaseHXRequest:
             return html
 
     def get_messages_html(self, **kwargs) -> str:
-        if self.messages():
+        messages = get_messages(self.request)
+        if messages:
+
             return render_to_string(
                 getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE"),
-                {"messages": self.messages},
+                {"messages": messages},
                 self.request,
             )
         return ""
@@ -270,34 +270,13 @@ class BaseHXRequest:
         """
         html = self.get_response_html(**kwargs)
         if self.use_messages:
-            if self.refresh_page or self.redirect:
-                self.set_synchronous_messages(**kwargs)
-            else:
+            if not (self.refresh_page or self.redirect):
                 html += self.get_messages_html(**kwargs)
 
         return HttpResponse(
             html,
             headers=self.get_headers(**kwargs),
         )
-
-    def set_synchronous_messages(self, **kwargs):
-        """
-        Convert the hx_message to a Django synchronous message if the page is going to
-        be refreshd (or redirected). This is done because the asynchrounous ones will
-        not show up if the page is reloaded.
-        """
-        if self.messages():
-            for message in self.messages():
-                tag = next(
-                    (
-                        key
-                        for key, value in self.messages.tags.items()
-                        if value == message.tags
-                    )
-                )
-                messages.add_message(
-                    self.request, tag, message.body, fail_silently=True
-                )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
@@ -368,11 +347,11 @@ class FormHXRequest(BaseHXRequest):
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
         if self.form.is_valid():
-            self.messages.success(self.get_success_message(**kwargs))
+            messages.success(request, self.get_success_message(**kwargs))
             return self.form_valid(**kwargs)
 
         else:
-            self.messages.error(self.get_error_message(**kwargs))
+            messages.error(request, self.get_error_message(**kwargs))
             return self.form_invalid(**kwargs)
 
     def form_valid(self, **kwargs) -> str:
@@ -477,7 +456,7 @@ class DeleteHXRequest(BaseHXRequest):
         """
         Sets success message and calls handle_delete
         """
-        self.messages.success(self.get_success_message(**kwargs))
+        messages.success(request, self.get_success_message(**kwargs))
         return self.handle_delete(**kwargs)
 
     def handle_delete(self, **kwargs) -> str:
