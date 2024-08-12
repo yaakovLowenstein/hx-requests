@@ -116,7 +116,7 @@ class BaseHXRequest:
         context["request"] = self.request
         context["hx_request"] = self
         if self.is_post_request:
-            context.update(self.get_post_context_data(**kwargs))
+            context.update(self.get_context_on_POST(**kwargs))
         else:
             context.update(self.get_context_on_GET(**kwargs))
         # Turn into dict for template rendering which expects a dict
@@ -128,8 +128,7 @@ class BaseHXRequest:
         """
         return {}
 
-    # TODO: Rename this for consistency
-    def get_post_context_data(self, **kwargs):
+    def get_context_on_POST(self, **kwargs):
         """
         Adds extra context to the context data only on POST.
         """
