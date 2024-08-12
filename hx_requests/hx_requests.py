@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
+from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
@@ -104,7 +105,7 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
-        context = {}
+        context = RequestContext(self.request)
         if hasattr(self.view_response, "context_data") and self.get_views_context:
             context.update(self.view_response.context_data)
         if self.kwargs_as_context:
@@ -118,7 +119,8 @@ class BaseHXRequest:
             context.update(self.get_post_context_data(**kwargs))
         else:
             context.update(self.get_context_on_GET(**kwargs))
-        return context
+        # Turn into dict for template rendering which expects a dict
+        return context.flatten()
 
     def get_context_on_GET(self, **kwargs) -> Dict:
         """
