@@ -34,3 +34,20 @@ def hx_post(
     if token:
         hx_attrs += f' hx-headers={{"X-CSRFTOKEN":"{token}"}}'
     return hx_attrs
+
+
+@register.simple_tag(takes_context=True)
+def hx_url(
+    context: Dict, hx_request_name: str, object=None, use_full_path=False, **kwargs
+) -> str:
+    """
+    Returns the URL for an HX request. Can be used when you need to manually set the URL in a template.
+    Useful if the hx-get or hx-post tags are not flexible enough for your use case.
+    For example:
+
+    ```
+    hx-get="{% hx_url 'my-hx-request' object %}"
+
+    ```
+    """
+    return get_url(context, hx_request_name, object, use_full_path, **kwargs)
