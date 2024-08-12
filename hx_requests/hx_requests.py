@@ -456,7 +456,7 @@ class DeleteHXRequest(BaseHXRequest):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        Sets success message and calls handle_delete
+        Sets success message and calls delete
         """
         messages.success(request, self.get_success_message(**kwargs))
         return self.delete(**kwargs)
