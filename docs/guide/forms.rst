@@ -79,11 +79,11 @@ HXRequest
         def form_valid(self,**kwargs):
             # This is the default form_valid
             self.form.save()
-            return self.get_response(**kwargs)
+            return self._get_response(**kwargs)
 
         def form_invalid(self, **kwargs) -> str:
             # This is the default form_invalid
-            return self.get_response(**kwargs)
+            return self._get_response(**kwargs)
 
 Notes:
     - :code:`form_valid` by default calls :code:`form.save()` and returns the :code:`POST_template`
