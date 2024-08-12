@@ -147,7 +147,7 @@ class BaseHXRequest:
         if request.GET.get("object"):
             return deserialize(request.GET.get("object"))
 
-    def setup_hx_request(self, request, *args, **kwargs):
+    def _setup_hx_request(self, request, *args, **kwargs):
         if self.get_views_context:
             self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
@@ -195,16 +195,16 @@ class BaseHXRequest:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
             else:
-                html = self.render_templates(
+                html = self._render_templates(
                     self.POST_template, self.POST_block, **kwargs
                 )
 
         else:
-            html = self.render_templates(self.GET_template, self.GET_block, **kwargs)
+            html = self._render_templates(self.GET_template, self.GET_block, **kwargs)
 
         return html
 
-    def render_templates(self, templates, blocks, **kwargs) -> str:
+    def _render_templates(self, templates, blocks, **kwargs) -> str:
         """
         Renders the templates and blocks into HTML.
         If templates is a string and blocks is empty then it renders the template.
@@ -254,7 +254,7 @@ class BaseHXRequest:
                 html += render_with_context(templates, block)
             return html
 
-    def get_messages_html(self, **kwargs) -> str:
+    def _get_messages_html(self, **kwargs) -> str:
         messages = get_messages(self.request)
         if messages:
 
@@ -265,14 +265,14 @@ class BaseHXRequest:
             )
         return ""
 
-    def get_response(self, **kwargs):
+    def _get_response(self, **kwargs):
         """
         Gets the response.
         """
         html = self.get_response_html(**kwargs)
         if self.use_messages:
             if not (self.refresh_page or self.redirect):
-                html += self.get_messages_html(**kwargs)
+                html += self._get_messages_html(**kwargs)
 
         return HttpResponse(
             html,
@@ -283,13 +283,13 @@ class BaseHXRequest:
         """
         Method that all GET requests hit.
         """
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Method that all POST requests hit.
         """
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
 
 class FormHXRequest(BaseHXRequest):
@@ -338,7 +338,7 @@ class FormHXRequest(BaseHXRequest):
         Instantiates the form.
         """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
@@ -357,16 +357,16 @@ class FormHXRequest(BaseHXRequest):
 
     def form_valid(self, **kwargs) -> str:
         """
-        Saves the form and returns get_response. Override to add custom behavior.
+        Saves the form and returns self._get_response. Override to add custom behavior.
         """
         self.form.save()
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def form_invalid(self, **kwargs) -> str:
         """
-        Returns get_response. Override to add custom behavior.
+        Returns self._get_response. Override to add custom behavior.
         """
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
         """
@@ -375,7 +375,7 @@ class FormHXRequest(BaseHXRequest):
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return self.render_templates(self.GET_template, self.GET_block, **kwargs)
+            return self._render_templates(self.GET_template, self.GET_block, **kwargs)
         return super().get_response_html(**kwargs)
 
     def get_form_kwargs(self, **kwargs):
@@ -466,7 +466,7 @@ class DeleteHXRequest(BaseHXRequest):
         Override to add custom behavior.
         """
         self.hx_object.delete()
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
         """
@@ -582,5 +582,5 @@ class HXFormModal(HXModal, FormHXRequest):
         to use the body_template instead of the GET_template.
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return self.render_templates(self.body_template, self.GET_block, **kwargs)
+            return self._render_templates(self.body_template, self.GET_block, **kwargs)
         return super().get_response_html(**kwargs)

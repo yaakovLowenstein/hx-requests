@@ -57,5 +57,5 @@ class HtmxViewMixin:
     def _setup_hx_request(self, request, *args, **kwargs):
         hx_request = self.get_hx_request(request)
         hx_request.view = self
-        hx_request.setup_hx_request(request, *args, **kwargs)
+        hx_request._setup_hx_request(request, *args, **kwargs)
         return hx_request

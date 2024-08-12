@@ -26,7 +26,7 @@ Notes:
             # This is the default delete
 
             self.hx_object.delete()
-            return self.get_response(**kwargs)
+            return self._get_response(**kwargs)
 
 Notes:
     - Very simple way to delete asyncronously.
