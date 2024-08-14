@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.31.0 (2024-08-14)
+
+### Feature
+
+* Add hx_url template tag ([`3c47bbb`](https://github.com/yaakovLowenstein/hx-requests/commit/3c47bbb6e0be54ce97c3291eda656d7031e1e523))
+* Use RequestContext for hx_request context ([`b4e19fc`](https://github.com/yaakovLowenstein/hx-requests/commit/b4e19fccfcd1a29153df59db30a52d9cf78a3e1e))
+* Change the way HXRequests are registered ([`ea2ee74`](https://github.com/yaakovLowenstein/hx-requests/commit/ea2ee742575534fce71e033e3e489b6608bf95b4))
+
+### Fix
+
+* Fix bug in HtmxViewMixin._get_hx_request_classes ([`e797a2e`](https://github.com/yaakovLowenstein/hx-requests/commit/e797a2ea5c47a144fdc547b3971ef86d64ad276a))
+* Raise an exception if duplicate HXRequest names are found ([`7c9fa47`](https://github.com/yaakovLowenstein/hx-requests/commit/7c9fa47a2cdf51fada1e61adabe5f44de5c5caaa))
+
+### Documentation
+
+* Update docs to reflect changes in messages setting ([`5865870`](https://github.com/yaakovLowenstein/hx-requests/commit/5865870ecee3d4dd9f72c7d39adf5a28c02ec841))
+* Update docs for delete HX request ([`6c6b94b`](https://github.com/yaakovLowenstein/hx-requests/commit/6c6b94bdaf0d769fc168828d3dc3b3d2463becb8))
+
 ## v0.30.0 (2024-08-09)
 
 ### Feature
