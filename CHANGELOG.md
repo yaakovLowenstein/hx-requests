@@ -10,6 +10,10 @@
 
 ## v0.31.0 (2024-08-14)
 
+This version is a major update with lots of breaking changes. However, still only a minor version bump
+because the package is still under development. Though, this release gets us closer to a mature package
+and a 1.0.0 release
+
 ### Feature
 
 * Add hx_url template tag ([`3c47bbb`](https://github.com/yaakovLowenstein/hx-requests/commit/3c47bbb6e0be54ce97c3291eda656d7031e1e523))
