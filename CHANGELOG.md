@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.31.1 (2024-08-14)
+
+### Fix
+
+* Update changelog for breaking changes ([`8df969f`](https://github.com/yaakovLowenstein/hx-requests/commit/8df969f124f9cce3146df045e51a671ade8423c5))
+
 ## v0.31.0 (2024-08-14)
 
 ### Feature
