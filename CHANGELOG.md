@@ -37,7 +37,7 @@ and a 1.0.0 release
     the get method of the view is called and the context is
     set up there. Technically if you did something different in the
     custom views get than the actual vies get then it would break
-    that as well.
+    that as well. ([`c001541`](https://github.com/yaakovLowenstein/hx-requests/commit/c0015414890b067c9de7a38c75835d67348d6d77))
 * The hx_messages module has been removed.
     Messages are now set using Django's messaging framework.
     The HXMessages class has been removed and the messages attribute
@@ -47,21 +47,21 @@ and a 1.0.0 release
     `self.messages.success()` has been replaced with
     `messages.success(request, message)` and the same for
     `self.messages.error()`, `self.messages.warning()`,
-    `self.messages.info()` and `self.messages.debug()`.
+    `self.messages.info()` and `self.messages.debug()`. ([`35caf9a`](https://github.com/yaakovLowenstein/hx-requests/commit/35caf9a58ae4a5eee78c7de8200bff177bc13e29))
 * This changes the method name from handle_delete
     to delete in DeleteHXRequest. If you have overridden handle_delete
-    in your DeleteHXRequest, you will need to change it to delete.
+    in your DeleteHXRequest, you will need to change it to delete. ([`4022933`](https://github.com/yaakovLowenstein/hx-requests/commit/4022933d26db5d649eba12efa1346fd296ea29f0))
 * This will break any custom modals that use
     the modalFormValid event. They will need to be updated to use
     closeHxModal instead. (and if using Alpin.js modal-form-valid
-    needs to be changed to close-hx-modal)
+    needs to be changed to close-hx-modal) ([`786c6a3`](https://github.com/yaakovLowenstein/hx-requests/commit/786c6a334d5227bc7d158f58bdbe609422080e37))
 * The render_hx template tag has been removed.
     It has been replaced by the hx_get and hx_post template tags.
     The hx_get and hx_post template tags are more explicit
     and easier to understand. The render_hx template tag was
-    confusing and not as clear as the hx_get and hx_post template tags.
+    confusing and not as clear as the hx_get and hx_post template tags. ([`0018ca5`](https://github.com/yaakovLowenstein/hx-requests/commit/0018ca563170d9cd9100b80ce9c26c139d856afe))
 * This renames the method `get_post_context_data`
-    to `get_context_on_POST` for consistency with the other methods.
+    to `get_context_on_POST` for consistency with the other methods. ([`971ec74`](https://github.com/yaakovLowenstein/hx-requests/commit/971ec74d0e07e2c94b83fcc425ae9ca30395dfb8))
 * This commit adds underscores to private methods
     in the hx_requests module. This is a breaking change and will
     require you to update your code to use the new method names.
@@ -69,13 +69,19 @@ and a 1.0.0 release
     setup_hx_request -> _setup_hx_request
     render_templates -> _render_templates
     get_messages_html -> _get_messages_html
-    get_response -> _get_response
-* Messages now need to be set in the
+    get_response -> _get_response ([`7af28b3`](https://github.com/yaakovLowenstein/hx-requests/commit/7af28b3f2316321b247babf75679e9e6dc52ff42))
+*  Messages now need to be set in the
     form_valid and form_invalid methods if you override them as opposed
     to previously where the messages were set in the POST methods so they
     were set even when overriding form_valid and form_invalid. The
     DeleteHXRequest class has also been updated to reflect this change.
-    where messages are now set in the delete method and not the POST method.
+    where messages are now set in the delete method and not the POST method. ([`bcf9df2`](https://github.com/yaakovLowenstein/hx-requests/commit/bcf9df2758830d055d4b796558ac62ede4b71057))
+
+## What's Changed
+* Major Changes by @yaakovLowenstein in https://github.com/yaakovLowenstein/hx-requests/pull/102
+
+
+**Full Changelog**: https://github.com/yaakovLowenstein/hx-requests/compare/v0.30.0...v0.31.0
 
 ## v0.30.0 (2024-08-09)
 
