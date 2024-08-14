@@ -79,10 +79,12 @@ HXRequest
         def form_valid(self,**kwargs):
             # This is the default form_valid
             self.form.save()
+            messages.success(self.request, self.get_success_message(**kwargs))
             return self._get_response(**kwargs)
 
         def form_invalid(self, **kwargs) -> str:
             # This is the default form_invalid
+            messages.error(self.request, self.get_error_message(**kwargs))
             return self._get_response(**kwargs)
 
 Notes:
