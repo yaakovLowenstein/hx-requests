@@ -26,6 +26,7 @@ Notes:
             # This is the default delete
 
             self.hx_object.delete()
+            messages.success(self.request, self.get_success_message(**kwargs))
             return self._get_response(**kwargs)
 
 Notes:
