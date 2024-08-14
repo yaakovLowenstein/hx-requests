@@ -348,11 +348,8 @@ class FormHXRequest(BaseHXRequest):
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
         if self.form.is_valid():
-            messages.success(request, self.get_success_message(**kwargs))
             return self.form_valid(**kwargs)
-
         else:
-            messages.error(request, self.get_error_message(**kwargs))
             return self.form_invalid(**kwargs)
 
     def form_valid(self, **kwargs) -> str:
@@ -360,18 +357,20 @@ class FormHXRequest(BaseHXRequest):
         Saves the form and returns self._get_response. Override to add custom behavior.
         """
         self.form.save()
+        messages.success(self.request, self.get_success_message(**kwargs))
         return self._get_response(**kwargs)
 
     def form_invalid(self, **kwargs) -> str:
         """
         Returns self._get_response. Override to add custom behavior.
         """
+        messages.error(self.request, self.get_error_message(**kwargs))
         return self._get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
         """
         On POST if the form is invalid instead of returning the
-        POST_tempalte the GET_template is returned (the form
+        POST_template the GET_template is returned (the form
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
@@ -455,17 +454,17 @@ class DeleteHXRequest(BaseHXRequest):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        Sets success message and calls delete
+        Calls delete on the hx_object.
         """
-        messages.success(request, self.get_success_message(**kwargs))
         return self.delete(**kwargs)
 
     def delete(self, **kwargs) -> str:
         """
-        Called on POST. Deletes the hx_object.
+        Deletes the hx_object and sets a success message.
         Override to add custom behavior.
         """
         self.hx_object.delete()
+        messages.success(self.request, self.get_success_message(**kwargs))
         return self._get_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
