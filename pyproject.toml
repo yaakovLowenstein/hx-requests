@@ -35,6 +35,7 @@ black = "^23.1.0"
 djlint = "^1.19.16"
 isort = "^5.12.0"
 pre-commit = "^3.2.1"
+pygments = "^2.18.0"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^6.1.3"
