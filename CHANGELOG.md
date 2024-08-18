@@ -98,7 +98,7 @@ and a 1.0.0 release
 ### Fix
 
 * Fix bug in HtmxViewMixin._get_hx_request_classes ([`e797a2e`](https://github.com/yaakovLowenstein/hx-requests/commit/e797a2ea5c47a144fdc547b3971ef86d64ad276a))
-* Raise an exception if duplicate HXRequest names are found ([`7c9fa47`](https://github.com/yaakovLowenstein/hx-requests/commit/7c9fa47a2cdf51fada1e61adabe5f44de5c5caaa))
+* Raise an exception if duplicate HxRequest names are found ([`7c9fa47`](https://github.com/yaakovLowenstein/hx-requests/commit/7c9fa47a2cdf51fada1e61adabe5f44de5c5caaa))
 
 ### Documentation
 
@@ -111,7 +111,7 @@ and a 1.0.0 release
 * The hx_messages module has been removed.
     Messages are now set using Django's messaging framework.
     The HXMessages class has been removed and the messages attribute
-    has been removed from the BaseHXRequest class. Messages are
+    has been removed from the BaseHxRequest class. Messages are
     now set using Django's messages module.
 
     `self.messages.success()` has been replaced with`messages.success(request, message)`
@@ -187,7 +187,7 @@ and a 1.0.0 release
 
 ### Fix
 
-* Fix get_triggers method in HXFormModal class when form is invalid ([`df23c7a`](https://github.com/yaakovLowenstein/hx-requests/commit/df23c7a528e834277c86da29d396c5703ba3cdce))
+* Fix get_triggers method in FormModalHxRequest class when form is invalid ([`df23c7a`](https://github.com/yaakovLowenstein/hx-requests/commit/df23c7a528e834277c86da29d396c5703ba3cdce))
 
 ## v0.28.0 (2024-05-02)
 
@@ -216,13 +216,13 @@ and a 1.0.0 release
 
 ### Fix
 
-* Use body_template instead of GET_template for HXModal ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* Use body_template instead of GET_template for ModalHxRequest ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
 * Change HX_REQUESTS_MODAL_BODY_SELECTOR to HX_REQUESTS_MODAL_BODY_ID ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
 
 ### Breaking
 
 * The default modal templates have been removed. You will need to create your own modal templates if you want to use the modal functionality. See the docs for more information. ([`c27e317`](https://github.com/yaakovLowenstein/hx-requests/commit/c27e3174fb7063829175c46942668017d262ecdf))
-* The GET_template is no longer used for the HXModal. Instead the body_template is used. What was previously set as GET_template should now be set as body_template. ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* The GET_template is no longer used for the ModalHxRequest. Instead the body_template is used. What was previously set as GET_template should now be set as body_template. ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
 * HX_REQUESTS_MODAL_BODY_SELECTOR is now HX_REQUESTS_MODAL_BODY_ID and the default is now #hx_modal_body. (set hx_modal_body as the html id on the modal body) ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
 
 ### Documentation
@@ -245,7 +245,7 @@ and a 1.0.0 release
 
 ### Feature
 
-* Add kwargs_as_context option to BaseHXRequest ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
+* Add kwargs_as_context option to BaseHxRequest ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
 
 ### Breaking
 
@@ -509,9 +509,9 @@ and a 1.0.0 release
 * Trying to get readthedocs to recognize docstrings ([`680fc98`](https://github.com/yaakovLowenstein/hx-requests/commit/680fc9887d35bb1c2d02274379d188a198c01559))
 * Add requirements and yml for readthedocs ([`f50a7b3`](https://github.com/yaakovLowenstein/hx-requests/commit/f50a7b3004f38c0b059328850c2669768bc92d3b))
 * Fix typo in quickstart ([`8d03c06`](https://github.com/yaakovLowenstein/hx-requests/commit/8d03c06c44f6ecbe54f462be7623961b2c02f32c))
-* Add reference documentation for DeleteHXRequest ([`58fe070`](https://github.com/yaakovLowenstein/hx-requests/commit/58fe070c30b2ee2c7d764ce64df3a8cdb72cf787))
-* Add in docstrings for FormHXRequest ([`558bac8`](https://github.com/yaakovLowenstein/hx-requests/commit/558bac8230f2ecf8d34b54544339e2664aa94352))
-* Add reference docs for FormHXRequest ([`263c533`](https://github.com/yaakovLowenstein/hx-requests/commit/263c533c1d2b166957a77c52c91c1cbf30f3a0c7))
+* Add reference documentation for DeleteHxRequest ([`58fe070`](https://github.com/yaakovLowenstein/hx-requests/commit/58fe070c30b2ee2c7d764ce64df3a8cdb72cf787))
+* Add in docstrings for FormHxRequest ([`558bac8`](https://github.com/yaakovLowenstein/hx-requests/commit/558bac8230f2ecf8d34b54544339e2664aa94352))
+* Add reference docs for FormHxRequest ([`263c533`](https://github.com/yaakovLowenstein/hx-requests/commit/263c533c1d2b166957a77c52c91c1cbf30f3a0c7))
 
 ## v0.10.2 (2023-05-02)
 ### Fix

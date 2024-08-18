@@ -13,7 +13,7 @@ class HtmxViewMixin:
     """
     Mixin to be added to views that are using HXRequests.
     Hijacks the get and post to route them to the proper
-    HXRequest.
+    HxRequest.
     """
 
     hx_requests: Dict = []
@@ -24,7 +24,7 @@ class HtmxViewMixin:
         # request method isn't on the approved list.
         if request.method.lower() in self.http_method_names:
             handler_class = self
-            # If it's an HTMX request, use the HXRequest class to handle the request
+            # If it's an HTMX request, use the HxRequest class to handle the request
             # otherwise, use the view class to handle the request.
             if is_htmx_request(request):
                 kwargs.update(self.get_hx_extra_kwargs(request))
@@ -39,7 +39,7 @@ class HtmxViewMixin:
         hx_request_class = HXRequestRegistry.get_hx_request(hx_request_name)
         if not hx_request_class:
             raise Http404(
-                f"No HXRequest found with the name {hx_request_name}. Are you sure it's spelled correctly?"
+                f"No HxRequest found with the name {hx_request_name}. Are you sure it's spelled correctly?"
             )
         return hx_request_class()
 

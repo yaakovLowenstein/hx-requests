@@ -34,7 +34,7 @@ Notes:
 Setting a Message
 -----------------
 
-You can set a message anywhere within an :code:`HXRequest` the same way you would set a message in Django.
+You can set a message anywhere within an :code:`HxRequest` the same way you would set a message in Django.
 
 .. code-block:: python
 
@@ -50,11 +50,11 @@ Disabling Messages
 ------------------
 
 If :code:`HX_REQUESTS_USE_HX_MESSAGES`  is set to True, there are some default messages set in some of the :code:`HXRequests`.
-To disable messages on any :code:`HXRequest` set :code:`show_messages` to False
+To disable messages on any :code:`HxRequest` set :code:`show_messages` to False
 
 .. code-block:: python
 
-    class MyHXRequest(BaseHXRequest):
+    class MyHXRequest(BaseHxRequest):
         ...
         show_messages = False
 

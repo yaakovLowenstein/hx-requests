@@ -23,14 +23,14 @@ class Renderer:
         return render_to_string(template_name, context, request)
 
 
-class BaseHXRequest:
+class BaseHxRequest:
     """
     Base class for HXRequests. Class to be used for basic GET and POST requests.
 
     Attributes
     ----------
     name : str
-         Unique name that needs to be matched in the template tag rendering the HXRequest
+         Unique name that needs to be matched in the template tag rendering the HxRequest
     hx_object_name : str, optional
         Name that the hx_object is passed into the context with
     GET_template : str,list, optional
@@ -57,8 +57,8 @@ class BaseHXRequest:
         If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
         then the set message is displayed
     get_views_context: bool
-        If True, the context from the view is added to the context of the HXRequest
-        If False, only the context from the HXRequest is used, potentially improving performance
+        If True, the context from the view is added to the context of the HxRequest
+        If False, only the context from the HxRequest is used, potentially improving performance
         by not needing to call the view's get_context_data method.
     kwargs_as_context: bool
         If True, the kwargs are added into the context directly.
@@ -281,12 +281,12 @@ class BaseHXRequest:
         return self._get_response(**kwargs)
 
 
-class FormHXRequest(BaseHXRequest):
+class FormHxRequest(BaseHxRequest):
     """
     HXRequests class to be used for forms that helps with some of the boiler plate.
     It's loosely based on Django's FormView and UpdateView.
 
-    Every FormHXRequest must have a form associated with it. The form is
+    Every FormHxRequest must have a form associated with it. The form is
     passed into the context and is also accessible within the class as
     self.form.
 
@@ -302,7 +302,7 @@ class FormHXRequest(BaseHXRequest):
     Attributes
     ----------
     form_class : Form
-        Class of the form attached to the FormHXRequest
+        Class of the form attached to the FormHxRequest
     add_form_errors_to_error_message : bool
         If True adds the form's validation errors to the error message on form_invalid
     set_initial_from_kwargs : bool
@@ -433,11 +433,11 @@ class FormHXRequest(BaseHXRequest):
         return errors
 
 
-class DeleteHXRequest(BaseHXRequest):
+class DeleteHxRequest(BaseHxRequest):
     """
-    HXRequest for deleting objects.
+    HxRequest for deleting objects.
 
-    The object passed into a DeleteHXRequest is deleted.
+    The object passed into a DeleteHxRequest is deleted.
     Override handle_delete for custom behavior.
     """
 
@@ -469,7 +469,7 @@ class DeleteHXRequest(BaseHXRequest):
         return message
 
 
-class HXModal(BaseHXRequest):
+class ModalHxRequest(BaseHxRequest):
     """
     A generic modal that can be used without needing to create a class that inherits from this one.
     It can be used by passing in title and body into the template tag as kwargs and passing in
@@ -515,11 +515,11 @@ class HXModal(BaseHXRequest):
         return render_to_string(self.modal_template, modal_context, self.request)
 
 
-class HXFormModal(HXModal, FormHXRequest):
+class FormModalHxRequest(ModalHxRequest, FormHxRequest):
     """
     A modal to be used with a form.
-    You need to create an HXRequest class that inherits from this one
-    and set the needed attributes for a FormHXRequest.
+    You need to create an HxRequest class that inherits from this one
+    and set the needed attributes for a FormHxRequest.
 
     If the form is invalid the modal stays open and the form contains the validation
     errors. If the form is valid the modal will close.
@@ -540,7 +540,7 @@ class HXFormModal(HXModal, FormHXRequest):
     def get_triggers(self, **kwargs) -> list:
         triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
-            triggers.append("closeHxModal")
+            triggers.append("closeModalHxRequest")
         return triggers
 
     def get_headers(self, **kwargs) -> Dict:

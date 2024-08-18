@@ -1,24 +1,24 @@
 FAQs
 ====
 
-**How do I make the page refresh when using an HXRequest?**
+**How do I make the page refresh when using an HxRequest?**
 
 Set :code:`refresh_page` to True.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
         refresh_page = True
 
 
-**How do I redirect to a new page when using an HXRequest?**
+**How do I redirect to a new page when using an HxRequest?**
 
-Set redirect to the URL the :code:`HXRequest` should redirect to.
+Set redirect to the URL the :code:`HxRequest` should redirect to.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
         redirect = "my-website/home"
 
@@ -29,7 +29,7 @@ Set :code:`refresh` or :code:`redirect` in form_invalid.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
         refresh=True # or redirect = "my-website/home"
 
@@ -39,7 +39,7 @@ Set :code:`refresh` or :code:`redirect` in form_invalid.
 
 **What is return_empty for?**
 
-:code:`return_empty` returns an empty :code:`HttpResponse` from the :code:`HXRequest`. An example of where it may be used is a 'save for later'
+:code:`return_empty` returns an empty :code:`HttpResponse` from the :code:`HxRequest`. An example of where it may be used is a 'save for later'
 button in a shopping cart. The item needs to disappear from the cart, but there is nothing on the page that needs to be updated. Therfore you
 want to return an empty :code:`HTTPResponse`. Another example is a delete where nothing on the page needs to be updated.
 
@@ -51,7 +51,7 @@ when the form in invalid, you may want to just set a message with the errors.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
 
         def form_invalid(self,**kwargs):
@@ -60,13 +60,13 @@ when the form in invalid, you may want to just set a message with the errors.
             return super().form_invalid(**kwargs)
 
 
-**How do I put the form errors into the error message when using a FormHXRequest?**
+**How do I put the form errors into the error message when using a FormHxRequest?**
 
 Setting :code:`add_form_errors_to_error_message` to True will put the form's errors into the error message.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
         add_form_errors_to_error_message = True
 
@@ -76,7 +76,7 @@ If you want to put the :code:`hx_object` into the context with a different name,
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         ...
         hx_object_name = "my_object"
 
