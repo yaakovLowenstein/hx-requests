@@ -15,7 +15,7 @@ views and urls with extra code. It simplifies making django forms post asyncrono
 with htmx, and many other awesome features.
 
 The idea of hx-requests is that `HXRequests` absorb all htmx requests.
-Define an `HXRequest` and
+Define an `HxRequest` and
 observe the magic of `hx-requests`.
 
 - No need to define extra urls to handle these requests

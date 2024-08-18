@@ -4,7 +4,7 @@ import threading
 
 from django.apps import apps
 
-from hx_requests.hx_requests import BaseHXRequest
+from hx_requests.hx_requests import BaseHxRequest
 
 
 class HXRequestRegistry:
@@ -33,7 +33,7 @@ class HXRequestRegistry:
                             continue
                         cls._processed_classes.add(obj)
 
-                        if issubclass(obj, BaseHXRequest) and getattr(
+                        if issubclass(obj, BaseHxRequest) and getattr(
                             obj, "name", None
                         ):
                             cls.register_hx_request(obj.name, obj)
@@ -45,7 +45,7 @@ class HXRequestRegistry:
     @classmethod
     def register_hx_request(cls, name, hx_request_class):
         if name in cls._registry:
-            raise Exception(f"Duplicate HXRequest name found: {name}")
+            raise Exception(f"Duplicate HxRequest name found: {name}")
         cls._registry[name] = hx_request_class
 
     @classmethod
