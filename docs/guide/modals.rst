@@ -9,7 +9,7 @@ Using Modals
 
 .. code-block:: python
 
-    class ModalExample(HXModal):
+    class ModalExample(ModalHxRequest):
         name = "modal_example"
         GET_template = "modal_body.html"
 
@@ -37,7 +37,7 @@ To customize a modal, there are a few steps that need to be followed.
 #. Set the id of you modal to :code:`hx_modal_body` or set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body) in settings.
 #. Include the body as context and add the title and modal_size_classes to the template. See the example below.
 #. Set a way for the modal to open when the modal template is rendered. See the modal example below.
-#. Set a way for the modal to close using the :code:`closeHxModal` event. See the modal example below
+#. Set a way for the modal to close using the :code:`closeModalHxRequest` event. See the modal example below
 #. Set a div with the id :code:`hx_modal_container` in the body of the page, this is where the modal will be rendered (the :code:`hx-target` of the request)
 
 .. tip::
@@ -87,7 +87,7 @@ Custom Modal Example
 Form Modals
 -----------
 
-:code:`hx-requests` has a built in form modal, :ref:`HXFormModal`. It takes care of the boilerplate needed to put a form in a modal.
+:code:`hx-requests` has a built in form modal, :ref:`FormModalHxRequest`. It takes care of the boilerplate needed to put a form in a modal.
 Additionally, it has features like keeping the modal open when the form in invalid so that the errors are displayed to the user.
 
 The page HTML
@@ -108,7 +108,7 @@ Notes:
 
 .. code-block:: python
 
-    class EditUserModal(HXFormModal):
+    class EditUserModal(FormModalHxRequest):
         name = "edit_user_modal"
         form_class = UserInfoForm
         GET_template = 'form.html' # Used as the body of the modal
@@ -132,5 +132,5 @@ Notes:
     </div>
 
 Notes:
-    - The object is in this context as :code:`hx_object` because :code:`hx_object_name` is not set in the :code:`HXRequest` above
+    - The object is in this context as :code:`hx_object` because :code:`hx_object_name` is not set in the :code:`HxRequest` above
     - The object is passed in here becasue it is the model instance of the model form and it's the instance getting updated by the form

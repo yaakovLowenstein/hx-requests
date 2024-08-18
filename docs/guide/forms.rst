@@ -3,7 +3,7 @@ Using Forms
 
 | Probably the most common thing to use :code:`HXRequests` with is forms. :code:`HXRequests` gives a simple way to post data and update the page asyncronously.
 |
-| Using a :code:`FormHXRequest` the form is fetched asyncronously using the :code:`GET_template`, the form is saved and then it returns the :code:`POST_template`
+| Using a :code:`FormHxRequest` the form is fetched asyncronously using the :code:`GET_template`, the form is saved and then it returns the :code:`POST_template`
 
 
 Basic Form
@@ -52,23 +52,23 @@ HTML
     {{ user.last_name }}
 
 Notes:
-    - 'user_info_form' in the template tags is the name of the :code:`HXRequest` that these requests will be routed to (see below)
+    - 'user_info_form' in the template tags is the name of the :code:`HxRequest` that these requests will be routed to (see below)
     - :code:`object` is equivalent to an instance in a Django form. In the :code:`get` it's used to set the initial of the fields. In the :code:`post` it's the object that is getting updated.
-    - An :code:`include` is used so that it can be reused below as the :code:`POST_template` in the :code:`HXRequest`.
+    - An :code:`include` is used so that it can be reused below as the :code:`POST_template` in the :code:`HxRequest`.
     - The user in :code:`user_info.html` comes from the context of the view.
 
 .. tip::
 
     :code:`includes` are very helpful when using htmx, because it gives an easy way to load part of the html.
 
-HXRequest
+HxRequest
 ~~~~~~~~~
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import FormHXRequest
+    from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHXRequest):
+    class UserInfoHXRequest(FormHxRequest):
         name = "user_info_form"
         form_class = UserInfoForm
         GET_template = 'form.html' # Renders the form
@@ -92,7 +92,7 @@ Notes:
     - :code:`form_invalid` by default returns the :code:`GET_template`. The purpose of this is to show the error messages. Because :code:`is_valid` was called (:code:`is_valid` is called in the :code:`post` method), the form now contains the errors, which gives you asyncronous validation of the form.
     - The :code:`GET_template` (*form.html*) has access to the form as 'form' in the context
     - :code:`hx_object_name` is the name given to the object when it's passed into the context. Above in :code:`user_info.html` (the :code:`POST_template`), on :code:`POST` the user in that context is the object that was passed in to the :code:`hx_post` template tag (although now it was updated by the form). If :code:`hx_object_name` was not set, instead of referencing the object as 'user' in :code:`user_info.html`, it would be referenced as :code:`hx_object` (i.e. :code:`hx_object.username`)
-    - The object is saved as an attribute on the :code:`HXRequest` as :code:`hx_object`, so it can be referenced anywhere in the class as :code:`self.hx_object`
+    - The object is saved as an attribute on the :code:`HxRequest` as :code:`hx_object`, so it can be referenced anywhere in the class as :code:`self.hx_object`
 
 Setting Form Kwargs
 -------------------
@@ -102,9 +102,9 @@ Setting Form Kwargs
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import FormHXRequest
+    from hx_requests.hx_requests import FormHxRequest
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         # Set attributes
 
         def get_form_kwargs(self,**kwargs):
@@ -127,7 +127,7 @@ As long as the key in the kwargs matches the name of a field in the form, it wil
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import FormHXRequest
+    from hx_requests.hx_requests import FormHxRequest
 
     class MyForm(forms.ModelForm):
 
@@ -135,7 +135,7 @@ As long as the key in the kwargs matches the name of a field in the form, it wil
             model = MyModel
             fields = ['field1', 'field2']
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         name='my_hx_request'
         set_initial_from_kwargs = True
 
@@ -154,11 +154,11 @@ Setting :ref:`Messages`
 
     See :ref:`Messages` for more details and for config settings.
 
-In a :code:`FormHXRequest` success and error messages can be set by overriding :code:`get_success_message` and :code:`get_error_message`
+In a :code:`FormHxRequest` success and error messages can be set by overriding :code:`get_success_message` and :code:`get_error_message`
 
 .. code-block:: python
 
-    class MyHXRequest(FormHXRequest):
+    class MyHXRequest(FormHxRequest):
         # Set attributes
 
         def get_success_message(self, **kwargs) -> str:
@@ -174,7 +174,7 @@ Notes:
 
 .. note::
 
-    Messages can be set in any :code:`HXRequest` at any point like this:
+    Messages can be set in any :code:`HxRequest` at any point like this:
 
     .. code-block:: python
 

@@ -1,7 +1,7 @@
 Deleting
 ========
 
-:code:`hx-requests` has a build in **Delete** :code:`HXRequest` which makes it really easy to asyncronously delete something.
+:code:`hx-requests` has a build in **Delete** :code:`HxRequest` which makes it really easy to asyncronously delete something.
 
 .. code-block:: html
 
@@ -18,7 +18,7 @@ Notes:
 
 .. code-block:: python
 
-    class DeleteUser(DeleteHXRequest):
+    class DeleteUser(DeleteHxRequest):
         name = "delete_user"
         POST_template = "..." # html returned on post (used to update DOM)
 

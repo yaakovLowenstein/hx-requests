@@ -19,14 +19,14 @@ hx_get
     </button>
 
 - :code:`hx_get` takes in:
-    - The name of the :code:`HXRequest` that is being used
-    - An object if there is one that is associted with the :code:`HXRequest` (similar to Django's `UpdateView <https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView>`_ )
+    - The name of the :code:`HxRequest` that is being used
+    - An object if there is one that is associted with the :code:`HxRequest` (similar to Django's `UpdateView <https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView>`_ )
     - And kwargs
 
 Notes:
-    - If an object is passed in it is added as an attribute to the :code:`HXRequest` as :code:`hx_object` and can be accessed as :code:`self.hx_object`
-    - If :code:`hx_object_name` is not set on the :code:`HXRequest`, the object is passed into the template (:code:`GET_template` for :code:`get` requests or :code:`POST_template` for :code:`post` requests) as :code:`hx_object` and can be accessed in the template as :code:`{{ hx_object }}`
-    - Kwargs that are passed in are accessible in the :code:`HXRequest` (through :code:`**kwargs` in each method). They get passed into the template as part of the context, unless :code:`kwargs_as_context` is set to False then they are put in as :code:`hx_kwargs` and can be accessed as :code:`{{ hx_kwargs.key }}`
+    - If an object is passed in it is added as an attribute to the :code:`HxRequest` as :code:`hx_object` and can be accessed as :code:`self.hx_object`
+    - If :code:`hx_object_name` is not set on the :code:`HxRequest`, the object is passed into the template (:code:`GET_template` for :code:`get` requests or :code:`POST_template` for :code:`post` requests) as :code:`hx_object` and can be accessed in the template as :code:`{{ hx_object }}`
+    - Kwargs that are passed in are accessible in the :code:`HxRequest` (through :code:`**kwargs` in each method). They get passed into the template as part of the context, unless :code:`kwargs_as_context` is set to False then they are put in as :code:`hx_kwargs` and can be accessed as :code:`{{ hx_kwargs.key }}`
     - Besides for primitive types the object and the kwargs can be a :code:`model_instance` (an instance of a Django model) because a :code:`model_instance` gets serialized by :code:`hx_get`.
 
 .. warning::
