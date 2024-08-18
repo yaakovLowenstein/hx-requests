@@ -2,7 +2,7 @@ Quickstart
 ==========
 
 The idea of hx-requests is that :code:`HXRequests` absorb all htmx requests.
-Define an :code:`HXRequest` (we'll get into how to do that in just a sec) and
+Define an :code:`HxRequest` (we'll get into how to do that in just a sec) and
 observe the magic of :code:`hx-requests`.
 
 - No need to define extra urls to handle these requests
@@ -42,11 +42,11 @@ The HTML
 
 Notes:
     - Using the :ref:`hx_get <hx_get>` template tag signifies that it's an :code:`hx-get`
-    - 'get_user_info' is the name of this :code:`HXRequest`. See below to understand what that means
+    - 'get_user_info' is the name of this :code:`HxRequest`. See below to understand what that means
     - The goal of this :code:`hx-get` is to render a user info card into the empty div
 
 
-Create the HXRequest
+Create the HxRequest
 ~~~~~~~~~~~~~~~~~~~~
 
 Create an :code:`hx_requests.py` file
@@ -56,14 +56,14 @@ Create an :code:`hx_requests.py` file
     All :code:`HXRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
     files must live inside an app that's included in Django's :code:`INSTALLED_APPS`.
 
-| Create the HXRequest.
-| The :code:`hx-get` will get directed to this :code:`HXRequest`.
+| Create the HxRequest.
+| The :code:`hx-get` will get directed to this :code:`HxRequest`.
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import BaseHXRequest
+    from hx_requests.hx_requests import BaseHxRequest
 
-    class GetUserInfo(BaseHXRequest):
+    class GetUserInfo(BaseHxRequest):
         name = "get_user_info"
         GET_template = "user_info_card.html"
 
@@ -82,7 +82,7 @@ Notes:
 Summary
 ~~~~~~~
 
-| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`hx_get` template tag. In this example 'get_user_info'. That's how the :code:`hx-get` is routed to :code:`GetUserInfo`.
+| Htmx requests are routed to the :code:`HxRequest` that matches the name (1st argument) passed into the :code:`hx_get` template tag. In this example 'get_user_info'. That's how the :code:`hx-get` is routed to :code:`GetUserInfo`.
 |
 | The request returns the html of the :code:`GET_template`.
 
@@ -134,7 +134,7 @@ Notes:
     - The goal of this :code:`hx-post` is to change the signed in user's email to the value of the input replace the email address in the div with the updated email
 
 
-Create the HXRequest
+Create the HxRequest
 ~~~~~~~~~~~~~~~~~~~~
 
 Create an :code:`hx_requests.py` file
@@ -144,14 +144,14 @@ Create an :code:`hx_requests.py` file
     All :code:`HXRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
     files must live inside an app that's included in Django's :code:`INSTALLED_APPS`.
 
-| Create the HXRequest.
-| The :code:`hx-post` will get directed to this :code:`HXRequest`.
+| Create the HxRequest.
+| The :code:`hx-post` will get directed to this :code:`HxRequest`.
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import BaseHXRequest
+    from hx_requests.hx_requests import BaseHxRequest
 
-    class ChangeEmail(BaseHXRequest):
+    class ChangeEmail(BaseHxRequest):
         name = "change_email"
         POST_template = "email.html"
 
@@ -173,7 +173,7 @@ Notes:
 Summary
 ~~~~~~~
 
-| Htmx requests are routed to the :code:`HXRequest` that matches the name (1st argument) passed into the :code:`hx_post` template tag. In this example 'change_email'. That's how the :code:`hx-post` is routed to :code:`ChangeEmail`.
+| Htmx requests are routed to the :code:`HxRequest` that matches the name (1st argument) passed into the :code:`hx_post` template tag. In this example 'change_email'. That's how the :code:`hx-post` is routed to :code:`ChangeEmail`.
 |
 | The request returns the html of the :code:`POST_template`.
 
@@ -189,9 +189,9 @@ a simple way to add context to them.
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import BaseHXRequest
+    from hx_requests.hx_requests import BaseHxRequest
 
-    class MyHXRequest(BaseHXRequest):
+    class MyHXRequest(BaseHxRequest):
         ...
 
         def get_context_data(self, **kwargs):
@@ -204,9 +204,9 @@ instead override :code:`get_post_context_data`
 
 .. code-block:: python
 
-    from hx_requests.hx_requests import BaseHXRequest
+    from hx_requests.hx_requests import BaseHxRequest
 
-    class MyHXRequest(BaseHXRequest):
+    class MyHXRequest(BaseHxRequest):
         ...
 
         def get_post_context_data(self, **kwargs):
