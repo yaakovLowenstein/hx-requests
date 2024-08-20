@@ -22,7 +22,6 @@ with htmx, and many other awesome features.
    :caption: Guide
 
    guide/overview
-   guide/installation
    guide/quickstart
    guide/forms
    guide/blocks
