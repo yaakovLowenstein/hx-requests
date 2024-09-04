@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.32.1 (2024-09-04)
+
+### Fix
+
+* Fix bug with get_views_context ([`f6ed918`](https://github.com/yaakovLowenstein/hx-requests/commit/f6ed918e4dbbf5cd4845da17a0d1174055fb2e1f))
+
 ## v0.32.0 (2024-09-04)
 
 ### Feature
