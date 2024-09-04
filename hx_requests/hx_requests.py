@@ -63,7 +63,9 @@ class BaseHXRequest:
     kwargs_as_context: bool
         If True, the kwargs are added into the context directly.
         If False, the kwargs are added into the context as hx_kwargs.
-
+    refresh_views_context_on_POST: bool
+        If True, the view's context is refreshed on a POST request.
+        Useful if the context needs to be updated after the POST.
 
     **Note**: Cannot use blocks with a list of templates
 
@@ -82,6 +84,7 @@ class BaseHXRequest:
     show_messages: bool = True
     get_views_context: bool = True
     kwargs_as_context: bool = True
+    refresh_views_context_on_POST: bool = False
 
     @cached_property
     def is_post_request(self):
@@ -136,6 +139,8 @@ class BaseHXRequest:
         # Refresh the object in case it was updated.
         if self.hx_object and self.hx_object.pk:
             self.hx_object.refresh_from_db()
+        if self.refresh_views_context_on_POST:
+            context.update(self.view.get_context_data(**kwargs))
         context[self.hx_object_name] = self.hx_object
 
         return context
