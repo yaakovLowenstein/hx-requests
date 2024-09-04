@@ -109,7 +109,7 @@ class BaseHXRequest:
             | self as hx_request
         """
         context = RequestContext(self.request)
-        if hasattr(self.view_response, "context_data") and self.get_views_context:
+        if self.get_views_context and hasattr(self.view_response, "context_data"):
             context.update(self.view_response.context_data)
         if self.kwargs_as_context:
             context.update(kwargs)
