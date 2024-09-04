@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.32.0 (2024-09-04)
+
+### Feature
+
+* Add refresh_views_context_on_POST to BaseHXRequest ([`bce66bd`](https://github.com/yaakovLowenstein/hx-requests/commit/bce66bd7f6bf1121b60b25bde7f6aa7d8e3f9c58))
+
+### Documentation
+
+* Add docs for refresh_views_context_on_POST ([`723a491`](https://github.com/yaakovLowenstein/hx-requests/commit/723a491af621ec446edfc91c802e44295348304e))
+* Add motivation page ([`1c0cd57`](https://github.com/yaakovLowenstein/hx-requests/commit/1c0cd5788ca688662e555382db41a7e3415b388a))
+
 ## v0.31.1 (2024-08-14)
 
 ### Fix
