@@ -186,3 +186,17 @@ Forms in Modals
 ---------------
 
 See :ref:`Form Modals`
+
+
+Reset Context After POST
+------------------------
+
+There are times when due to updates in the POST, the view's context needs to be reset after the form is saved.
+For example, if the user is updated in the POST, the user in the context needs to be updated as well.
+Or if the page displays a list of blogs and a new blog is added, the list of blogs needs to be updated in the context.
+However, this is not really true because querysets are lazy loaded, therefore at the time the view is rendered,
+the queryset will be updated to include the new blog. The times when the context needs to be updated is when it's
+not a queryset. Also, the :code:`hx_object` is auto refreshed from the DB so it does not need to be readded to the context.
+
+To refresh the context after a POST, set :code:`refresh_views_context_on_POST` to :code:`True` in the :code:`HXRequest`.
+This will call the :code:`get_context_data` method of the view and update the context with the new data.
