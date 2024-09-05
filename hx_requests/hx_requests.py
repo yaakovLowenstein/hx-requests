@@ -222,7 +222,11 @@ class BaseHXRequest:
         # If blocks is a dict then we are using multiple blocks with multiple templates
         if isinstance(blocks, dict):
             for template, block in blocks.items():
-                html += render_with_context(template, block)
+                if isinstance(block, list):
+                    for b in block:
+                        html += render_with_context(template, b)
+                elif isinstance(block, str):
+                    html += render_with_context(template, block)
             if templates and isinstance(templates, str):
                 html += render_with_context(templates, None)
             elif isinstance(templates, list):
