@@ -227,11 +227,6 @@ class BaseHXRequest:
                         html += render_with_context(template, b)
                 elif isinstance(block, str):
                     html += render_with_context(template, block)
-            if templates and isinstance(templates, str):
-                html += render_with_context(templates, None)
-            elif isinstance(templates, list):
-                for template in templates:
-                    html += render_with_context(template, None)
             return html
 
         # If templates is a list then we are using multiple templates with no blocks
