@@ -231,7 +231,11 @@ class BaseHXRequest:
         # If blocks is a dict then we are using multiple blocks with multiple templates
         if isinstance(blocks, dict):
             for template, block in blocks.items():
-                html += render_with_context(template, block)
+                if isinstance(block, list):
+                    for b in block:
+                        html += render_with_context(template, b)
+                elif isinstance(block, str):
+                    html += render_with_context(template, block)
             if templates and isinstance(templates, str):
                 html += render_with_context(templates, None)
             elif isinstance(templates, list):
@@ -262,7 +266,6 @@ class BaseHXRequest:
     def _get_messages_html(self, **kwargs) -> str:
         messages = get_messages(self.request)
         if messages:
-
             return render_to_string(
                 getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE"),
                 {"messages": messages},
