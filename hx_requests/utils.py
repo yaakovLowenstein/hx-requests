@@ -2,8 +2,8 @@ import json
 from urllib.parse import quote_plus, urlencode, urlparse
 
 from django.apps import apps
-from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 
 MODEL_INSTANCE_PREFIX = "model_instance__"
 KWARG_PREFIX = "___"
@@ -12,7 +12,9 @@ __ = "__"
 
 def serialize(value):
     if isinstance(value, models.Model):
-        return f"{MODEL_INSTANCE_PREFIX}{value._meta.app_label}{__}{value._meta.model_name}{__}{value.pk}"
+        return (
+            f"{MODEL_INSTANCE_PREFIX}{value._meta.app_label}{__}{value._meta.model_name}{__}{value.pk}"
+        )
     return json.dumps(value, cls=DjangoJSONEncoder)
 
 
@@ -56,9 +58,7 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     if use_full_path:
         get_params = {}
         for k, v in request.GET.lists():
-            if k not in ["hx_request_name", "object"] and not k.startswith(
-                KWARG_PREFIX
-            ):
+            if k not in ["hx_request_name", "object"] and not k.startswith(KWARG_PREFIX):
                 get_params[k] = v[0] if len(v) == 1 else v
         params.update(get_params)
 

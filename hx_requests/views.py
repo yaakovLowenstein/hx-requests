@@ -1,7 +1,5 @@
 from typing import Dict
 
-from django.apps import apps
-from django.conf import settings
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -31,9 +29,7 @@ class HtmxViewMixin:
             if is_htmx_request(request):
                 kwargs.update(self.get_hx_extra_kwargs(request))
                 handler_class = self._setup_hx_request(request, *args, **kwargs)
-            handler = getattr(
-                handler_class, request.method.lower(), self.http_method_not_allowed
-            )
+            handler = getattr(handler_class, request.method.lower(), self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
