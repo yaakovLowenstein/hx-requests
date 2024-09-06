@@ -21,15 +21,16 @@ The view requires :code:`HtmxViewMixin`
 .. code-block:: python
 
     from hx_requests.views import HtmxViewMixin
+    from django.views.generic.base import View
 
-    class MyView(HtmxViewMixin):
+    class MyView(HtmxViewMixin, View):
         pass
 
 The HTML
 ~~~~~~~~
 
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info_target"></div>
@@ -71,7 +72,7 @@ Notes:
 
 *user_info_card.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     <div>
         <p>Username:{{request.user.username}}</p>
@@ -108,14 +109,15 @@ The view requires :code:`HtmxViewMixin`
 .. code-block:: python
 
     from hx_requests.views import HtmxViewMixin
+    from django.views.generic.base import View
 
-    class MyView(HtmxViewMixin):
+    class MyView(HtmxViewMixin, View):
         pass
 
 The HTML
 ~~~~~~~~
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="email_display">{{request.user.email}}</div>
@@ -164,7 +166,7 @@ Notes:
 
 *email.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     <span>{{request.user.email}}</span>
 
@@ -220,8 +222,8 @@ instead override :code:`get_post_context_data`
 
     For example:
 
-    .. code-block:: html
+    .. code-block:: html+django
 
         {% hx_get 'my_hx_request' object=object my_awesome_kwarg="I am awesome" %}
 
-    In the :code:`GET_template`, 'my_awesome_kwarg' can be accessed as :code:`hx_kwargs.my_awesome_kwarg` .
+    In the :code:`GET_template`, 'my_awesome_kwarg' can be accessed as :code:`my_awesome_kwarg` unless :code:`kwargs_as_context` is set to False then it can be accessed as :code:`{{ hx_kwargs.my_awesome_kwarg }}`

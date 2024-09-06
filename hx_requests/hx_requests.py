@@ -1,20 +1,19 @@
-import json
-from email import header
-from mimetypes import init
-from typing import Dict
+from functools import partial
+from typing import Dict, Union
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
+from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from render_block import render_block_to_string
 
-from hx_requests.hx_messages import HXMessages
+from hx_requests.utils import deserialize
 
 
 class Renderer:
@@ -34,14 +33,18 @@ class BaseHXRequest:
          Unique name that needs to be matched in the template tag rendering the HXRequest
     hx_object_name : str, optional
         Name that the hx_object is passed into the context with
-    GET_template : str, optional
-        Template rendered for a GET request
-    POST_template : str, optional
-        Template rendered for a POST request
-    GET_block : str, optional
-        Block of the GET_template to be used insted of rendering the whole template
-    POST_block : str, optional
-        Block of the POST_block to be used insted of rendering the whole template
+    GET_template : str,list, optional
+        Template rendered for a GET request. If a list is passed in, all the templates are rendered
+    POST_template : str,list, optional
+        Template rendered for a POST request. If a list is passed in, all the templates are rendered
+    GET_block : str,list, optional
+        Block of the GET_template to be used instead of rendering the whole template
+        If a list is passed in, all the blocks are rendered per the GET_template
+        If a dict is passed in, the keys are the templates and the values are the blocks
+    POST_block : str,list, optional
+        Block of the POST_block to be used instead of rendering the whole template
+        If a list is passed in, all the blocks are rendered per the POST_template
+        If a dict is passed in, the keys are the templates and the values are the blocks
     refresh_page : bool
         If True the page will refresh after a POST request
     redirect : str, optional
@@ -53,21 +56,35 @@ class BaseHXRequest:
     show_messages: bool
         If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
         then the set message is displayed
+    get_views_context: bool
+        If True, the context from the view is added to the context of the HXRequest
+        If False, only the context from the HXRequest is used, potentially improving performance
+        by not needing to call the view's get_context_data method.
+    kwargs_as_context: bool
+        If True, the kwargs are added into the context directly.
+        If False, the kwargs are added into the context as hx_kwargs.
+    refresh_views_context_on_POST: bool
+        If True, the view's context is refreshed on a POST request.
+        Useful if the context needs to be updated after the POST.
+
+    **Note**: Cannot use blocks with a list of templates
+
     """
 
     name: str = ""
     hx_object_name: str = "hx_object"
-    messages: HXMessages
-    GET_template: str = ""
-    POST_template: str = ""
-    GET_block: str = ""
-    POST_block: str = ""
+    GET_template: Union[str, list] = ""
+    POST_template: Union[str, list] = ""
+    GET_block: Union[str, list] = ""
+    POST_block: Union[str, list] = ""
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
     no_swap = False
     show_messages: bool = True
-    
+    get_views_context: bool = True
+    kwargs_as_context: bool = True
+    refresh_views_context_on_POST: bool = False
 
     @cached_property
     def is_post_request(self):
@@ -91,16 +108,30 @@ class BaseHXRequest:
             | hx_object as {self.hx_object_name} (default is hx_object)
             | self as hx_request
         """
-        context = self.view.get_context_data()
-        context["hx_kwargs"] = kwargs
+        context = RequestContext(self.request)
+        if self.get_views_context and hasattr(self.view_response, "context_data"):
+            context.update(self.view_response.context_data)
+        if self.kwargs_as_context:
+            context.update(kwargs)
+        else:
+            context["hx_kwargs"] = kwargs
         context[self.hx_object_name] = self.hx_object
         context["request"] = self.request
         context["hx_request"] = self
         if self.is_post_request:
-            context.update(self.get_post_context_data(**kwargs))
-        return context
+            context.update(self.get_context_on_POST(**kwargs))
+        else:
+            context.update(self.get_context_on_GET(**kwargs))
+        # Turn into dict for template rendering which expects a dict
+        return context.flatten()
 
-    def get_post_context_data(self, **kwargs):
+    def get_context_on_GET(self, **kwargs) -> Dict:
+        """
+        Adds extra context to the context data only on GET.
+        """
+        return {}
+
+    def get_context_on_POST(self, **kwargs):
         """
         Adds extra context to the context data only on POST.
         """
@@ -108,6 +139,8 @@ class BaseHXRequest:
         # Refresh the object in case it was updated.
         if self.hx_object and self.hx_object.pk:
             self.hx_object.refresh_from_db()
+        if self.refresh_views_context_on_POST:
+            context.update(self.view.get_context_data(**kwargs))
         context[self.hx_object_name] = self.hx_object
 
         return context
@@ -117,14 +150,12 @@ class BaseHXRequest:
         If an 'object' was passed in, deserialize it.
         """
         if request.GET.get("object"):
-            serialized_hx_object = request.GET.get("object")
-            app_label, model, pk = serialized_hx_object.split("_")
-            model = apps.get_model(app_label, model)
-            return model.objects.get(pk=pk)
+            return deserialize(request.GET.get("object"))
 
-    def setup_hx_request(self, request):
+    def _setup_hx_request(self, request, *args, **kwargs):
+        if self.get_views_context:
+            self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
-        self.messages = HXMessages()
         self.renderer = Renderer()
         self.GET_template = self.GET_template or self.view.template_name
         self.POST_template = self.POST_template or self.view.template_name
@@ -149,7 +180,17 @@ class BaseHXRequest:
                 headers["HX-Redirect"] = self.redirect
         if self.no_swap:
             headers["HX-Reswap"] = "none"
+
+        triggers = self.get_triggers(**kwargs)
+        if triggers:
+            headers["HX-Trigger"] = ", ".join(triggers)
         return headers
+
+    def get_triggers(self, **kwargs) -> list:
+        """
+        Override to set the triggers for the response.
+        """
+        return []
 
     def get_response_html(self, **kwargs) -> str:
         """
@@ -159,78 +200,101 @@ class BaseHXRequest:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
             else:
-                html = self.renderer.render(
-                    self.POST_template,
-                    self.POST_block,
-                    self.get_context_data(**kwargs),
-                    self.request,
+                html = self._render_templates(
+                    self.POST_template, self.POST_block, **kwargs
                 )
 
         else:
-            html = self.renderer.render(
-                self.GET_template,
-                self.GET_block,
-                self.get_context_data(**kwargs),
-                self.request,
-            )
+            html = self._render_templates(self.GET_template, self.GET_block, **kwargs)
 
         return html
 
-    def get_messages_html(self, **kwargs) -> str:
-        if self.messages():
+    def _render_templates(self, templates, blocks, **kwargs) -> str:
+        """
+        Renders the templates and blocks into HTML.
+        If templates is a string and blocks is empty then it renders the template.
+        If templates is a string and blocks is a string then it renders the block from the template.
+        If templates is a list then it renders all the templates.
+        If blocks is a list then it renders all the blocks per the template defined.
+        If blocks is a dict then it renders the blocks per the templates in the dict.
+        """
+        context = self.get_context_data(**kwargs)
+        render_with_context = partial(
+            self.renderer.render, context=context, request=self.request
+        )
+        html = ""
+
+        # If both are strings then its one template and possibly one block
+        if isinstance(templates, str) and isinstance(blocks, str):
+            return render_with_context(templates, blocks)
+
+        # If blocks is a dict then we are using multiple blocks with multiple templates
+        if isinstance(blocks, dict):
+            for template, block in blocks.items():
+                html += render_with_context(template, block)
+            if templates and isinstance(templates, str):
+                html += render_with_context(templates, None)
+            elif isinstance(templates, list):
+                for template in templates:
+                    html += render_with_context(template, None)
+            return html
+
+        # If templates is a list then we are using multiple templates with no blocks
+        if isinstance(templates, list):
+            if blocks != "":
+                raise Exception(
+                    "When using multiple blocks with multiple templates blocks must be a dict"
+                )
+            for template in templates:
+                html += render_with_context(template, None)
+            return html
+
+        # If blocks is a list then we are using multiple blocks with one template
+        if isinstance(blocks, list):
+            if isinstance(templates, list):
+                raise Exception(
+                    "When using multiple blocks with multiple templates blocks must be a dict"
+                )
+            for block in blocks:
+                html += render_with_context(templates, block)
+            return html
+
+    def _get_messages_html(self, **kwargs) -> str:
+        messages = get_messages(self.request)
+        if messages:
+
             return render_to_string(
                 getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE"),
-                {"messages": self.messages},
+                {"messages": messages},
                 self.request,
             )
         return ""
 
-    def get_response(self, **kwargs):
+    def _get_response(self, **kwargs):
         """
         Gets the response.
         """
         html = self.get_response_html(**kwargs)
         if self.use_messages:
-            if self.refresh_page or self.redirect:
-                self.set_synchronous_messages(**kwargs)
-            else:
-                html += self.get_messages_html(**kwargs)
+            if not (self.refresh_page or self.redirect):
+                html += self._get_messages_html(**kwargs)
 
         return HttpResponse(
             html,
             headers=self.get_headers(**kwargs),
         )
 
-    def set_synchronous_messages(self, **kwargs):
-        """
-        Convert the hx_message to a Django synchronous message if the page is going to
-        be refreshd (or redirected). This is done because the asynchrounous ones will
-        not show up if the page is reloaded.
-        """
-        if self.messages():
-            for message in self.messages():
-                tag = next(
-                    (
-                        key
-                        for key, value in self.messages.tags.items()
-                        if value == message.tag
-                    )
-                )
-                messages.add_message(
-                    self.request, tag, message.body, fail_silently=True
-                )
-
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Method that all GET requests hit.
         """
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Method that all POST requests hit.
         """
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
 
 class FormHXRequest(BaseHXRequest):
@@ -257,10 +321,14 @@ class FormHXRequest(BaseHXRequest):
         Class of the form attached to the FormHXRequest
     add_form_errors_to_error_message : bool
         If True adds the form's validation errors to the error message on form_invalid
+    set_initial_from_kwargs : bool
+        If True sets the initial values in the form from the kwargs as long as the key
+        matches a field in the form
     """
 
     form_class: Form = None
     add_form_errors_to_error_message: bool = False
+    set_initial_from_kwargs: bool = False
 
     def get_context_data(self, **kwargs) -> Dict:
         """
@@ -275,49 +343,45 @@ class FormHXRequest(BaseHXRequest):
         Instantiates the form.
         """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
-        return self.get_response(**kwargs)
+        return self._get_response(**kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        If the form is valid sets a success message and calls form_valid.
-        If invalid sets an error message and calls form_invalid.
+        If the form is valid form_valid.
+        If invalid calls form_invalid.
         """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
         if self.form.is_valid():
-            self.messages.success(self.get_success_message(**kwargs))
             return self.form_valid(**kwargs)
-
         else:
-            self.messages.error(self.get_error_message(**kwargs))
             return self.form_invalid(**kwargs)
 
     def form_valid(self, **kwargs) -> str:
         """
-        Saves the form and returns get_response. Override to add custom behavior.
+        Saves the form and sets a success message.
+        Returns self._get_response. Override to add custom behavior.
         """
         self.form.save()
-        return self.get_response(**kwargs)
+        messages.success(self.request, self.get_success_message(**kwargs))
+        return self._get_response(**kwargs)
 
     def form_invalid(self, **kwargs) -> str:
         """
-        Returns get_response. Override to add custom behavior.
+        Sets an error message.
+        Returns self._get_response. Override to add custom behavior.
         """
-        return self.get_response(**kwargs)
+        messages.error(self.request, self.get_error_message(**kwargs))
+        return self._get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
         """
         On POST if the form is invalid instead of returning the
-        POST_tempalte the GET_template is returned (the form
+        POST_template the GET_template is returned (the form
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return self.renderer.render(
-                self.GET_template,
-                self.GET_block,
-                self.get_context_data(**kwargs),
-                self.request,
-            )
+            return self._render_templates(self.GET_template, self.GET_block, **kwargs)
         return super().get_response_html(**kwargs)
 
     def get_form_kwargs(self, **kwargs):
@@ -341,7 +405,15 @@ class FormHXRequest(BaseHXRequest):
         """
         Override to set initial values in the form.
         """
-        return {}
+        initial = {}
+
+        if self.set_initial_from_kwargs:
+            form_fields = self.form_class.base_fields
+            for key, value in kwargs.items():
+                if key in form_fields:
+                    initial[key] = value
+
+        return initial
 
     def get_success_message(self, **kwargs) -> str:
         """
@@ -389,18 +461,18 @@ class DeleteHXRequest(BaseHXRequest):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        Sets success message and calls handle_delete
+        Calls delete on the hx_object.
         """
-        self.messages.success(self.get_success_message(**kwargs))
-        return self.handle_delete(**kwargs)
+        return self.delete(**kwargs)
 
-    def handle_delete(self, **kwargs) -> str:
+    def delete(self, **kwargs) -> str:
         """
-        Called on POST. Deletes the hx_object.
+        Deletes the hx_object and sets a success message.
         Override to add custom behavior.
         """
         self.hx_object.delete()
-        return self.get_response(**kwargs)
+        messages.success(self.request, self.get_success_message(**kwargs))
+        return self._get_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
         """
@@ -421,16 +493,19 @@ class HXModal(BaseHXRequest):
     It can be used by passing in title and body into the template tag as kwargs and passing in
     'hx-modal' as the name.
 
-    **Note** : The body can be a string, html or a path to an html file.
-
-    Example
-    -------
-
-    ```{% hx_get 'hx_modal' body="This is a modal body" title="My First Modal" %}```
-
+    Attributes
+    ----------
+    body_template : str
+        Template used as the modal body
+    title : str
+        Title of the modal, can be passed in as a kwarg and the kwarg will override this attribute
+    modal_size_classes : str
+        Classes to set the size of the modal, can be passed in as a kwarg and the kwarg will override this attribute
     """
 
-    name = "hx_modal"
+    body_template: str = ""
+    title: str = ""
+    modal_size_classes: str = ""
 
     @cached_property
     def modal_container_id(self):
@@ -438,41 +513,33 @@ class HXModal(BaseHXRequest):
 
     @cached_property
     def modal_template(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", "hx_requests/modal.html")
+        modal_template = getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
+        if not modal_template:
+            raise Exception(
+                "HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal"
+            )
+        return modal_template
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Regular get method but additionally sets the modal body.
         """
-        self.set_modal_body(**kwargs)
-        return super().get(request, *args, **kwargs)
+        self.GET_template = self.modal_template
+        if not self.body_template:
+            raise Exception("body_template is required when using HXModal")
 
-    def set_modal_body(self, **kwargs):
-        """
-        Sets the modal body to either the kwargs 'body' or to the GET_template.
-        (the GET_template might be set if a class inherits from hx_modal)
-        """
-        self.body = kwargs.get("body")
-        if self.GET_template != self.modal_template:
-            self.body = self.GET_template
-            self.GET_template = self.modal_template
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> Dict:
         """
         Adds title and body into the context.
         """
         context = super().get_context_data(**kwargs)
-        body = getattr(self, "body", None) or kwargs.get("body", self.GET_template)
-        context["title"] = kwargs.get("title", self.hx_object)
-        context["modal_container_id"] = self.modal_container_id
-        context["body"] = (
-            render_to_string(body, context=self.get_body_context(context, **kwargs))
-            if body.split(".")[-1] == "html"
-            else mark_safe(body)
+        context["title"] = kwargs.get("title", self.title)
+        context["modal_size_classes"] = kwargs.get(
+            "modal_size_classes", self.modal_size_classes
         )
-        return context
-
-    def get_body_context(self, context, **kwargs):
+        context["body"] = self.body_template
         return context
 
 
@@ -496,13 +563,30 @@ class HXFormModal(HXModal, FormHXRequest):
 
     @cached_property
     def modal_body_selector(self):
-        return getattr(settings, "HX_REQUESTS_MODAL_BODY_SELECTOR", ".modal-body")
+        return getattr(settings, "HX_REQUESTS_MODAL_BODY_ID", "#hx_modal_body")
+
+    def get_triggers(self, **kwargs) -> list:
+        triggers = super().get_triggers(**kwargs)
+        if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
+            triggers.append("closeHxModal")
+        return triggers
 
     def get_headers(self, **kwargs) -> Dict:
         headers = super().get_headers(**kwargs)
-        if self.is_post_request:
-            if self.form.is_valid() and self.close_modal_on_save:
-                headers["HX-Trigger"] = "modalFormValid"
-            elif self.form.is_valid() is False:
-                headers["HX-Retarget"] = self.modal_body_selector
+        if self.is_post_request and self.form.is_valid() is False:
+            headers["HX-Retarget"] = self.modal_body_selector
+            headers["HX-Reswap"] = "innerHTML"
         return headers
+
+    def get_response_html(self, **kwargs):
+        """
+        On POST if the form is invalid instead of returning the
+        POST_template the GET_template is returned (the form
+        now contains the validation errors.)
+
+        Overrides the get_response_html method from FormHXRequest
+        to use the body_template instead of the GET_template.
+        """
+        if self.is_post_request and self.form.is_valid() is False:
+            return self._render_templates(self.body_template, self.GET_block, **kwargs)
+        return super().get_response_html(**kwargs)

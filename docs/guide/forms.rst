@@ -26,7 +26,7 @@ HTML
 ~~~~
 *user_info_page.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info">
@@ -45,7 +45,7 @@ HTML
 
 *user_info.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {{ user.email }}
     {{ user.first_name }}
@@ -79,11 +79,13 @@ HXRequest
         def form_valid(self,**kwargs):
             # This is the default form_valid
             self.form.save()
-            return self.get_response(**kwargs)
+            messages.success(self.request, self.get_success_message(**kwargs))
+            return self._get_response(**kwargs)
 
         def form_invalid(self, **kwargs) -> str:
             # This is the default form_invalid
-            return self.get_response(**kwargs)
+            messages.error(self.request, self.get_error_message(**kwargs))
+            return self._get_response(**kwargs)
 
 Notes:
     - :code:`form_valid` by default calls :code:`form.save()` and returns the :code:`POST_template`
@@ -119,6 +121,31 @@ Setting Form Kwargs
             initial['created_by'] = self.request.user
             return initial
 
+You can also set the initial from the kwargs by setting :code:`set_initial_from_kwargs` to :code:`True`.
+This setting allows the initial value to be automatically populated from the kwargs.
+As long as the key in the kwargs matches the name of a field in the form, it will be assigned as the initial value for that field.
+
+.. code-block:: python
+
+    from hx_requests.hx_requests import FormHXRequest
+
+    class MyForm(forms.ModelForm):
+
+        class Meta:
+            model = MyModel
+            fields = ['field1', 'field2']
+
+    class MyHXRequest(FormHXRequest):
+        name='my_hx_request'
+        set_initial_from_kwargs = True
+
+
+.. code-block:: html+django
+
+        <button {% hx_get 'my_hx_request' field1="Cool Initial Value" %}></button>
+
+Notes:
+    - The initial value of :code:`field1` will be set to :code:`"Cool Initial Value"`
 
 Setting :ref:`Messages`
 -----------------------
@@ -159,3 +186,19 @@ Forms in Modals
 ---------------
 
 See :ref:`Form Modals`
+
+
+Reset Context After POST
+------------------------
+
+There are situations where, after a POST request, the view's context needs to be refreshed to reflect changes made by the form
+submission. For example, if the user is updated in the POST request, the user in the context needs to be refreshed as well.
+Similarly, if the page displays a list of blogs and a new blog is added, the list in the context should reflect the update.
+
+However, this isn't always necessary because Django's querysets are lazily loaded. This means that when the view is rendered,
+the queryset will automatically be updated to include the new blog. The context only needs to be refreshed when it contains
+objects that aren't querysets. Additionally, the hx_object is automatically refreshed from the database, so it does not need
+to be re-added to the context.
+
+To force a refresh of the context after a POST, set refresh_views_context_on_POST to True in the HXRequest. This will call the
+view's get_context_data method and update the context with the new data.

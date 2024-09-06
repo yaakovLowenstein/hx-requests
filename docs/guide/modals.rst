@@ -2,166 +2,88 @@ Modals
 ======
 
 | Modals are a very useful component when designing web pages. :code:`hx-requests` has a built in modal to reduce boilerplate code.
-| :code:`hx-requests` comes with two flavors of a modal. `A custom Htmx modal <https://htmx.org/examples/modal-custom/>`_  and a `bootstrap modal <https://htmx.org/examples/modal-bootstrap/>`_ . You can also override these and use your own modal.
+| To use the build in modal functionality, you need to define a modal tempalte and set :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings to the path of the template.
 
-| To select which of the two modals to use, set :code:`HX_REQUESTS_MODAL_TEMPLATE` to 'hx_requests/modal.html' (this is the default), or to 'hx_requests/bootstrap_modal.html' or :ref:`override the modal <Overriding the built-in Modal>`
+Using Modals
+------------
 
-| The default modal and the bootstrap modal differ in how to use them and override them. Both are documented below.
+.. code-block:: python
 
-.. warning::
-
-    Hyperscript is used for both modals. To use either of them you will need to load Hyperscript (see :ref:`Installation`)
-
-Using a Modal
--------------
-
-Default Modal
-~~~~~~~~~~~~~
-
-HTML to load the modal
-
-.. code-block:: html
-
-    {% load hx_tags %}
-    <button
-        {% hx_get 'hx_modal' body='modal_body.html' title='My Modal' %}
-        hx-target="body"
-        hx-swap="beforeend"
-    >
-        Open Modal
-    </buton>
+    class ModalExample(HXModal):
+        name = "modal_example"
+        body_template = "modal_body.html"
 
 Notes:
-    - The body and title of the modal are passed in as kwargs. The body could be an html file OR just raw html (i.e. :code:`body=<h1>Hello</h1>`)
+    - :code:`body_template` is used with modals instead of :code:`GET_template` since the :code:`GET_template` is acutally the the entire modal
+    - HxModal's return the entire modal not just the body template
 
-.. note::
+.. code-block:: html+django
 
-    Any context needed for the modal body can be passed into the template tag as kwargs and can be accessed in the body template as :code:`hx_kwargs.{context_var_name}`
+    <button {% hx_get 'modal_example' %}
+            hx-trigger="click"
+            hx-target="#hx_modal_container"
+            >
+            Open Modal
+    </button>
 
-Bootstrap Modal
-~~~~~~~~~~~~~~~
+Notes:
+    - The :code:`hx-target` is the id of the div where the modal will be rendered. Makes sense to put an empty div with the id :code:`hx_modal_container` in the base template of your project.
 
-1. The page using the modal needs to define a container for the modal to be rendered in.
+Defining a Modal Template
+-------------------------
 
-.. code-block:: html
+To customize a modal, there are a few steps that need to be followed.
 
-    <div id="hx_modal_container"></div>
-
-If you use an the :code:`id` other than :code:`hx_modal_container`, you need to set :code:`HX_REQUESTS_MODAL_CONTAINER_ID` in settings to that :code:`id`.
-
+#. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the path of the modal template.
+#. Set the id of you modal to :code:`hx_modal_body` or set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body) in settings.
+#. Use an include for the body and add the title and modal_size_classes to the template. See the example below.
+#. Set a way for the modal to open when the modal template is rendered. See the modal example below.
+#. Set a way for the modal to close using the :code:`closeHxModal` event. See the modal example below
+#. Set a div with the id :code:`hx_modal_container` in the body of the page, this is where the modal will be rendered (the :code:`hx-target` of the request)
 
 .. tip::
 
-    Put the :code:`div` in your base html file so it can be used on any page easily
+    Put :code:`<div id="hx_modal_container"></div>` in the base template of your project.
 
-2. HTML to load the modal
+Custom Modal Example
+~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: html
+.. code-block:: html+django
 
-    {% load hx_tags %}
-    <button
-        {% hx_get 'hx_modal' body='modal_body.html' title='My Modal' %}
-        hx-target="#hx_modal_container"
-        _="on htmx:afterOnLoad wait 10ms then add .show to #hx_modal then add .show to #hx_modal_backdrop">
-        Open Modal
-    </buton>
-
-Notes:
-    - The body and title of the modal are passed in as kwargs. The body could be an html file OR just raw html (i.e. :code:`body=<h1>Hello</h1>`)
-    - Hyperscript is used here to load the modal, it can be done using JavaScript, but it's recommended to use Hyperscript
-    - :code:`hx_modal_container`, :code:`hx_modal_backdrop`, and :code:`hx_modal` are the ids when using the modal provided by :code:`hx-requests`. If you are not using the default modal and you change the ids, these values would need to reflect that.
-
-.. note::
-
-    Any context needed for the modal body can be passed into the template tag as kwargs and can be accessed in the body template as :code:`hx_kwargs.{context_var_name}`
-
-
-Overriding the built-in Modal
------------------------------
-
-To use a custom modal instead of the built-in one, there are a few steps that need to be followed.
-
-Default Modal
-~~~~~~~~~~~~~
-
-#. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
-#. Make sure the hyperscript for closing the modal is set correctly.
-
-    - The modal's close button has hyperscript that triggers the modal to close
-    - For :ref:`Form Modals`, on submit the modal only closes when the :code:`modalFormValid` event is triggered. When a form is invalid the modal stays open so the user can see the form errors. There is hyperscript that triggers the modal to close on :code:`modalFormValid`.
-
-*hx_requests/modal.html*
-
-.. code-block:: html
-
-    {% load static %}
-    <div id="modal"
-        _="on closeModal add .closing then wait for animationend then remove me"
-        _="on modalFormValid add .closing then wait for animationend then remove me">
-        <div class="modal-underlay" _="on click trigger closeModal"></div>
-        <div class="modal-content">
-            <h1>{{ title }}</h1>
-            <div class="modal-body">{{ body }}</div>
-            <br>
-            <br>
-            <button _="on click trigger closeModal">Close</button>
-        </div>
-    </div>
-    <link href="{% static 'hx_requests/css/modal.css' %}" rel="stylesheet">
-
-
-
-Bootstrap Modal
-~~~~~~~~~~~~~~~
-
-#. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the template of your modal.
-#. Set :code:`HX_REQUESTS_MODAL_BODY_SELECTOR` (a :code:`css` selector for the modal body container) in settings.
-#. Set your own 'close modal' function. See below for built in modal html and JavaScript that handles the closing of the modal.
-
-    - The modal's close button has onclick set to :code:`closeHXModal()`
-    - For :ref:`Form Modals` on submit the modal only closes when the :code:`modalFormValid` event is triggered. When a form is invalid the modal stays open so the user can see the form errors. By default the event handler for closing the modal on :code:`modalFormValid` is set for the built-in modal. When overriding the modal, make sure to add that event handler if you want the modal to stay open when the form is invalid.
-
-*hx_requests/bootstrap_modal.html*
-
-.. code-block:: html
-
-    <div id="hx_modal_backdrop"
-        class="modal-backdrop fade show"
-        style="display:block"></div>
-    <div id="hx_modal"
-        class="modal fade show"
+    <div class="modal fade"
+        {% comment %} Using Alpine.js for close, but vanilla JS can be used as well to do this {% endcomment %}
+        x-on:close-hx-modal.camel="$('#hx_modal').modal('hide')"
+        id="hx_modal"
         tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
         style="display:block">
-        <div class="modal-dialog modal-dialog-centered">
+        {% comment %} Modal size classes {% endcomment %}
+        <div role="document" class="modal-dialog {{ modal_size_classes }}">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ title }}</h5>
+                    {% comment %} Title {% endcomment %}
+                    <h5 id="hx-modal-title" class="modal-title">{{ title|default_if_none:""|safe }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <p>{{ body }}</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeHXModal()">Close</button>
+                {% comment %} Modal body id {% endcomment %}
+                <div class="modal-body" id="hx_modal_body" >
+                    {% comment %} How to include the body {% endcomment %}
+                    <p >{% include body %}</p>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        function closeHXModal() {
-            const container = document.getElementById('{{modal_container_id}}')
-            const backdrop = document.getElementById("hx_modal_backdrop")
-            const modal = document.getElementById("hx_modal")
+    {% comment %} Opens the modal when this template is rendered {% endcomment %}
+    <script>$('#hx_modal').modal();</script>
 
-            modal.classList.remove("show")
-            backdrop.classList.remove("show")
 
-            setTimeout(function () {
-                container.innerHTML = ''
-            }, 200)
-    }
-        document.addEventListener('modalFormValid',closeHXModal)
-    </script>
+.. note::
+
+    - `Alpine.js <https://alpinejs.dev/>`_ works very nicely with Htmx
+
 
 Form Modals
 -----------
@@ -176,22 +98,21 @@ The page HTML
     <button {% hx_get 'edit_user_modal' object=request.user %}
             hx-trigger="click"
             hx-target="#hx_modal_container"
-            _="on htmx:afterOnLoad wait 10ms then add .show to #hx_modal then add .show to #hx_modal_backdrop">
+            >
             Open Modal
     </button>
 
 Notes:
-    - This is a button for triggering a boostrap modal
+    - This is a button for triggering a modal
     - The object is passed in here becasue it is the model instance of the model form and it's the instance that's used for initializing the form
-    - Hyperscript is used here to load the modal, it can be done using JavaScript, but it's recommended to use Hyperscript
-    - :code:`hx_modal_container`, :code:`hx_modal_backdrop`, and :code:`hx_modal` are the ids when using the modal provided by :code:`hx-requests`. If you are not using the default modal and you change the ids, these values would need to reflect that.
+    - The :code:`hx-target` is the id of the div where the modal will be rendered. Makes sense to put an empty div with the id :code:`hx_modal_container` in the base template of your project.
 
 .. code-block:: python
 
     class EditUserModal(HXFormModal):
         name = "edit_user_modal"
         form_class = UserInfoForm
-        GET_template = 'form.html' # Used as the body of the modal
+        body_template = 'form.html' # Used as the body of the modal
         POST_template = '...' # This works the same as any POST_template
 
 Notes:

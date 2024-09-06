@@ -6,19 +6,21 @@
 hx-requests
 ===========
 
-Hx-requests is a package to simplify the usage of htmx with Django.
-It enables an application to make asyncronous requests without clogging up
-views and urls with extra code. It simplifies making django forms post asyncronously
+Hx-requests is a package to simplify the usage of htmx with Django CBV Views.
+It enables an application to make asynchronous requests without clogging up
+views and urls with extra code. It simplifies making django forms post asynchronously
 with htmx, and many other awesome features.
 
 .. toctree::
    :maxdepth: 2
    :caption: Guide
 
+   guide/overview
    guide/installation
    guide/quickstart
    guide/forms
    guide/blocks
+   guide/out_of_band
    guide/delete
    guide/modals
    guide/messages

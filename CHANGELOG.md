@@ -2,6 +2,315 @@
 
 <!--next-version-placeholder-->
 
+## v0.32.1 (2024-09-04)
+
+### Fix
+
+* Fix bug with get_views_context ([`f6ed918`](https://github.com/yaakovLowenstein/hx-requests/commit/f6ed918e4dbbf5cd4845da17a0d1174055fb2e1f))
+
+## v0.32.0 (2024-09-04)
+
+### Feature
+
+* Add refresh_views_context_on_POST to BaseHXRequest ([`bce66bd`](https://github.com/yaakovLowenstein/hx-requests/commit/bce66bd7f6bf1121b60b25bde7f6aa7d8e3f9c58))
+
+### Documentation
+
+* Add docs for refresh_views_context_on_POST ([`723a491`](https://github.com/yaakovLowenstein/hx-requests/commit/723a491af621ec446edfc91c802e44295348304e))
+* Add motivation page ([`1c0cd57`](https://github.com/yaakovLowenstein/hx-requests/commit/1c0cd5788ca688662e555382db41a7e3415b388a))
+
+## v0.31.1 (2024-08-14)
+
+### Fix
+
+* Update changelog for breaking changes ([`8df969f`](https://github.com/yaakovLowenstein/hx-requests/commit/8df969f124f9cce3146df045e51a671ade8423c5))
+
+## v0.31.0 (2024-08-14)
+
+This version is a major update with lots of breaking changes. However, still only a minor version bump
+because the package is still under development. Though, this release gets us closer to a mature package
+and a 1.0.0 release
+
+### Feature
+
+* Add hx_url template tag ([`3c47bbb`](https://github.com/yaakovLowenstein/hx-requests/commit/3c47bbb6e0be54ce97c3291eda656d7031e1e523))
+* Use RequestContext for hx_request context ([`b4e19fc`](https://github.com/yaakovLowenstein/hx-requests/commit/b4e19fccfcd1a29153df59db30a52d9cf78a3e1e))
+* Change the way HXRequests are registered ([`ea2ee74`](https://github.com/yaakovLowenstein/hx-requests/commit/ea2ee742575534fce71e033e3e489b6608bf95b4))
+
+### Fix
+
+* Fix bug in HtmxViewMixin._get_hx_request_classes ([`e797a2e`](https://github.com/yaakovLowenstein/hx-requests/commit/e797a2ea5c47a144fdc547b3971ef86d64ad276a))
+* Raise an exception if duplicate HXRequest names are found ([`7c9fa47`](https://github.com/yaakovLowenstein/hx-requests/commit/7c9fa47a2cdf51fada1e61adabe5f44de5c5caaa))
+
+### Documentation
+
+* Update docs to reflect changes in messages setting ([`5865870`](https://github.com/yaakovLowenstein/hx-requests/commit/5865870ecee3d4dd9f72c7d39adf5a28c02ec841))
+* Update docs for delete HX request ([`6c6b94b`](https://github.com/yaakovLowenstein/hx-requests/commit/6c6b94bdaf0d769fc168828d3dc3b3d2463becb8))
+
+### Breaking
+
+* hx_requests no longer have an extra_context attribute.
+* The hx_messages module has been removed.
+    Messages are now set using Django's messaging framework.
+    The HXMessages class has been removed and the messages attribute
+    has been removed from the BaseHXRequest class. Messages are
+    now set using Django's messages module.
+
+    `self.messages.success()` has been replaced with`messages.success(request, message)`
+    and the same for `self.messages.error()`, `self.messages.warning()`,
+    `self.messages.info()` and `self.messages.debug()`. ([`35caf9a`](https://github.com/yaakovLowenstein/hx-requests/commit/35caf9a58ae4a5eee78c7de8200bff177bc13e29))
+* `DeleteHXRequest`'s `handle_delete` has been updated to `delete`. If you have overridden `handle_delete`
+    in your `DeleteHXRequest`, you will need to change it to `delete`. ([`4022933`](https://github.com/yaakovLowenstein/hx-requests/commit/4022933d26db5d649eba12efa1346fd296ea29f0))
+* modalFormValid is renamed to closeHxModal. All trigger's of modalFormValid need to be replaced with closeHxModal.
+    The modal template as well will need to be updated to handle closeHxModal.(and if using Alpin.js modal-form-valid
+    needs to be changed to close-hx-modal) ([`786c6a3`](https://github.com/yaakovLowenstein/hx-requests/commit/786c6a334d5227bc7d158f58bdbe609422080e37))
+* The render_hx template tag has been removed.
+    It has been replaced by the hx_get and hx_post template tags.
+    The hx_get and hx_post template tags are more explicit
+    and easier to understand. The render_hx template tag was
+    confusing and not as clear as the hx_get and hx_post template tags. ([`0018ca5`](https://github.com/yaakovLowenstein/hx-requests/commit/0018ca563170d9cd9100b80ce9c26c139d856afe))
+* `get_post_context_data` has been renamed to `get_context_on_POST` for consistency with the other methods. ([`971ec74`](https://github.com/yaakovLowenstein/hx-requests/commit/971ec74d0e07e2c94b83fcc425ae9ca30395dfb8))
+* Underscores have been added to private methods
+    in the hx_requests module.
+
+    setup_hx_request -> _setup_hx_request
+    render_templates -> _render_templates
+    get_messages_html -> _get_messages_html
+    get_response -> _get_response ([`7af28b3`](https://github.com/yaakovLowenstein/hx-requests/commit/7af28b3f2316321b247babf75679e9e6dc52ff42))
+* Default message setting was moved from the post method to form_valid and form_invalid.
+  Therefore if form_valid or form_invalid are overridden messages need to be explicitly set
+  in those methods. ([`bcf9df2`](https://github.com/yaakovLowenstein/hx-requests/commit/bcf9df2758830d055d4b796558ac62ede4b71057))
+* The way the view's context is added to the hx-request's context has changed. The new way is more efficient but is also breaking.
+  The view's context is now setup prior to the form_valid. Therefore updates in the form_valid will not be reflected
+  in the context of the POST_template. To refresh the view's context for the POST_template, set refresh_views_context_on_POST to True.
+  **Note**: This is only really needed in detail views. List views use querysets which are lazy evaluated and therefore do pick up
+            on changes made in form_valid. The detail view uses a model instance and therefore is evaluated.
+## What's Changed
+* Major Changes by @yaakovLowenstein in https://github.com/yaakovLowenstein/hx-requests/pull/102
+
+
+**Full Changelog**: https://github.com/yaakovLowenstein/hx-requests/compare/v0.30.0...v0.31.0
+
+## v0.30.0 (2024-08-09)
+
+### Feature
+
+* Add get_context_on_GET ([`d31f4e6`](https://github.com/yaakovLowenstein/hx-requests/commit/d31f4e67bfe0a58e57394d5ef8af01a37f8f631e))
+
+## v0.29.3 (2024-07-25)
+
+### Fix
+
+* Fix bug with triggers ([`44e9edf`](https://github.com/yaakovLowenstein/hx-requests/commit/44e9edfa63473efb3fa1a833e9d965985c8eb8a5))
+
+## v0.29.2 (2024-07-18)
+
+### Fix
+
+* Reset swap type when form invalid ([`0f51bf4`](https://github.com/yaakovLowenstein/hx-requests/commit/0f51bf42f7d5f6e9e4c8a5216b13a4c362185d8d))
+
+## v0.29.1 (2024-07-17)
+
+### Fix
+
+* Update django-render-block to 0.10 ([`4084ccc`](https://github.com/yaakovLowenstein/hx-requests/commit/4084ccc2e341c3f8e7351f132d76c78233cc1a4f))
+
+## v0.29.0 (2024-07-10)
+
+### Feature
+
+* Move view's get call to the hx_request ([`7e79422`](https://github.com/yaakovLowenstein/hx-requests/commit/7e794225694ff2b2b2cae479dd17f4a2417554fc))
+
+### Breaking
+
+* Everything should work as before, however it is breaking because the setup_hx_request function now has parameters for *args and **kwargs. These are the view's args and kwargs and are needed to setup the view from the hx_request ([`7e79422`](https://github.com/yaakovLowenstein/hx-requests/commit/7e794225694ff2b2b2cae479dd17f4a2417554fc))
+
+## v0.28.1 (2024-05-15)
+
+### Fix
+
+* Fix get_triggers method in HXFormModal class when form is invalid ([`df23c7a`](https://github.com/yaakovLowenstein/hx-requests/commit/df23c7a528e834277c86da29d396c5703ba3cdce))
+
+## v0.28.0 (2024-05-02)
+
+### Feature
+
+* Json serialize date, datetime, decimal ([`8a4db23`](https://github.com/yaakovLowenstein/hx-requests/commit/8a4db236eee07e8594014ff16fd67f0358b40faf))
+
+## v0.27.2 (2024-03-29)
+
+### Fix
+
+* Fix bug with modal_template ([`6924cdc`](https://github.com/yaakovLowenstein/hx-requests/commit/6924cdc64f58de9e8dedc3708e8e174c6f4a1528))
+
+## v0.27.1 (2024-03-29)
+
+### Fix
+
+* Fix bug with misnamed variable ([`154a119`](https://github.com/yaakovLowenstein/hx-requests/commit/154a119fe43e37c5a80c061bd3564c05655e3616))
+
+## v0.27.0 (2024-03-29)
+
+### Feature
+
+* Remove modal templates ([`c27e317`](https://github.com/yaakovLowenstein/hx-requests/commit/c27e3174fb7063829175c46942668017d262ecdf))
+* Add the ability to set the modal title and body classes ([`e8037ba`](https://github.com/yaakovLowenstein/hx-requests/commit/e8037ba2188faf37f2778ea22111ec259cd20504))
+
+### Fix
+
+* Use body_template instead of GET_template for HXModal ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* Change HX_REQUESTS_MODAL_BODY_SELECTOR to HX_REQUESTS_MODAL_BODY_ID ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
+
+### Breaking
+
+* The default modal templates have been removed. You will need to create your own modal templates if you want to use the modal functionality. See the docs for more information. ([`c27e317`](https://github.com/yaakovLowenstein/hx-requests/commit/c27e3174fb7063829175c46942668017d262ecdf))
+* The GET_template is no longer used for the HXModal. Instead the body_template is used. What was previously set as GET_template should now be set as body_template. ([`f28723e`](https://github.com/yaakovLowenstein/hx-requests/commit/f28723ea3cb1b341e1e7e48544d99af9c2b4377f))
+* HX_REQUESTS_MODAL_BODY_SELECTOR is now HX_REQUESTS_MODAL_BODY_ID and the default is now #hx_modal_body. (set hx_modal_body as the html id on the modal body) ([`b79abde`](https://github.com/yaakovLowenstein/hx-requests/commit/b79abde9e0067579872833605a19cec4d09eb105))
+
+### Documentation
+
+* Update docs for modals ([`25ce372`](https://github.com/yaakovLowenstein/hx-requests/commit/25ce372535bcff29643809182cca0e1ab42a9875))
+
+## v0.26.2 (2024-03-26)
+
+### Fix
+
+* Fix issue with lists in GET params ([`a83fada`](https://github.com/yaakovLowenstein/hx-requests/commit/a83fadaeb24b9b2a9b6ede94cc5cec2cb8a43f3e))
+
+## v0.26.1 (2024-03-25)
+
+### Fix
+
+* Fix issue with extra_context overriding regular context ([`cd955c7`](https://github.com/yaakovLowenstein/hx-requests/commit/cd955c70223efa13e96ed5a8d68d23ad8fb2ff04))
+
+## v0.26.0 (2024-03-21)
+
+### Feature
+
+* Add kwargs_as_context option to BaseHXRequest ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
+
+### Breaking
+
+* kwargs will now be added to the context directly by default. If you do not want this, you can set kwargs_as_context to False. Any code that relies on kwargs being in the hx_kwargs context variable will need to be updated to use the new context. For example, if you were doing `hx_kwargs.some_key` in the template you will need to change it to `some_key` OR set kwargs_as_context to False. ([`8eecaa6`](https://github.com/yaakovLowenstein/hx-requests/commit/8eecaa61bcbcfeab6a7d2774fd794711ccbcd285))
+
+### Documentation
+
+* Update docs ([`13ce5fd`](https://github.com/yaakovLowenstein/hx-requests/commit/13ce5fd94e37fa8d8fc5fec3f8b3f86735de6437))
+
+## v0.25.0 (2024-03-11)
+
+### Feature
+
+* Add option to set initial in form from kwargs ([`b140786`](https://github.com/yaakovLowenstein/hx-requests/commit/b140786b26167ee5c257c2f6d7ec431c794a66f2))
+
+## v0.24.0 (2024-03-11)
+
+### Feature
+
+* Add method to set HX-Trigger ([`a66efcf`](https://github.com/yaakovLowenstein/hx-requests/commit/a66efcf94665256fe20696e25e5ee15ef902c28e))
+
+## v0.23.1 (2024-03-11)
+
+### Fix
+
+* Fix the way serialization is being done ([`f510a53`](https://github.com/yaakovLowenstein/hx-requests/commit/f510a531c36a283bb9dfdba7a62e2f398f7d0e9d))
+
+## v0.23.0 (2024-03-05)
+
+### Feature
+
+* Change message tag to tags and add __str__ method to Message ([`c006405`](https://github.com/yaakovLowenstein/hx-requests/commit/c006405ab5b77e4b4bc6705ec73c7c39fc1ebac8))
+
+## v0.22.0 (2024-03-04)
+
+### Feature
+
+* Only call get_context_data if the view defines one ([`d904b12`](https://github.com/yaakovLowenstein/hx-requests/commit/d904b12c846b1b8befa9bc85a4762b9ff71af463))
+* Add opt-out for views context `get_views_context` ([`9df3c17`](https://github.com/yaakovLowenstein/hx-requests/commit/9df3c17e5b223cad9010f879d482c5e6d0155cb7))
+* Change the way 'gets' are handled ([`881b596`](https://github.com/yaakovLowenstein/hx-requests/commit/881b596ad53dec40ee78bd311fc71693493ae214))
+
+### Documentation
+
+* Add documentation for get_views_context ([`df4e689`](https://github.com/yaakovLowenstein/hx-requests/commit/df4e689282e019dc41f91cbfa002b8df2f62f168))
+* Add documentation about setting up views' gets ([`857e522`](https://github.com/yaakovLowenstein/hx-requests/commit/857e522366e589f94af612ea41fc5ad937b666ab))
+
+## v0.21.0 (2024-02-29)
+
+### Feature
+
+* Add support for using a dict for blocks ([`eed8baf`](https://github.com/yaakovLowenstein/hx-requests/commit/eed8baf471928f0846f8136921db42d8b1a7108c))
+
+### Documentation
+
+* Update README.md contributing section ([`4e65870`](https://github.com/yaakovLowenstein/hx-requests/commit/4e6587065a4e13daf0673fe739d96cbb20c7e34b))
+* Add a docstring to the render_templates method ([`dfc8a31`](https://github.com/yaakovLowenstein/hx-requests/commit/dfc8a316d65ff9a9609b7023d987c5b085d6ee2e))
+* Add more examples for out-of-band swaps ([`88d7805`](https://github.com/yaakovLowenstein/hx-requests/commit/88d78052f446f00add9c0788b1b6354e3dc53920))
+
+## v0.20.4 (2024-02-27)
+
+### Fix
+
+* Fix bug that the views kwargs were not passed to get_context_data ([`4083e5c`](https://github.com/yaakovLowenstein/hx-requests/commit/4083e5c6a17c1552ca828d5fd0dfead2291f28ec))
+
+## v0.20.3 (2024-02-23)
+
+### Fix
+
+* Fix a couple of bugs in get_url ([`5f388d8`](https://github.com/yaakovLowenstein/hx-requests/commit/5f388d8c8741fbd639a7cd25f5c75f341f55e29e))
+
+## v0.20.2 (2024-02-12)
+
+### Fix
+
+* Fix bug with url kwargs ([`8b38ef6`](https://github.com/yaakovLowenstein/hx-requests/commit/8b38ef6cb91c410053dbad471e126078f8fe846e))
+
+## v0.20.1 (2024-02-09)
+
+### Fix
+
+* Fix bugs in serialization and with use_full_path ([`a429e89`](https://github.com/yaakovLowenstein/hx-requests/commit/a429e89eed2897bc97a7b3515d16083b9b2d3466))
+
+### Documentation
+
+* Use html+django for syntax highlighting in html code blocks ([`7d4aca0`](https://github.com/yaakovLowenstein/hx-requests/commit/7d4aca0db6aaf0fd830ed63ca1ddf0804f2a043c))
+
+## v0.20.0 (2024-02-09)
+
+### Feature
+
+* Allow multiple templates and blocks to be passed in ([`a48a179`](https://github.com/yaakovLowenstein/hx-requests/commit/a48a179aa894cac24f7383c95a6ff475c4032111))
+
+### Documentation
+
+* Add documentation for out-of-band ([`76a3f49`](https://github.com/yaakovLowenstein/hx-requests/commit/76a3f497a4de889ff9562c6429232c351138ffb7))
+
+## v0.19.0 (2024-02-08)
+
+### Feature
+
+* Pass extra kwargs to hx request setup ([`8551bab`](https://github.com/yaakovLowenstein/hx-requests/commit/8551babc28ddd4f76923e4a5425dfdaabb0e7315))
+* Route hx request directly to hx request handler ([`a053727`](https://github.com/yaakovLowenstein/hx-requests/commit/a053727ad38b32ed7be7e4c892148c9411ac4d7c))
+
+### Fix
+
+* Update kwargs with extras instead overriding ([`392452f`](https://github.com/yaakovLowenstein/hx-requests/commit/392452fe35890aefa2556ea7a28a4e41f0f57b72))
+
+## v0.18.4 (2024-02-08)
+
+### Fix
+
+* Remove View inheritance from HtmxViewMixin ([`64fa163`](https://github.com/yaakovLowenstein/hx-requests/commit/64fa163fc197853e5394c6aa23e9823f69b0ccf0))
+
+### Documentation
+
+* Update view docs ([`9fa8f01`](https://github.com/yaakovLowenstein/hx-requests/commit/9fa8f0134c45d3c4d030fab5e8f2f757ece36b23))
+
+## v0.18.3 (2024-02-08)
+
+### Fix
+
+* Exception when missing csrf ([`0c49042`](https://github.com/yaakovLowenstein/hx-requests/commit/0c49042bd723e34148cb20d64e846ebd92a574a6))
+
 ## v0.18.2 (2024-02-07)
 
 ### Fix

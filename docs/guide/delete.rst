@@ -22,11 +22,12 @@ Notes:
         name = "delete_user"
         POST_template = "..." # html returned on post (used to update DOM)
 
-        def handle_delete(self, **kwargs) -> str:
-            # This is the default handle_delete
+        def delete(self, **kwargs) -> str:
+            # This is the default delete
 
             self.hx_object.delete()
-            return self.get_response(**kwargs)
+            messages.success(self.request, self.get_success_message(**kwargs))
+            return self._get_response(**kwargs)
 
 Notes:
     - Very simple way to delete asyncronously.

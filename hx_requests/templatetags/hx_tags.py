@@ -8,32 +8,46 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def render_hx(
-    context: Dict, hx_request_name: str, method: str = "get", object=None, use_full_path=False, **kwargs
+def hx_get(
+    context: Dict, hx_request_name: str, object=None, use_full_path=False, **kwargs
 ) -> str:
     """
-    Renders out the hx-post or hx-get with the correct url along with all kwargs
-    turned into GET params.
+    Renders the proper HTML attributes for an HX GET request.
+    And includes the hx_request_name, object, and any additional kwargs.
     """
-    url = get_url(context, hx_request_name, object,use_full_path ,**kwargs)
+    url = get_url(context, hx_request_name, object, use_full_path, **kwargs)
+    return f"hx-get={url}"
 
+
+@register.simple_tag(takes_context=True)
+def hx_post(
+    context: Dict, hx_request_name: str, object=None, use_full_path=False, **kwargs
+) -> str:
+    """
+    Renders the proper HTML attributes for an HX POST request.
+    And includes the hx_request_name, object, and any additional kwargs.
+    Also includes the CSRF token if available.
+    """
+    url = get_url(context, hx_request_name, object, use_full_path, **kwargs)
+    hx_attrs = f"hx-post={url}"
     token = get_csrf_token(context)
-    return f""" hx-{method}={url}
-                hx-headers={{"X-CSRFTOKEN":"{token}"}}
-            """
+    if token:
+        hx_attrs += f' hx-headers={{"X-CSRFTOKEN":"{token}"}}'
+    return hx_attrs
 
 
 @register.simple_tag(takes_context=True)
-def hx_get(context: Dict, hx_request_name: str, object=None, use_full_path=False, **kwargs) -> str:
+def hx_url(
+    context: Dict, hx_request_name: str, object=None, use_full_path=False, **kwargs
+) -> str:
     """
-    Same as render_hx EXCEPT that it is specifically for 'get' requests.
-    """
-    return render_hx(context, hx_request_name, method="get", object=object, use_full_path=use_full_path, **kwargs)
+    Returns the URL for an HX request. Can be used when you need to manually set the URL in a template.
+    Useful if the hx-get or hx-post tags are not flexible enough for your use case.
+    For example:
 
+    ```
+    hx-get="{% hx_url 'my-hx-request' object %}"
 
-@register.simple_tag(takes_context=True)
-def hx_post(context: Dict, hx_request_name: str, object=None,use_full_path=False ,**kwargs) -> str:
+    ```
     """
-    Same as render_hx EXCEPT that it is specifically for 'post' requests.
-    """
-    return render_hx(context, hx_request_name, method="post", object=object, use_full_path=use_full_path, **kwargs)
+    return get_url(context, hx_request_name, object, use_full_path, **kwargs)

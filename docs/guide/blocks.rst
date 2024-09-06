@@ -12,7 +12,7 @@ Using the example from :ref:`forms <HTML>`, instead of using an :code:`include`,
 
 *user_info_page.html* (what it originally was)
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info">
@@ -31,7 +31,7 @@ Using the example from :ref:`forms <HTML>`, instead of using an :code:`include`,
 
 *user_info_page.html* (modified to use block rendering)
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <div id="user_info">
@@ -86,7 +86,7 @@ Another Example
 
 *big_template.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     ....
@@ -108,7 +108,7 @@ Another Example
 
 *user_form.html*
 
-.. code-block:: html
+.. code-block:: html+django
 
     {% load hx_tags %}
     <td colspan="2">
