@@ -33,7 +33,9 @@ class HXRequestRegistry:
                             continue
                         cls._processed_classes.add(obj)
 
-                        if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
+                        if issubclass(obj, BaseHXRequest) and getattr(
+                            obj, "name", None
+                        ):
                             cls.register_hx_request(obj.name, obj)
                 except ModuleNotFoundError:
                     continue
