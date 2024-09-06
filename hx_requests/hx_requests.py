@@ -95,10 +95,7 @@ class BaseHXRequest:
 
     @cached_property
     def use_messages(self):
-        return (
-            getattr(settings, "HX_REQUESTS_USE_HX_MESSAGES", False)
-            and self.show_messages
-        )
+        return getattr(settings, "HX_REQUESTS_USE_HX_MESSAGES", False) and self.show_messages
 
     def get_context_data(self, **kwargs) -> Dict:
         """
@@ -164,9 +161,7 @@ class BaseHXRequest:
             self.hx_object = self.get_hx_object(request)
 
     def hx_object_to_str(self) -> str:
-        return (
-            self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
-        )
+        return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
 
     def get_headers(self, **kwargs) -> Dict:
         """
@@ -200,9 +195,7 @@ class BaseHXRequest:
             if self.refresh_page or self.redirect or self.return_empty:
                 html = ""
             else:
-                html = self._render_templates(
-                    self.POST_template, self.POST_block, **kwargs
-                )
+                html = self._render_templates(self.POST_template, self.POST_block, **kwargs)
 
         else:
             html = self._render_templates(self.GET_template, self.GET_block, **kwargs)
@@ -219,9 +212,7 @@ class BaseHXRequest:
         If blocks is a dict then it renders the blocks per the templates in the dict.
         """
         context = self.get_context_data(**kwargs)
-        render_with_context = partial(
-            self.renderer.render, context=context, request=self.request
-        )
+        render_with_context = partial(self.renderer.render, context=context, request=self.request)
         html = ""
 
         # If both are strings then its one template and possibly one block
@@ -262,9 +253,8 @@ class BaseHXRequest:
     def _get_messages_html(self, **kwargs) -> str:
         messages = get_messages(self.request)
         if messages:
-
             return render_to_string(
-                getattr(settings, "HX_REQUESTS_HX_MESSAGES_TEMPLATE"),
+                settings.HX_REQUESTS_HX_MESSAGES_TEMPLATE,
                 {"messages": messages},
                 self.request,
             )
@@ -275,9 +265,8 @@ class BaseHXRequest:
         Gets the response.
         """
         html = self.get_response_html(**kwargs)
-        if self.use_messages:
-            if not (self.refresh_page or self.redirect):
-                html += self._get_messages_html(**kwargs)
+        if self.use_messages and not (self.refresh_page or self.redirect):
+            html += self._get_messages_html(**kwargs)
 
         return HttpResponse(
             html,
@@ -397,7 +386,7 @@ class FormHXRequest(BaseHXRequest):
                     "files": self.request.FILES,
                 }
             )
-        if getattr(self, "hx_object"):
+        if self.hx_object:
             form_kwargs.update({"instance": self.hx_object})
         return form_kwargs
 
@@ -421,9 +410,7 @@ class FormHXRequest(BaseHXRequest):
         a custom message.
         """
         message = (
-            f"{self.hx_object_to_str()} Saved Successfully."
-            if self.hx_object
-            else "Saved Successfully"
+            f"{self.hx_object_to_str()} Saved Successfully." if self.hx_object else "Saved Successfully"
         )
         return message
 
@@ -515,9 +502,7 @@ class HXModal(BaseHXRequest):
     def modal_template(self):
         modal_template = getattr(settings, "HX_REQUESTS_MODAL_TEMPLATE", None)
         if not modal_template:
-            raise Exception(
-                "HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal"
-            )
+            raise Exception("HX_REQUESTS_MODAL_TEMPLATE needs to be set in settings to use HXModal")
         return modal_template
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -536,9 +521,7 @@ class HXModal(BaseHXRequest):
         """
         context = super().get_context_data(**kwargs)
         context["title"] = kwargs.get("title", self.title)
-        context["modal_size_classes"] = kwargs.get(
-            "modal_size_classes", self.modal_size_classes
-        )
+        context["modal_size_classes"] = kwargs.get("modal_size_classes", self.modal_size_classes)
         context["body"] = self.body_template
         return context
 

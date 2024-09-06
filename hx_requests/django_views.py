@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 
 
 def list_view_get(self, request, *args, **kwargs):
@@ -9,9 +10,7 @@ def list_view_get(self, request, *args, **kwargs):
         # When pagination is enabled and object_list is a queryset,
         # it's better to do a cheap query than to load the unpaginated
         # queryset in memory.
-        if self.get_paginate_by(self.object_list) is not None and hasattr(
-            self.object_list, "exists"
-        ):
+        if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, "exists"):
             is_empty = not self.object_list.exists()
         else:
             is_empty = not self.object_list
