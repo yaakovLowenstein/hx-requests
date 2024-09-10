@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.33.0 (2024-09-10)
+
+### Breaking
+
+* cleanup package versions ([`ed928a0`](https://github.com/yaakovLowenstein/hx-requests/commit/ed928a0049dadd4871c95404879dc0c7b1aa4e72))
+
+### Documentation
+
+* Update CHANGELOG.md ([`c537c8a`](https://github.com/yaakovLowenstein/hx-requests/commit/c537c8a97c2d8485325fe45fc087f5b064106844))
+
 ## v0.32.1 (2024-09-04)
 
 ### Fix
