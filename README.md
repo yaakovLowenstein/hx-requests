@@ -46,12 +46,11 @@ Hyperscript: `<script src="https://unpkg.com/hyperscript.org@0.9.8"></script>`
 
 # Contributing to this repository
 
-**Warning CI is not setup yet, but will be at a later date.**
 ## Getting setup
 
 - This project is using poetry
+- pre-commit is used for CI (code formatting, linting, etc...)
 - There is a dev container that can be used with vs-code
-
 
 
 ## Committing
