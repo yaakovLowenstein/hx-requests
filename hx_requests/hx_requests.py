@@ -76,7 +76,7 @@ class BaseHXRequest:
     GET_template: Union[str, list] = ""
     POST_template: Union[str, list] = ""
     GET_block: Union[str, list] = ""
-    POST_block: Union[str, list] = ""
+    POST_block: Union[str, list, dict[str, str]] = ""
     refresh_page: bool = False
     redirect: str = None
     return_empty: bool = False
