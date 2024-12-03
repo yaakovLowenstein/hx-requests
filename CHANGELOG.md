@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.33.1 (2024-12-03)
+
+### Fix
+
+* Use base manager to get model instance ([`69de1d1`](https://github.com/yaakovLowenstein/hx-requests/commit/69de1d14b32c9790bca62ece772eb3d825c66dca))
+
+### Documentation
+
+* Replace black with ruff badge in readme ([`85c4f58`](https://github.com/yaakovLowenstein/hx-requests/commit/85c4f581d3a7161535f2c8c1103c96673c27d54e))
+* README.md to reflect new CI ([`c56b7ff`](https://github.com/yaakovLowenstein/hx-requests/commit/c56b7ffdc80991bd9090201703b2f0ef2a43461b))
+
 ## v0.33.0 (2024-09-10)
 
 ### Breaking
