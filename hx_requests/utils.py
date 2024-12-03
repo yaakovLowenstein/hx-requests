@@ -23,7 +23,8 @@ def deserialize(value):
         value = value.replace(MODEL_INSTANCE_PREFIX, "")
         app_label, model_name, pk = value.split(__)
         model = apps.get_model(app_label, model_name)
-        return model.objects.get(pk=pk)
+        manager = model._base_manager
+        return manager.get(pk=pk)
     return json.loads(value)
 
 
