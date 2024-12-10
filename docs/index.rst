@@ -13,10 +13,15 @@ with htmx, and many other awesome features.
 
 .. toctree::
    :maxdepth: 2
+   :caption: General
+
+   tutorials/index
+
+.. toctree::
+   :maxdepth: 2
    :caption: Guide
 
    guide/overview
-   guide/installation
    guide/quickstart
    guide/forms
    guide/blocks
