@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.33.2 (2024-12-10)
+
+### Fix
+
+* Adjust POST_block type hints to reflect acceptable usage ([`90ab2f9`](https://github.com/yaakovLowenstein/hx-requests/commit/90ab2f90a2b63fd6cbee31286864dc51942bf89e))
+
+### Documentation
+
+* Add documentation for POST_block usage ([`b0f255c`](https://github.com/yaakovLowenstein/hx-requests/commit/b0f255c16d97371b96252eff90b89236a96833a7))
+
 ## v0.33.1 (2024-12-03)
 
 ### Fix
