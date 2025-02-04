@@ -498,7 +498,15 @@ class HXModal(BaseHXRequest):
         return modal_template
 
     def get_response_html(self, **kwargs) -> str:
+        if self.is_post_request is False:
+            return self._get_modal_html(kwargs)
+        return super().get_response_html(**kwargs)
+
+    def _get_modal_html(self, kwargs):
+        # Turn the GET_template into the body of the modal
         body_html = super().get_response_html(**kwargs)
+
+        # Add the body to the context of the modal template
         modal_context = {
             "modal_size_classes": kwargs.get(
                 "modal_size_classes", self.modal_size_classes
