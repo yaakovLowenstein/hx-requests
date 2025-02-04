@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.0 (2025-02-04)
+
+### Fix
+
+* Replace HXRequest with HxRequest in the documentation ([`dbde0fe`](https://github.com/yaakovLowenstein/hx-requests/commit/dbde0fe430a9876bc478f7161d07e9ffc23becd5))
+* Rename HxRequest classes to be more semantic ([`03a4442`](https://github.com/yaakovLowenstein/hx-requests/commit/03a4442390abe7a170e0100412412c1de292fe22))
+
+### Breaking
+
+* Imports and references to the classes need to be updated. BaseHXRequest -> BaseHxRequest FormHXRequest -> FormHxRequest DeleteHxRequest -> DeleteHxRequest HXModal -> ModalHxRequest HXFormModal -> FormModalHxRequest ([`03a4442`](https://github.com/yaakovLowenstein/hx-requests/commit/03a4442390abe7a170e0100412412c1de292fe22))
+
 ## v0.34.0 (2025-02-04)
 
 ### Feature
