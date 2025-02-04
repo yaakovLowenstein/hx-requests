@@ -68,9 +68,9 @@ View handling multiple Htmx requests:
     class MyView(View):
         def get(self, request):
             if request.headers.get("HX-Request"):
-                if request.headers.get("HX-Request-Name") == "get_user_info":
+                if request.headers.get("Unique-Identifier") == "get_user_info":
                     return render(request, "user_info_card.html")
-                if request.headers.get("HX-Request-Name") == "get_user_profile":
+                if request.headers.get("Unique-Identifier") == "get_user_profile":
                     return render(request, "user_profile_card.html")
             return render(request, "my_template.html")
 
@@ -109,7 +109,6 @@ Every Htmx request is routed to a separate view.
 
 Issues with this:
 
-Suggested change
 * There's a lot of extra URL handling, as every Htmx request needs a url.
 * The context is not shared across views. This is a major issue because if the parent page view does some logic to set up context,
   that context is not available in the Htmx request views and would need to be duplicated. In the contrived example above, a mixin or helper
@@ -122,14 +121,14 @@ Suggested change
 **Hx-requests**
 
 :code:`hx-requests` solves all of these issues. It allows for multiple Htmx requests on the same page, and the context is shared across all of the Htmx requests.
-Every Htmx request routes to an hx-request.
+Every Htmx request routes to an :ref:`hx-request <What Are hx-requests?>`.
 
 Therefore:
 
 * The parent view is not clogged up with extra logic to handle many Htmx requests
 * Reusable HXRequests across views. Since they are not directly tied to the view (even though they can use the view's context) they can be reused across views.
 * No extra urls are needed
-* The context is shared across all Htmx requests because the parent view routes the Htmx request to the correct hx-request giving the hx-request access to the all the view's attributes and context.
+* The view's context is shared across all Htmx requests because the parent view routes the Htmx request to the correct hx-request giving the hx-request access to the all the view's attributes and context.
 
 Additionally, :code:`hx-requests` has built in functionality that helps with common Htmx use cases.
 
