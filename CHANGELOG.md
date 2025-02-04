@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v0.34.0 (2025-02-04)
+
+### Feature
+
+* Use GET_template and GET_block for modal body ([`3c12f24`](https://github.com/yaakovLowenstein/hx-requests/commit/3c12f24a8d551efbe11db75e4849ef07494fc0ed))
+* Add support for nested hx-requests in hx_requests dir ([`250b93c`](https://github.com/yaakovLowenstein/hx-requests/commit/250b93c24b7641e18e96304377c52649bb45a9e9))
+* Add support for multiple blocks per template ([`627339e`](https://github.com/yaakovLowenstein/hx-requests/commit/627339e72adcfd3eb12be23cb78cd85161ddb41b))
+* Add block list support when using a dict ([`dc6aec6`](https://github.com/yaakovLowenstein/hx-requests/commit/dc6aec6a5be5e471b8d1cead24ca1603c30879b5))
+
+### Fix
+
+* Pin poetry version to 1.8.5 in publish_package.yml ([`6c23de5`](https://github.com/yaakovLowenstein/hx-requests/commit/6c23de5366d01b343b2e75627bec53831fddc4a5))
+* Fix new modal rendering method not working with invalid forms ([`478268a`](https://github.com/yaakovLowenstein/hx-requests/commit/478268a2de2bc9c5246d15898b6eca4ddf5be33f))
+* Remove breaking code that I don't understand ([`bb3e303`](https://github.com/yaakovLowenstein/hx-requests/commit/bb3e3034880a83670653a6a8225911f1f69078bd))
+
+### Breaking
+
+* Modals no longer use body_template and they render the html for the body and add it to the context instead of putting the body_template in the context. ([`3c12f24`](https://github.com/yaakovLowenstein/hx-requests/commit/3c12f24a8d551efbe11db75e4849ef07494fc0ed))
+
+### Documentation
+
+* Update modal docs ([`3e4b278`](https://github.com/yaakovLowenstein/hx-requests/commit/3e4b278f826a8981b7dd021c64b923d7767f53f6))
+* Fixup docs ([`663aaa4`](https://github.com/yaakovLowenstein/hx-requests/commit/663aaa43acb287cbfbcec65b3706f2dcd0af60ae))
+* Add docs on registering hx-requests ([`030b194`](https://github.com/yaakovLowenstein/hx-requests/commit/030b194257ea03e6f4a6b8ff89b27b8e91e8a0dd))
+* Fix readme formatting ([`ad3b382`](https://github.com/yaakovLowenstein/hx-requests/commit/ad3b382cb624e2ac336f9ab8c4e2bad7b4e698a3))
+* Fixup documentation ([`a92b614`](https://github.com/yaakovLowenstein/hx-requests/commit/a92b614230d5f36a7aab5f82caa4ae2c5178a849))
+* Add line to basic_tutorial ([`c6e0864`](https://github.com/yaakovLowenstein/hx-requests/commit/c6e0864ffd036d19e3a0b3ea4eb3ff8ec51495e4))
+* Remove installation guide ([`5721457`](https://github.com/yaakovLowenstein/hx-requests/commit/5721457d82f4fba43758052f28cd50a5f7663cbf))
+* Add basic tutorial ([`68b4e65`](https://github.com/yaakovLowenstein/hx-requests/commit/68b4e6525f4a6c1778e78d3dc3d776dce22adaf6))
+
 ## v0.33.2 (2024-12-10)
 
 ### Fix
