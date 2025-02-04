@@ -1,7 +1,7 @@
 HX Tags
 =======
 
-There are two template tags to use to setup :code:`HXRequests`: :code:`hx_get` and :code:`hx_post`. They are identical except that one makes a get request and one makes a post request.
+There are two template tags to use to setup :code:`HxRequests`: :code:`hx_get` and :code:`hx_post`. They are identical except that one makes a get request and one makes a post request.
 
 hx_get
 ------

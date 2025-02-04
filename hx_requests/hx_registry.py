@@ -8,7 +8,7 @@ from django.apps import apps
 from hx_requests.hx_requests import BaseHxRequest
 
 
-class HXRequestRegistry:
+class HxRequestRegistry:
     _registry = {}
     _initialized = False
     _lock = threading.Lock()  # Lock to ensure thread safety
@@ -53,14 +53,14 @@ class HXRequestRegistry:
 
     @classmethod
     def _process_module(cls, module):
-        """Process a given module to register its HXRequest classes."""
+        """Process a given module to register its HxRequest classes."""
         clsmembers = inspect.getmembers(module, inspect.isclass)
         for _, obj in clsmembers:
             if obj in cls._processed_classes:
                 continue
             cls._processed_classes.add(obj)
 
-            if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
+            if issubclass(obj, BaseHxRequest) and getattr(obj, "name", None):
                 cls.register_hx_request(obj.name, obj)
 
     @classmethod

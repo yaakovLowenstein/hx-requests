@@ -114,7 +114,7 @@ class GetUserProfile(View):
 **Advantages:**
 
 - The parent view is not cluttered with extra logic for handling multiple Htmx requests.
-- HXRequests are reusable across views, reducing duplication.
+- HxRequests are reusable across views, reducing duplication.
 - No extra URLs are needed.
 - The view's context is shared across all Htmx requests, making it easier to manage.
 

@@ -1,13 +1,13 @@
 Quickstart
 ==========
 
-The idea of hx-requests is that :code:`HXRequests` absorb all htmx requests.
+The idea of hx-requests is that :code:`HxRequests` absorb all htmx requests.
 Define an :code:`HxRequest` (we'll get into how to do that in just a sec) and
 observe the magic of :code:`hx-requests`.
 
 - No need to define extra urls to handle these requests
 - No need to add anything extra in views
-- Reusable :code:`HXRequests` across views
+- Reusable :code:`HxRequests` across views
 - Built in :code:`HXReuqests` to reduce boilerplate code (Forms, Deleting, Modals)
 
 Making a GET Request (hx-get)
@@ -53,7 +53,7 @@ Create an :code:`hx_requests.py` file
 
 .. warning::
 
-    All :code:`HXRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
+    All :code:`HxRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
     files must live inside an app that's included in Django's :code:`INSTALLED_APPS`.
 
 | Create the HxRequest.
@@ -141,7 +141,7 @@ Create an :code:`hx_requests.py` file
 
 .. warning::
 
-    All :code:`HXRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
+    All :code:`HxRequests` must be defined inside an :code:`hx_requests.py` file, and the :code:`hx_requests.py`
     files must live inside an app that's included in Django's :code:`INSTALLED_APPS`.
 
 | Create the HxRequest.
@@ -191,7 +191,7 @@ a simple way to add context to them.
 
     from hx_requests.hx_requests import BaseHxRequest
 
-    class MyHXRequest(BaseHxRequest):
+    class MyHxRequest(BaseHxRequest):
         ...
 
         def get_context_data(self, **kwargs):
@@ -206,7 +206,7 @@ instead override :code:`get_post_context_data`
 
     from hx_requests.hx_requests import BaseHxRequest
 
-    class MyHXRequest(BaseHxRequest):
+    class MyHxRequest(BaseHxRequest):
         ...
 
         def get_post_context_data(self, **kwargs):

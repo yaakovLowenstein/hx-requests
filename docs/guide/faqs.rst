@@ -7,7 +7,7 @@ Set :code:`refresh_page` to True.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
         refresh_page = True
 
@@ -18,7 +18,7 @@ Set redirect to the URL the :code:`HxRequest` should redirect to.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
         redirect = "my-website/home"
 
@@ -29,7 +29,7 @@ Set :code:`refresh` or :code:`redirect` in form_invalid.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
         refresh=True # or redirect = "my-website/home"
 
@@ -51,7 +51,7 @@ when the form in invalid, you may want to just set a message with the errors.
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
 
         def form_invalid(self,**kwargs):
@@ -66,7 +66,7 @@ Setting :code:`add_form_errors_to_error_message` to True will put the form's err
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
         add_form_errors_to_error_message = True
 
@@ -76,7 +76,7 @@ If you want to put the :code:`hx_object` into the context with a different name,
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         ...
         hx_object_name = "my_object"
 
