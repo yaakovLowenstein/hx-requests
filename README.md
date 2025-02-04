@@ -1,6 +1,6 @@
 # hx-requests
 
-Full documentation: https://hx-requests.readthedocs.io/en/latest/#
+Full documentation: [hx-requests Documentation](https://hx-requests.readthedocs.io/en/latest/#)
 
 <br>
 
@@ -8,148 +8,126 @@ Full documentation: https://hx-requests.readthedocs.io/en/latest/#
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-blue.svg)](https://docs.astral.sh/ruff/formatter/)
 [![Code style: djlint](https://img.shields.io/badge/html%20style-djlint-blue.svg)](https://www.djlint.com)
 
-Overview
-==========
+## Overview
 
-What Are hx-requests?
----------------------
+### What Are hx-requests?
 
-To start with a high level explanation, :code:`hx-requests` are quasy Django + Htmx views.
-They mimic Django's class based views, but with the added functionality to work
-seamlessly with Htmx. Using a View mixin, it elegantly handles multiple Htmx requests on a single page. Each Htmx request is routed to a specific hx-request (think of it as a view), which returns the
-necessary HTML to update the DOM. A more detailed explanation can be found :ref:`below <Why Use hx-requests?>`.
+To start with a high-level explanation, `hx-requests` are quasi Django + Htmx views.
+They mimic Django's class-based views but with added functionality to work seamlessly with Htmx. Using a View mixin, it elegantly handles multiple Htmx requests on a single page. Each Htmx request is routed to a specific hx-request (think of it as a view), which returns the necessary HTML to update the DOM. A more detailed explanation can be found [below](#why-use-hx-requests).
 
-
-Why The Name?
--------------
+### Why The Name?
 
 Excellent question! The package was named early on in the development process when the behavior wasn't exactly clear.
 All that was clear was that there needed to be an easier way to work with Htmx in Django.
-Hx comes from Htmx, and requests because every use of Htmx is a request to the server.
-If it was named today, it would probably be named something like Django-Htmx-Views, but :code:`hx-requests` has stuck.
+**Hx** comes from Htmx, and **requests** because every use of Htmx is a request to the server.
+If it was named today, it would probably be called something like `Django-Htmx-Views`, but `hx-requests` has stuck.
 
+### Why Use hx-requests?
 
-Why Use hx-requests?
---------------------
-
-This is where we will get into the weeds a little to explain why :code:`hx-requests` is needed.
+This is where we will get into the details of why `hx-requests` is needed.
 
 There are multiple ways of integrating Htmx in a Django project.
 
-1. **Using The Page View**
+#### 1. Using The Page View
 
-The most common way seems to be re-hitting the view that loaded the page.
+The most common way is re-hitting the view that loaded the page.
 
 The base view:
 
-.. code-block:: python
-
-    class MyView(View):
-        def get(self, request):
-            return render(request, "my_template.html")
-
+```python
+class MyView(View):
+    def get(self, request):
+        return render(request, "my_template.html")
+```
 
 The template:
 
-.. code-block:: html+django
-
-    <div hx-get="{% url 'my_view' %}">
-        <p>Click me to use hx-get</p>
-    </div>
+```html
+<div hx-get="{% url 'my_view' %}">
+    <p>Click me to use hx-get</p>
+</div>
+```
 
 Handling the request:
 
-.. code-block:: python
-
-    class MyView(View):
-        def get(self, request):
-            if request.headers.get("HX-Request"):
-                return render(request, "my_template.html")
+```python
+class MyView(View):
+    def get(self, request):
+        if request.headers.get("HX-Request"):
             return render(request, "my_template.html")
+        return render(request, "my_template.html")
+```
 
+This approach works well for views with one Htmx request, but what if you have multiple Htmx requests on the same page?
 
-This, along with help from some other packages out there, seems to be the most common way to use Htmx in Django.
-However, this works well for views with one Htmx request, but what if you have multiple Htmx requests on the same page?
+Handling multiple Htmx requests:
 
-View handling multiple Htmx requests:
+```python
+class MyView(View):
+    def get(self, request):
+        if request.headers.get("HX-Request"):
+            if request.headers.get("Unique-Identifier") == "get_user_info":
+                return render(request, "user_info_card.html")
+            if request.headers.get("Unique-Identifier") == "get_user_profile":
+                return render(request, "user_profile_card.html")
+        return render(request, "my_template.html")
+```
 
-.. code-block:: python
+**Issues with this approach:**
 
-    class MyView(View):
-        def get(self, request):
-            if request.headers.get("HX-Request"):
-                if request.headers.get("Unique-Identifier") == "get_user_info":
-                    return render(request, "user_info_card.html")
-                if request.headers.get("Unique-Identifier") == "get_user_profile":
-                    return render(request, "user_profile_card.html")
-            return render(request, "my_template.html")
+- It gets messy if there are multiple Htmx requests on the same page.
+- Handling POST requests with specific logic dynamically adds complexity.
+- The logic for handling Htmx requests is tightly coupled to the view, making reuse difficult.
 
-Issues with this:
+#### 2. Using Separate Views
 
-* This already isn't great, but now imagine this with 10 Htmx requests on the same page. It's a mess. Additionally, if they are POST requests and specfic
-  logic needs to be run (and it needs to be dynamic based on whether the form is valid or not), it's even more of a mess.
-* The logic for the Htmx request is tied to the view and therefore a duplicate request for this cannot be used on a different page
-  without duplicating all the logic.
+Each Htmx request is routed to a separate view.
 
-This brings us to the 2nd way of using Htmx in Django.
+```python
+# Page View
+class MyView(View):
+    def get(self, request):
+        context = {'complex-context': "This is a complex context"}
+        return render(request, "my_template.html", context)
 
-2. **Using Separate Views**
+# Htmx Request 1
+class GetUserInfo(View):
+    def get(self, request):
+        return render(request, "user_info_card.html")
 
-Every Htmx request is routed to a separate view.
+# Htmx Request 2
+class GetUserProfile(View):
+    def get(self, request):
+        return render(request, "user_profile_card.html")
+```
 
-.. code-block:: python
+**Issues with this approach:**
 
-    # Page View
-    class MyView(View):
-        def get(self, request):
-            # Do some logic to set up context
-            context['complex-context'] = "This is a complex context"
-            return render(request, "my_template.html", context)
+- Each Htmx request requires a separate URL.
+- Context is not shared across views, leading to code duplication.
+- Using Django's built-in `ListView`, duplicating logic for Htmx requests becomes a nightmare.
 
-    # Htmx Request 1
-    class GetUserInfo(View):
-        def get(self, request):
-            return render(request, "user_info_card.html")
+### hx-requests: The Solution
 
-    # Htmx Request 2
-    class GetUserProfile(View):
-        def get(self, request):
-            return render(request, "user_profile_card.html")
+`hx-requests` solves all of these issues. It allows multiple Htmx requests on the same page while sharing context across requests. Every Htmx request routes to an [`hx-request`](#what-are-hx-requests).
 
+**Advantages:**
 
-Issues with this:
+- The parent view is not cluttered with extra logic for handling multiple Htmx requests.
+- HXRequests are reusable across views, reducing duplication.
+- No extra URLs are needed.
+- The view's context is shared across all Htmx requests, making it easier to manage.
 
-* There's a lot of extra URL handling, as every Htmx request needs a url.
-* The context is not shared across views. This is a major issue because if the parent page view does some logic to set up context,
-  that context is not available in the Htmx request views and would need to be duplicated. In the contrived example above, a mixin or helper
-  function could be used to set up the context, but in a real world application, this would be a nightmare. Especially with Django's built in
-  views. Think of the ListView, If there is an Htmx request that needs to return a list of objects (i.e. a filter form), the ListView would need to be duplicated
-  in the view setup for the Htmx request view.
+Additionally, `hx-requests` includes built-in functionality to help with common Htmx use cases:
 
+- Form validation and automatic return of errors when using `FormHxRequest`.
+- Easy integration with Django's messages framework.
+- Compatibility with [`django-render-block`](https://github.com/clokep/django-render-block) for partial template rendering.
+- Built-in support for handling modals with Htmx.
 
+Full documentation: [hx-requests Documentation](https://hx-requests.readthedocs.io/en/latest/#)
 
-**Hx-requests**
-
-:code:`hx-requests` solves all of these issues. It allows for multiple Htmx requests on the same page, and the context is shared across all of the Htmx requests.
-Every Htmx request routes to an :ref:`hx-request <What Are hx-requests?>`.
-
-Therefore:
-
-* The parent view is not clogged up with extra logic to handle many Htmx requests
-* Reusable HXRequests across views. Since they are not directly tied to the view (even though they can use the view's context) they can be reused across views.
-* No extra urls are needed
-* The view's context is shared across all Htmx requests because the parent view routes the Htmx request to the correct hx-request giving the hx-request access to the all the view's attributes and context.
-
-Additionally, :code:`hx-requests` has built in functionality that helps with common Htmx use cases.
-
-* When a form is posted, the form is validated and the form is returned with errors if it is not valid.
-  This is done by default when using :code:`FormHxRequest`.
-* Easy integration with Django's messages framework.
-* Easy integration with `django-render-block <https://github.com/clokep/django-render-block>`_ to reduce the need for includes and instead
-  use blocks to render partials.
-* A built in way to use modals with Htmx.
-
-Full documentation: https://hx-requests.readthedocs.io/en/latest/#
+---
 
 # Contributing to this repository
 
@@ -159,8 +137,6 @@ Full documentation: https://hx-requests.readthedocs.io/en/latest/#
 - pre-commit is used for CI (code formatting, linting, etc...)
 - There is a dev container that can be used with vs-code
 
-
 ## Committing
 
-Must follow Conventional Commit
-https://www.conventionalcommits.org/en/v1.0.0/
+Must follow [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/).
