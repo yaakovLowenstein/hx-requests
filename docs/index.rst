@@ -16,6 +16,7 @@ with htmx, and many other awesome features.
    :caption: General
 
    tutorials/index
+   how_tos/index
 
 .. toctree::
    :maxdepth: 2
