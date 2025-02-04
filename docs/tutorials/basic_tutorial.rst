@@ -113,6 +113,9 @@ Create a new template file, `replaced.html`, which contains the content to swap 
 Step 6: HxRequest
 ~~~~~~~~~~~~~~~~~
 
+Create a new file, `hx_requests.py`, in the same directory as your views.py file.
+This file will contain the :code:`HxRequest` class that will be used to swap in the content.
+
 .. code-block:: python
 
     from hx_requests.hx_requests import BaseHxRequest
