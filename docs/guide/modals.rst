@@ -11,10 +11,9 @@ Using Modals
 
     class ModalExample(HXModal):
         name = "modal_example"
-        body_template = "modal_body.html"
+        GET_template = "modal_body.html"
 
 Notes:
-    - :code:`body_template` is used with modals instead of :code:`GET_template` since the :code:`GET_template` is acutally the the entire modal
     - HxModal's return the entire modal not just the body template
 
 .. code-block:: html+django
@@ -36,7 +35,7 @@ To customize a modal, there are a few steps that need to be followed.
 
 #. Override :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings and set it to the path of the modal template.
 #. Set the id of you modal to :code:`hx_modal_body` or set :code:`HX_REQUESTS_MODAL_BODY_ID` (a :code:`css` id for the modal body) in settings.
-#. Use an include for the body and add the title and modal_size_classes to the template. See the example below.
+#. Include the body as context and add the title and modal_size_classes to the template. See the example below.
 #. Set a way for the modal to open when the modal template is rendered. See the modal example below.
 #. Set a way for the modal to close using the :code:`closeHxModal` event. See the modal example below
 #. Set a div with the id :code:`hx_modal_container` in the body of the page, this is where the modal will be rendered (the :code:`hx-target` of the request)
@@ -71,7 +70,7 @@ Custom Modal Example
                 {% comment %} Modal body id {% endcomment %}
                 <div class="modal-body" id="hx_modal_body" >
                     {% comment %} How to include the body {% endcomment %}
-                    <p >{% include body %}</p>
+                    {{body}}
                 </div>
             </div>
         </div>
@@ -112,7 +111,7 @@ Notes:
     class EditUserModal(HXFormModal):
         name = "edit_user_modal"
         form_class = UserInfoForm
-        body_template = 'form.html' # Used as the body of the modal
+        GET_template = 'form.html' # Used as the body of the modal
         POST_template = '...' # This works the same as any POST_template
 
 Notes:
