@@ -126,7 +126,7 @@ Every Htmx request routes to an :ref:`hx-request <What Are hx-requests?>`.
 Therefore:
 
 * The parent view is not clogged up with extra logic to handle many Htmx requests
-* Reusable HXRequests across views. Since they are not directly tied to the view (even though they can use the view's context) they can be reused across views.
+* Reusable HxRequests across views. Since they are not directly tied to the view (even though they can use the view's context) they can be reused across views.
 * No extra urls are needed
 * The view's context is shared across all Htmx requests because the parent view routes the Htmx request to the correct hx-request giving the hx-request access to the all the view's attributes and context.
 

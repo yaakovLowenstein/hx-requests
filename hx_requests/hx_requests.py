@@ -25,7 +25,7 @@ class Renderer:
 
 class BaseHxRequest:
     """
-    Base class for HXRequests. Class to be used for basic GET and POST requests.
+    Base class for HxRequests. Class to be used for basic GET and POST requests.
 
     Attributes
     ----------
@@ -283,7 +283,7 @@ class BaseHxRequest:
 
 class FormHxRequest(BaseHxRequest):
     """
-    HXRequests class to be used for forms that helps with some of the boiler plate.
+    HxRequests class to be used for forms that helps with some of the boiler plate.
     It's loosely based on Django's FormView and UpdateView.
 
     Every FormHxRequest must have a form associated with it. The form is

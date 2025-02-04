@@ -1,7 +1,7 @@
 Using Forms
 ===========
 
-| Probably the most common thing to use :code:`HXRequests` with is forms. :code:`HXRequests` gives a simple way to post data and update the page asyncronously.
+| Probably the most common thing to use :code:`HxRequests` with is forms. :code:`HxRequests` gives a simple way to post data and update the page asyncronously.
 |
 | Using a :code:`FormHxRequest` the form is fetched asyncronously using the :code:`GET_template`, the form is saved and then it returns the :code:`POST_template`
 
@@ -68,7 +68,7 @@ HxRequest
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHxRequest):
+    class UserInfoHxRequest(FormHxRequest):
         name = "user_info_form"
         form_class = UserInfoForm
         GET_template = 'form.html' # Renders the form
@@ -104,7 +104,7 @@ Setting Form Kwargs
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         # Set attributes
 
         def get_form_kwargs(self,**kwargs):
@@ -135,7 +135,7 @@ As long as the key in the kwargs matches the name of a field in the form, it wil
             model = MyModel
             fields = ['field1', 'field2']
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         name='my_hx_request'
         set_initial_from_kwargs = True
 
@@ -158,7 +158,7 @@ In a :code:`FormHxRequest` success and error messages can be set by overriding :
 
 .. code-block:: python
 
-    class MyHXRequest(FormHxRequest):
+    class MyHxRequest(FormHxRequest):
         # Set attributes
 
         def get_success_message(self, **kwargs) -> str:
@@ -200,5 +200,5 @@ the queryset will automatically be updated to include the new blog. The context 
 objects that aren't querysets. Additionally, the hx_object is automatically refreshed from the database, so it does not need
 to be re-added to the context.
 
-To force a refresh of the context after a POST, set refresh_views_context_on_POST to True in the HXRequest. This will call the
+To force a refresh of the context after a POST, set refresh_views_context_on_POST to True in the HxRequest. This will call the
 view's get_context_data method and update the context with the new data.

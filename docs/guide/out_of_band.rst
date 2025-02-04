@@ -13,7 +13,7 @@ Setting template to a list
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHxRequest):
+    class UserInfoHxRequest(FormHxRequest):
         name = "user_info_form"
         form_class = UserInfoForm
         GET_template = 'form.html'
@@ -39,7 +39,7 @@ Setting block to a list
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHxRequest):
+    class UserInfoHxRequest(FormHxRequest):
         name = "user_info_form"
         form_class = UserInfoForm
         GET_template = 'form.html'
@@ -66,7 +66,7 @@ Setting block to a dict
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHxRequest):
+    class UserInfoHxRequest(FormHxRequest):
         name = "user_info_form"
         form_class = UserInfoForm
         GET_template = 'form.html'

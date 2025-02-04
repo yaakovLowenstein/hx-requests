@@ -49,12 +49,12 @@ You can set a message anywhere within an :code:`HxRequest` the same way you woul
 Disabling Messages
 ------------------
 
-If :code:`HX_REQUESTS_USE_HX_MESSAGES`  is set to True, there are some default messages set in some of the :code:`HXRequests`.
+If :code:`HX_REQUESTS_USE_HX_MESSAGES`  is set to True, there are some default messages set in some of the :code:`HxRequests`.
 To disable messages on any :code:`HxRequest` set :code:`show_messages` to False
 
 .. code-block:: python
 
-    class MyHXRequest(BaseHxRequest):
+    class MyHxRequest(BaseHxRequest):
         ...
         show_messages = False
 

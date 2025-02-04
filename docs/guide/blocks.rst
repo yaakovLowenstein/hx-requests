@@ -58,7 +58,7 @@ And the :code:`HxRequest`:
 
     from hx_requests.hx_requests import FormHxRequest
 
-    class UserInfoHXRequest(FormHxRequest):
+    class UserInfoHxRequest(FormHxRequest):
         ...
         # Instead of this (which was the include)
         POST_template = 'user_info.html'
@@ -129,14 +129,14 @@ Notes:
 Formats for Using `POST_block`
 ------------------------------
 
-The `POST_block` attribute in an `HXRequest` can be used in various formats depending on how you want to render blocks in your templates. Below are the different ways to use it:
+The `POST_block` attribute in an `HxRequest` can be used in various formats depending on how you want to render blocks in your templates. Below are the different ways to use it:
 
 1. **Single Block from a Template**
    When you want to render just one specific block from the template on POST:
 
    .. code-block:: python
 
-       class UpdateUser(FormHXRequest):
+       class UpdateUser(FormHxRequest):
            POST_template = "big_template.html"
            POST_block = "table"  # Renders the 'table' block from the template
 
@@ -147,7 +147,7 @@ The `POST_block` attribute in an `HXRequest` can be used in various formats depe
 
    .. code-block:: python
 
-       class UpdateUser(FormHXRequest):
+       class UpdateUser(FormHxRequest):
            POST_template = "big_template.html"
            POST_block = ["table", "summary"]  # Renders both 'table' and 'summary' blocks
 
@@ -158,7 +158,7 @@ The `POST_block` attribute in an `HXRequest` can be used in various formats depe
 
    .. code-block:: python
 
-       class UpdateUser(FormHXRequest):
+       class UpdateUser(FormHxRequest):
            POST_template = "additional_template_to_render.html"
            POST_block = {
                "big_template.html": "table",
@@ -172,7 +172,7 @@ The `POST_block` attribute in an `HXRequest` can be used in various formats depe
 
    .. code-block:: python
 
-       class UpdateUser(FormHXRequest):
+       class UpdateUser(FormHxRequest):
            POST_template = "big_template.html"
            # POST_block is omitted to render the entire template
 

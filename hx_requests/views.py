@@ -4,14 +4,14 @@ from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from hx_requests.hx_registry import HXRequestRegistry
+from hx_requests.hx_registry import HxRequestRegistry
 from hx_requests.utils import deserialize_kwargs, is_htmx_request
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class HtmxViewMixin:
     """
-    Mixin to be added to views that are using HXRequests.
+    Mixin to be added to views that are using HxRequests.
     Hijacks the get and post to route them to the proper
     HxRequest.
     """
@@ -36,7 +36,7 @@ class HtmxViewMixin:
 
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
-        hx_request_class = HXRequestRegistry.get_hx_request(hx_request_name)
+        hx_request_class = HxRequestRegistry.get_hx_request(hx_request_name)
         if not hx_request_class:
             raise Http404(
                 f"No HxRequest found with the name {hx_request_name}. Are you sure it's spelled correctly?"
