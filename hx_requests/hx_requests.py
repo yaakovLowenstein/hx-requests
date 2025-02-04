@@ -204,50 +204,46 @@ class BaseHXRequest:
 
     def _render_templates(self, templates, blocks, **kwargs) -> str:
         """
-        Renders the templates and blocks into HTML.
-        If templates is a string and blocks is empty then it renders the template.
-        If templates is a string and blocks is a string then it renders the block from the template.
-        If templates is a list then it renders all the templates.
-        If blocks is a list then it renders all the blocks per the template defined.
-        If blocks is a dict then it renders the blocks per the templates in the dict.
+        Renders templates and blocks into HTML based on different input cases.
         """
         context = self.get_context_data(**kwargs)
         render_with_context = partial(self.renderer.render, context=context, request=self.request)
-        html = ""
+        html = []
 
-        # If both are strings then its one template and possibly one block
+        # Case: Single template, single block
         if isinstance(templates, str) and isinstance(blocks, str):
             return render_with_context(templates, blocks)
 
-        # If blocks is a dict then we are using multiple blocks with multiple templates
+        # Case: Multiple templates and blocks provided as a dictionary
         if isinstance(blocks, dict):
             for template, block in blocks.items():
                 if isinstance(block, list):
-                    for b in block:
-                        html += render_with_context(template, b)
-                elif isinstance(block, str):
-                    html += render_with_context(template, block)
-            return html
+                    html.extend(render_with_context(template, b) for b in block)
+                else:
+                    html.append(render_with_context(template, block))
 
-        # If templates is a list then we are using multiple templates with no blocks
+            if isinstance(templates, str):
+                html.append(render_with_context(templates, None))
+            elif isinstance(templates, list):
+                html.extend(render_with_context(template, None) for template in templates)
+
+            return "".join(html)
+
+        # Case: Multiple templates, no blocks
         if isinstance(templates, list):
-            if blocks != "":
-                raise Exception(
-                    "When using multiple blocks with multiple templates blocks must be a dict"
-                )
-            for template in templates:
-                html += render_with_context(template, None)
-            return html
+            if blocks:
+                raise ValueError("When using multiple templates, blocks must be a dictionary or empty.")
+            return "".join(render_with_context(template, None) for template in templates)
 
-        # If blocks is a list then we are using multiple blocks with one template
+        # Case: Single template, multiple blocks
         if isinstance(blocks, list):
             if isinstance(templates, list):
-                raise Exception(
-                    "When using multiple blocks with multiple templates blocks must be a dict"
+                raise ValueError(
+                    "When using multiple blocks with multiple templates, blocks must be a dictionary."
                 )
-            for block in blocks:
-                html += render_with_context(templates, block)
-            return html
+            return "".join(render_with_context(templates, block) for block in blocks)
+
+        return ""
 
     def _get_messages_html(self, **kwargs) -> str:
         messages = get_messages(self.request)
