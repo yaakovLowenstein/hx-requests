@@ -20,6 +20,8 @@ jobs:
           python-version: 3.8
 
       - uses: Gr1N/setup-poetry@v8
+        with:
+          poetry-version: 1.8.5
 
       - name: Install semantic release
         run: |
