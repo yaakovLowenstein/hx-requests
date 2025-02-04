@@ -508,9 +508,7 @@ class HXModal(BaseHXRequest):
 
         # Add the body to the context of the modal template
         modal_context = {
-            "modal_size_classes": kwargs.get(
-                "modal_size_classes", self.modal_size_classes
-            ),
+            "modal_size_classes": kwargs.get("modal_size_classes", self.modal_size_classes),
             "title": kwargs.get("title", self.title),
             "body": body_html,
         }
