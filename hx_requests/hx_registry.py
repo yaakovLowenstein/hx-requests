@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import os
 import threading
 
 from django.apps import apps
@@ -24,21 +25,43 @@ class HXRequestRegistry:
 
             # Proceed with initialization
             for app in apps.get_app_configs():
+                # Process hx_requests.py in the root directory of the app
                 try:
                     module = importlib.import_module(f"{app.label}.hx_requests")
-                    clsmembers = inspect.getmembers(module, inspect.isclass)
-                    for _, obj in clsmembers:
-                        # Check if the class has already been processed
-                        if obj in cls._processed_classes:
-                            continue
-                        cls._processed_classes.add(obj)
+                    cls._process_module(module)
+                except ModuleNotFoundError:
+                    pass
 
-                        if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
-                            cls.register_hx_request(obj.name, obj)
+                # Check if hx_requests directory exists in the root of the app
+                hx_requests_dir = os.path.join(app.path, "hx_requests")
+                if os.path.isdir(hx_requests_dir):
+                    cls._process_hx_requests_directory(hx_requests_dir, app.label)
+
+            cls._initialized = True
+
+    @classmethod
+    def _process_hx_requests_directory(cls, directory_path, app_label):
+        """Process all modules in the root-level hx_requests directory."""
+        for file in os.listdir(directory_path):
+            if file.endswith(".py") and file != "__init__.py":
+                module_name = f"{app_label}.hx_requests.{os.path.splitext(file)[0]}"
+                try:
+                    module = importlib.import_module(module_name)
+                    cls._process_module(module)
                 except ModuleNotFoundError:
                     continue
 
-            cls._initialized = True
+    @classmethod
+    def _process_module(cls, module):
+        """Process a given module to register its HXRequest classes."""
+        clsmembers = inspect.getmembers(module, inspect.isclass)
+        for _, obj in clsmembers:
+            if obj in cls._processed_classes:
+                continue
+            cls._processed_classes.add(obj)
+
+            if issubclass(obj, BaseHXRequest) and getattr(obj, "name", None):
+                cls.register_hx_request(obj.name, obj)
 
     @classmethod
     def register_hx_request(cls, name, hx_request_class):
