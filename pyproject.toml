@@ -25,7 +25,7 @@ include = [
     "LICENSE"
 ]
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = "^3.8"
 Django = ">=3.2,<5"
 django-render-block = "^0.10"
 
