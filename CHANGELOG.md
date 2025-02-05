@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.2 (2025-02-05)
+
+### Fix
+
+* Allow any 3.x version of python ([`8b8d2bd`](https://github.com/yaakovLowenstein/hx-requests/commit/8b8d2bdfc1f302d274b90e6c65eb7f225b604939))
+
 ## v0.35.1 (2025-02-05)
 
 ### Fix
