@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.1 (2025-02-05)
+
+### Fix
+
+* Revert close modal trigger name to what it was before ([`f2a6286`](https://github.com/yaakovLowenstein/hx-requests/commit/f2a6286d3fe6c40f0afec85d33e5b390e877f97d))
+
 ## v0.35.0 (2025-02-04)
 
 ### Fix
