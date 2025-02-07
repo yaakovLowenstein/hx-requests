@@ -31,7 +31,7 @@ Next, install :code:`hx_requests`
 
     OR
 
-    Poetry add hx-requests
+    poetry add hx-requests
 
 Finally, add :code:`hx_requests` to your :code:`settings.py`.
 
@@ -49,7 +49,6 @@ Step 2: Create The View
 
     from hx_requests.views import HtmxViewMixin
     from django.views.generic.base import TemplateView
-    from django.contrib.auth import get_user_model
 
     class MyView(HtmxViewMixin, TemplateView):
         # For this tutorial, we will use base.html
@@ -67,7 +66,7 @@ Step 3: Add a URL
     from .views import MyView
 
     urlpatterns = [
-        path('my_vew/', MyView.as_view(), name='my_view'),
+        path('my_view/', MyView.as_view(), name='my_view'),
     ]
 
 Step 4: Update The Template
@@ -90,9 +89,9 @@ Next, update the base.html template to include a button that will trigger the Ht
 
 Notes:
     - The button is using the :code:`hx_get` template tag to make an Htmx request to an :code:`HxRequest` with the name
-      :code:`replace_btn` (we will create this in step 5)
+      :code:`replace_btn` (we will create this in step 6)
 
-Go to :code:`/my_veiw` and you should see a button that looks like this:
+Go to :code:`/my_view` and you should see a button that looks like this:
 
 .. image:: ../images/replace_me_btn.png
    :width: 400
