@@ -108,7 +108,7 @@ Step 5: Add The Form To The View
 Step 6: Update base.html
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next, update the base.html template to include a form that will trigger the Htmx request:
+Next, update the base.html template to include a button that will trigger the Htmx request:
 
 .. code-block:: html+django
 
