@@ -135,7 +135,7 @@ Go click the button and you should see the button replaced with the content from
    :alt: Replace me button
 
 
-Stesp 7: Add Context (Optional)
+Step 7: Add Context (Optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 What if you want to pass context to the template that is being swapped in? You can do this by overriding the :code:`get_context_data` method in the :code:`HxRequest`.
