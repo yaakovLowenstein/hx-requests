@@ -28,7 +28,6 @@ with htmx, and many other awesome features.
    guide/blocks
    guide/out_of_band
    guide/delete
-   guide/modals
    guide/messages
    guide/hx_tags
    guide/config
