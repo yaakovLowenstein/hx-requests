@@ -16,12 +16,12 @@ To use the built in modal functionality, you need to define a modal template and
 .. code-block:: html+django
 
     <div class="modal fade"
-     x-on:close-hx-modal.camel="bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).hide()"
-     id="hx_modal"
-     tabindex="-1"
-     role="dialog"
-     aria-hidden="true"
-     style="display:block">
+         x-on:close-hx-modal.camel="bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).hide()"
+         id="hx_modal"
+         tabindex="-1"
+         role="dialog"
+         aria-hidden="true"
+         style="display:block">
         <div role="document" class="modal-dialog {{ modal_size_classes }}">
             <div class="modal-content">
                 <div class="modal-header">
@@ -31,20 +31,22 @@ To use the built in modal functionality, you need to define a modal template and
                             data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id='hx_modal_body'>
+                <div class="modal-body" id="hx_modal_body">
                     <p>{{ body }}</p>
                 </div>
             </div>
         </div>
     </div>
-    <script>bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).show();</script>
+    <script>
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).show();
+    </script>
 
 
 
 Notes:
     - This is using a bootstrap modal, but any modal can be used.
     - The title, modal_size_classes and body are passed in as context from the :code:`HxRequest` that is being rendered.
-    - The closeHxModal (close-hx-modal in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest`.
+    - The :code:`closeHxModal` (:code:`close-hx-modal` in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest`.
 
 
 Add Settings to settings.py
