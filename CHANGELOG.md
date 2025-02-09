@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.3 (2025-02-09)
+
+### Fix
+
+* Refresh view object if refresh_view_context_on_post is True ([`881f36c`](https://github.com/yaakovLowenstein/hx-requests/commit/881f36ccc8e46302f703083819833c7179649cc4))
+
+### Documentation
+
+* Add how to use modals to the how tos ([#148](https://github.com/yaakovLowenstein/hx-requests/issues/148)) ([`0a49361`](https://github.com/yaakovLowenstein/hx-requests/commit/0a493616be811bb0dd0f57e922cbaf7bec9c85e5))
+* Fix typo ([`6398c00`](https://github.com/yaakovLowenstein/hx-requests/commit/6398c009059560118aa59d6812d109886440922e))
+* Update form tutorial ([`fc296b2`](https://github.com/yaakovLowenstein/hx-requests/commit/fc296b29e61459b6616d7d88196d58e299e10886))
+* Add form tutorial to index ([`057e636`](https://github.com/yaakovLowenstein/hx-requests/commit/057e6363a8e47354764780860331ecd01a88e77a))
+* Fix typos and mistakes in basic tutorial ([`5eaab46`](https://github.com/yaakovLowenstein/hx-requests/commit/5eaab4608850b2a3851192bc347c64f14d7bb8d2))
+* Add form tutorial ([`734c05b`](https://github.com/yaakovLowenstein/hx-requests/commit/734c05bd9a77f325095b6d4f94ff7f20fdb93b7e))
+* Add example directory structures to how to register hx-requests docs ([`2aaa64e`](https://github.com/yaakovLowenstein/hx-requests/commit/2aaa64e5ad9342e555fdd2666b128340b30c1536))
+
 ## v0.35.2 (2025-02-05)
 
 ### Fix
