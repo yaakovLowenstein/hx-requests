@@ -137,6 +137,9 @@ class BaseHxRequest:
         if self.hx_object and self.hx_object.pk:
             self.hx_object.refresh_from_db()
         if self.refresh_views_context_on_POST:
+            if hasattr(self.view, "object") and self.view.object:
+                self.view.object.refresh_from_db()
+                context["object"] = self.view.object
             context.update(self.view.get_context_data(**kwargs))
         context[self.hx_object_name] = self.hx_object
 
