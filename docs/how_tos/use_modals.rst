@@ -38,6 +38,9 @@ To use the built in modal functionality, you need to define a modal template and
             </div>
         </div>
     </div>
+    <script>
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).show();
+    </script>
 
 
 
