@@ -16,26 +16,12 @@ To use the built in modal functionality, you need to define a modal template and
 .. code-block:: html+django
 
     <div class="modal fade"
-         x-on:close-hx-modal.camel="bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).hide()"
          id="hx_modal"
          tabindex="-1"
          role="dialog"
          aria-hidden="true"
          style="display:block">
-        <div role="document" class="modal-dialog {{ modal_size_classes }}">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ title|default_if_none:""|safe }}</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="hx_modal_body">
-                    <p>{{ body }}</p>
-                </div>
-            </div>
-        </div>
+
     </div>
 
 
