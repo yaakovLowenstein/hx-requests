@@ -52,6 +52,6 @@ If the HTML snippets are in separate blocks across different templates, the code
 
 More On Blocks:
 
-    |:ref:`Basic Tutorial <Step 8: Use Blocks (Optional)>`
-    |:ref:`Form Tutorial <Step 8: Create The HxRequest>`
-    |:ref:`Django Render Block <https://github.com/clokep/django-render-block>`_
+    | :ref:`Basic Tutorial <Step 8: Use Blocks (Optional)>`
+    | :ref:`Form Tutorial <Step 8: Create The HxRequest>`
+    | `Django Render Block <https://github.com/clokep/django-render-block>`_
