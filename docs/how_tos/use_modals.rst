@@ -20,7 +20,9 @@ To use the built in modal functionality, you need to define a modal template and
          tabindex="-1"
          role="dialog"
          aria-hidden="true"
-         style="display:block">
+         style="display:block"
+         x-on:close-hx-modal.camel="bootstrap.Modal.getOrCreateInstance(document.getElementById('hx_modal')).hide()"
+        >
         <div role="document" class="modal-dialog {{ modal_size_classes }}">
             <div class="modal-content">
                 <div class="modal-header">
