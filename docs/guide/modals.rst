@@ -69,7 +69,7 @@ Custom Modal Example
                 </div>
                 {% comment %} Modal body id {% endcomment %}
                 <div class="modal-body" id="hx_modal_body" >
-                    {% comment %} How to include the body {% endcomment %}
+                    {% comment %} Body comes from the context - it's the render of the GET_template {% endcomment %}
                     {{body}}
                 </div>
             </div>
