@@ -44,14 +44,14 @@ To use the built in modal functionality, you need to define a modal template and
 Notes:
     - This is using a bootstrap modal, but any modal can be used.
     - The title, modal_size_classes and body are passed in as context from the :code:`HxRequest` that is being rendered.
-    - The closeHxModal event is used to close the modal - this is triggered by the :code:`HxModalHxRequest`.
+    - The closeHxModal (close-hx-modal in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest`.
 
 
 Add Settings to settings.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Define :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings to the path of the modal template.
-Define :code:`HX_REQUESTS_MODAL_BODY_ID` in settings to the id of the modal body (default is :code:`hx_modal_body`)
+| Define :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings to the path of the modal template.
+| Define :code:`HX_REQUESTS_MODAL_BODY_ID` in settings to the id of the modal body (default is :code:`hx_modal_body`)
 
 .. code-block:: python
 
