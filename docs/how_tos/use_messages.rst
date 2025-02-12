@@ -10,6 +10,11 @@ Add Settings to settings.py
 | Set :code:`HX_REQUESTS_USE_HX_MESSAGES`: to True (default is False)
 | Define :code:`HX_REQUESTS_HX_MESSAGES_TEMPLATE` in settings to the path of the messages template. The context in the template has access to :code:`messages`.
 
+.. code-block:: python
+
+    HX_REQUESTS_USE_HX_MESSAGES = True # Default is False
+    HX_REQUESTS_HX_MESSAGES_TEMPLATE = "path/to/your/messages_template.html"
+
 *example-message-template.html*
 
 .. code-block:: html
@@ -50,6 +55,12 @@ You can set a message anywhere within an :code:`HxRequest` the same way you woul
 
         # Set a message
         messages.success(self.request, "Form saved successfully")
+
+        return ...
+
+    def form_invalid(self, **kwargs) -> str:
+        # Set a message
+        messages.error(self.request, "Form is invalid")
 
         return ...
 
