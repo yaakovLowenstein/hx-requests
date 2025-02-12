@@ -15,7 +15,7 @@ Add Settings to settings.py
     HX_REQUESTS_USE_HX_MESSAGES = True # Default is False
     HX_REQUESTS_HX_MESSAGES_TEMPLATE = "path/to/your/messages_template.html"
 
-*example-message-template.html*
+*messages_template.html*
 
 .. code-block:: html
 
@@ -49,6 +49,8 @@ Setting a Message
 You can set a message anywhere within an :code:`HxRequest` the same way you would set a message in Django.
 
 .. code-block:: python
+
+    from django.contrib import messages
 
     def form_valid(self, **kwargs) -> str:
         self.form.save()
