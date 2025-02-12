@@ -37,10 +37,15 @@ If the HTML snippets are in separate blocks across different templates, the code
 
     class MyHxRequest(BaseHxRequest):
         name ="my_hx_request"
+        GET_template = '' # This is needed because the default is the view's template
         GET_block = {
             "template1.html": "block",
             "template2.html": ["oob_block1","oob_block2"]
         }
+
+.. warning::
+
+    You must set :code:`GET_template` to an empty string if you are not intending to return the view's template. This is because the default is the view's template.
 
 .. note::
 
