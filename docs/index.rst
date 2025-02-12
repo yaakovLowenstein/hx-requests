@@ -15,6 +15,7 @@ with htmx, and many other awesome features.
    :maxdepth: 2
    :caption: General
 
+   overview
    tutorials/index
    how_tos/index
 
@@ -22,7 +23,6 @@ with htmx, and many other awesome features.
    :maxdepth: 2
    :caption: Guide
 
-   guide/overview
    guide/quickstart
    guide/forms
    guide/delete

@@ -15,7 +15,7 @@ Add Settings to settings.py
     HX_REQUESTS_USE_HX_MESSAGES = True # Default is False
     HX_REQUESTS_HX_MESSAGES_TEMPLATE = "path/to/your/messages_template.html"
 
-*example-message-template.html*
+*messages_template.html*
 
 .. code-block:: html
 
