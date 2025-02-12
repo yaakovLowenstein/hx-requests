@@ -50,6 +50,8 @@ You can set a message anywhere within an :code:`HxRequest` the same way you woul
 
 .. code-block:: python
 
+    from django.contrib import messages
+
     def form_valid(self, **kwargs) -> str:
         self.form.save()
 
