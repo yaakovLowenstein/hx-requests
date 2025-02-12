@@ -50,7 +50,8 @@ If the HTML snippets are in separate blocks across different templates, the code
 
     Ensure that all top level blocks or templates have :code:`hx-swap-oob=True` in the html tag, excluding the one being swapped into the :code:`hx-target`.
 
-More On Blocks:
+More On Blocks
+~~~~~~~~~~~~~~
 
     | :ref:`Basic Tutorial <Step 8: Use Blocks (Optional)>`
     | :ref:`Form Tutorial <Step 8: Create The HxRequest>`
