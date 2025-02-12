@@ -25,7 +25,6 @@ with htmx, and many other awesome features.
    guide/overview
    guide/quickstart
    guide/forms
-   guide/blocks
    guide/out_of_band
    guide/delete
    guide/messages

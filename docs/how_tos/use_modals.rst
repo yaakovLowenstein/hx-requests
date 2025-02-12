@@ -47,7 +47,7 @@ To use the built in modal functionality, you need to define a modal template and
 Notes:
     - This is using a bootstrap modal, but any modal can be used.
     - The title, modal_size_classes and body are passed in as context from the :code:`HxRequest` that is being rendered.
-    - The :code:`closeHxModal` (:code:`close-hx-modal` in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest`.
+    - The :code:`closeHxModal` (:code:`close-hx-modal` in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest` (the code above is using `Alpine.js <https://alpinejs.dev/>`_ to close the modal).
 
 
 Add Settings to settings.py
@@ -116,3 +116,23 @@ Notes:
     - This is all that is needed to use a form in a modal.
     - The form will be validated and the form will be re-rendered in the modal if there are errors.
     - If the form is valid, the form will be submitted and the modal will close.
+
+
+Manually Triggering The Modal To Close
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you need to manually close the modal, you can return the :code:`closeHxModal` trigger as header in the response.
+
+.. code-block:: python
+
+    class UserFormModal(FormModalHxRequest):
+        name = "user_form_modal"
+        GET_template = "user_form.html" # This will be rendered as the body of the modal
+        POST_template = "user_display.html"
+        form_class = UserForm
+
+        def get_triggers(self, **kwargs) -> list:
+            triggers = super().get_triggers(**kwargs)
+            if some_condition:
+                triggers.append("closeHxModal")
+            return triggers
