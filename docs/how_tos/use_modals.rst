@@ -121,7 +121,7 @@ Notes:
 Manually Triggering The Modal To Close
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you need to manually close the modal, you can return the :code:`closeHxModal` trigger as header in the response.
+If you need to manually close the modal, you can return the :code:`closeHxModal` trigger from the :code:`get_triggers` method.
 
 .. code-block:: python
 
