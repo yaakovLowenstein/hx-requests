@@ -2,6 +2,6 @@ Reference
 =========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
    ../autoapi/hx_requests/hx_requests/index
