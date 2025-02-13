@@ -8,3 +8,4 @@ How Tos
    use_modals
    oob_swap
    use_messages
+   delete
