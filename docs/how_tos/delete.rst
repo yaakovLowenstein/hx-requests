@@ -17,7 +17,7 @@ Django's `DeleteView <https://docs.djangoproject.com/en/5.0/ref/class-based-view
     </button>
 
 Notes
-    - The object passed in is a Django model instance and will be deleted
+    - The object passed in to the :code:`hx_post` is a Django model instance and will be deleted
 
 .. code-block:: python
 
