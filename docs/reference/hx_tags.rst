@@ -1,4 +1,4 @@
-HX Tags
+Hx Tags
 =======
 
 :code:`hx_get` and :code:`hx_post` are template tags for setting up :code:`HxRequests`.

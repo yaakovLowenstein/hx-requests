@@ -88,7 +88,7 @@ Next, update the base.html template to include a button that will trigger the Ht
     </html>
 
 Notes:
-    - The button is using the :code:`hx_get` template tag to make an Htmx request to an :code:`HxRequest` with the name
+    - The button is using the :ref:`hx_get<Hx Tags>` template tag to make an Htmx request to an :code:`HxRequest` with the name
       :code:`replace_btn` (we will create this in step 6)
 
 Go to :code:`/my_view` and you should see a button that looks like this:
