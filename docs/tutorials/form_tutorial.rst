@@ -6,7 +6,7 @@ Objective
 
 In this tutorial, you'll learn how to use hx_requests with forms by building a simple user form that is swapped in and replaces the
 user's info display, and submits data via an HTMX request, dynamically updating both the user and the user info display. We'll also cover
-handling form validation and displaying error messages using hx_requests. Additionally, we'll take a more advanced approach by utilizing
+handling form validation and displaying error :ref:`messages <How To Use Messages>` using hx_requests. Additionally, we'll take a more advanced approach by utilizing
 template blocks to update content efficiently, eliminating the need for a separate template.
 
 Step 1: Installation
