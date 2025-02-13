@@ -101,7 +101,7 @@ Using Forms in Modals
 ~~~~~~~~~~~~~~~~~~~~~
 
 To use a form in a modal, you can use the :code:`FormModalHxRequest` class. This class is a subclass of :code:`ModalHxRequest`
-and has the same functionality as the :ref:`Form Tutorial <FormHxRequest>`.
+and has the same functionality as the :ref:`FormHxRequest<Form Tutorial>`.
 
 
 .. code-block:: python
