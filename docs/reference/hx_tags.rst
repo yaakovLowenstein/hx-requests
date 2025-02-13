@@ -8,6 +8,7 @@ Parameters
 ~~~~~~~~~~
     - :code:`HxRequest` Name (required) – The name of the HxRequest being used.
     - Object (optional) - If provided, this object is associated with the :code:`HxRequest` (similar to Django's `UpdateView <https://docs.djangoproject.com/en/5.0/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView>`_ )
+    - use_full_path (optional) - If set to True, the full path of the :code:`url` is used. TODO: Add link to get params docs
     - Keyword Arguments (:code:`kwargs`) - Additional arguments passed into the :code:`HxRequest`. These can be Django :code:`Model` objects because they are serialized.
 
 Behavior
