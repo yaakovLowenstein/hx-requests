@@ -25,7 +25,6 @@ with htmx, and many other awesome features.
 
    guide/quickstart
    guide/forms
-   guide/delete
    guide/hx_tags
    guide/config
    guide/faqs
