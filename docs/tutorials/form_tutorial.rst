@@ -129,8 +129,8 @@ Next, update the base.html template to include a button that will trigger the Ht
     </html>
 
 Notes:
-    - The :code:`hx_get` template tag is used to make an Htmx request to the :code:`user_form_hx_request` HxRequest
-    - The object in the context coming from the UpdateView is passed to the :code:`hx_get` template tag as object
+    - The ::ref:`hx_get<Hx Tags>` template tag is used to make an Htmx request to the :code:`user_form_hx_request` HxRequest
+    - The object in the context coming from the UpdateView is passed to the :ref:`hx_get<Hx Tags>` template tag as object
 
 Go to :code:`/my_form_view/1` and you should see the user data that looks like this:
 
@@ -153,9 +153,9 @@ Add a template: user_form.html
     </form>
 
 Notes:
-    - The form is using the :code:`hx_post` template tag to make an Htmx request to an :code:`HxRequest` with the name
+    - The form is using the :ref:`hx_post<Hx Tags>` template tag to make an Htmx request to an :code:`HxRequest` with the name
       :code:`user_form_hx_request` (we will create this in step 8)
-    - The object in the context coming from the UpdateView is passed to the :code:`hx_post` template tag as object
+    - The object in the context coming from the UpdateView is passed to the :ref:`hx_post<Hx Tags>` template tag as object
 
 
 
