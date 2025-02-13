@@ -4,4 +4,4 @@ Reference
 .. toctree::
    :maxdepth: 3
 
-   autoapi/hx_requests/hx_requests/index
+   ../autoapi/hx_requests/hx_requests/index
