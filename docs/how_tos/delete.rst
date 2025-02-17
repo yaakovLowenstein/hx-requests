@@ -1,4 +1,4 @@
-How To delete
+How To Delete
 -------------
 
 This how-to demonstrates how to delete an object using :code:`hx-requests`. It follows the same structure as
