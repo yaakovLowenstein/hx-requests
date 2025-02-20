@@ -1,14 +1,15 @@
-How To Add Headers To Respones
-------------------------------
+How To Add Headers To Responses
+-------------------------------
 
 
 There are times when you need to add headers to the response returned from the server.
 HTMX uses specific headers to modify behavior when certain headers are present.
 
 Common HTMX response headers include:
-- **`Hx-Triggers`** - Triggers client-side events when the response is returned.
-- **`Hx-Redirect`** - Redirects the user to a new page.
-- **`Hx-Refresh`** - Refreshes the page.
+
+* **`Hx-Triggers`** - Triggers client-side events when the response is returned.
+* **`Hx-Redirect`** - Redirects the user to a new page.
+* **`Hx-Refresh`** - Refreshes the page.
 
 
 Adding Headers
