@@ -11,3 +11,4 @@ How Tos
    delete
    add_context
    add_form_kwargs
+   add_headers
