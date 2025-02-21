@@ -12,3 +12,4 @@ How Tos
    add_context
    add_form_kwargs
    add_headers
+   access_hx_object_in_template
