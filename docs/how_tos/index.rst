@@ -13,3 +13,4 @@ How Tos
    add_form_kwargs
    add_headers
    access_hx_object_in_template
+   get_params_post_request
