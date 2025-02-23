@@ -30,3 +30,15 @@ Setting :code:`add_form_errors_to_error_message` to True will add a Django form'
     class MyHxRequest(FormHxRequest):
         ...
         add_form_errors_to_error_message = True
+
+
+How To Opt Out Of The View's Context
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default :code:`HxRequests` include the view's context so that you can access the view's context in your template.
+However, there may be cases where you want to opt out of this behavior (slow performance, security concerns, etc).
+
+.. code-block:: python
+
+    class MyHxRequest(BaseHxRequest):
+        get_views_context = False
