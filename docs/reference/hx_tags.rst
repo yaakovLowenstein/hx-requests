@@ -21,3 +21,22 @@ Behavior
     - Kwargs
         - Accessible in the :code:`HxRequest` through :code:`**kwargs` in each method.
         - Available in the template as context variables, unless :code:`kwargs_as_context = False` is set on the :code:`HxRequest`, in which case they are stored in :code:`hx_kwargs`, accessible as {{ hx_kwargs.key }}.
+
+
+Example
+~~~~~~~
+
+.. code-block:: html+django
+
+    <button {% hx_get 'my_hx_request' object=my_instance %}></button>
+
+
+Is equal to:
+
+.. code-block:: html+django
+
+    <button hx-get="my-website/current-page?hx_request_name=my_hx_request&object=model_instance__app_name__model__id_of_my_instance"></button>
+
+.. note::
+
+    :ref:`How Hx Tags Serialize Objects`

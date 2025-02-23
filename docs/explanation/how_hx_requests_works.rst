@@ -1,7 +1,8 @@
 How Do HxRequests Work?
 -----------------------
 
-Instead of routing HTMX requests to a Django view like a normal request, hx_requests intercepts them and sends them to a dedicated HxRequest class.
+Instead of routing HTMX requests to a Django view like a normal request,
+:code:`hx_requests` intercepts them and sends them to a dedicated HxRequest class.
 
 How It Works
 ~~~~~~~~~~~~
@@ -14,6 +15,7 @@ When using the :ref:`hx_get <Hx Tags>` and :ref:`hx_post <Hx Tags>` template tag
 #. When the request reaches the view, :code:`HtmxViewMixin` checks if the request is an HTMX request and if the :code:`hx_request_name` is in the request
    and routes the request to the :code:`HxRequest` with the matching name.
 #. The :code:`HxRequest` processes the request and returns an Html response.
+
 
 Why Not Just Use A URL Router?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
