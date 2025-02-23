@@ -19,3 +19,4 @@ with htmx, and many other awesome features.
    tutorials/index
    how_tos/index
    reference/index
+   explanation/index
