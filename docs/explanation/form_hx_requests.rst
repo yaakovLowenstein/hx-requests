@@ -9,7 +9,7 @@ Which on one hand makes it easier to use, but on the other hand can make it a li
 It simplifies working with forms in Django and HTMX by providing built-in methods, attributes, and behaviors that streamline form handling.
 
 The :code:`FormHxRequest` uses a :code:`form_class` attribute to set which form to use. This could be a regular form or a model form.
-On GET the form is accessible in the context as :code:`form` and the template defined in :code:GET_template has access to it..
+On GET the form is accessible in the context as :code:`form` and the template defined in :code:`GET_template` has access to it.
 On POST the form is validated and if it is valid the :code:`form_valid` method is called, if it is invalid the :code:`form_invalid` method is called just
 like in Django's :code:`FormView`.
 
