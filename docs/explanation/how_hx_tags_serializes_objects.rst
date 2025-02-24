@@ -1,5 +1,5 @@
-How Objects Are Serialized
---------------------------
+Object Serialization
+--------------------
 
 Serialization in :code:`hx_requests` ensures that Django model instances and other data types
 can be safely passed through HTMX requests.
