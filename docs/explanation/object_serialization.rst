@@ -2,7 +2,7 @@ Object Serialization
 --------------------
 
 Serialization in :code:`hx_requests` ensures that Django model instances and other data types
-can be safely passed through HTMX requests.
+can be safely passed through HTMX requests. The serialization process takes place in the :ref:`template tag <Hx Tags>`.
 
 Since HTMX requests don’t natively support passing complex Python objects,
 :code:`hx_requests` provides a custom serialization method that allows Django models
