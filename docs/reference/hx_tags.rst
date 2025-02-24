@@ -39,4 +39,5 @@ Is equal to:
 
 .. note::
 
-    :ref:`How Hx Tags Serialize Objects`
+    See :ref:`Object Serialization` for more information on how objects are serialized.
+`
