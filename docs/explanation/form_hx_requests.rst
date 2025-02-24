@@ -6,6 +6,8 @@ The :code:`FormHxRequest` is modeled after Django's :code:`FormView`, :code:`Cre
 If the package was being rewritten it coulde be there would be three separate classes, but for now they are all combined into one.
 Which on one hand makes it easier to use, but on the other hand can make it a little more coupled.
 
+It simplifies working with forms in Django and HTMX by providing built-in methods, attributes, and behaviors that streamline form handling.
+
 The :code:`FormHxRequest` uses a :code:`form_class` attribute to set which form to use. This could be a regular form or a model form.
 On GET the form is accessible in the context as :code:`form` and the template defined in :code:GET_template has access to it..
 On POST the form is validated and if it is valid the :code:`form_valid` method is called, if it is invalid the :code:`form_invalid` method is called just
