@@ -1,4 +1,4 @@
-How To Add Context To HX Requests
+How To Add Context To HxRequests
 ---------------------------------
 
 There are times when you need to pass additional context to the template that is being swapped in, beyond the context that is provided by the view.
