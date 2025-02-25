@@ -82,6 +82,8 @@ Create a ModalHxRequest
     class ModalExample(ModalHxRequest):
         name = "modal_example"
         GET_template = "modal_body.html" # A template to be used as the body of the modal
+        title = "Modal Title" # The title of the modal
+        modal_size_classes = "modal-lg" # The size of the modal (bootstrap classes example)
 
 
 Trigger the Modal
@@ -101,7 +103,7 @@ Using Forms in Modals
 ~~~~~~~~~~~~~~~~~~~~~
 
 To use a form in a modal, you can use the :code:`FormModalHxRequest` class. This class is a subclass of :code:`ModalHxRequest`
-and has the same functionality as the :ref:`FormHxRequest<Form Tutorial>`.
+and has the same functionality as the :ref:`FormHxRequest<   Tutorial>`.
 
 
 .. code-block:: python
@@ -136,3 +138,33 @@ If you need to manually close the modal, you can return the :code:`closeHxModal`
             if some_condition:
                 triggers.append("closeHxModal")
             return triggers
+
+Setting Title and Size Dynamically
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Many times you will want to set the title and size of the modal dynamically based on some condition.
+This can be done in two ways:
+
+1. By setting the title and size in the :code:`HxRequest`:
+
+.. code-block:: python
+
+    class ModalExample(ModalHxRequest):
+        name = "modal_example"
+        GET_template = "modal_body.html" # A template to be used as the body of the modal
+
+        def get(self, request, *args, **kwargs):
+            if some_condition:
+                self.title = "New Title"
+                self.modal_size_classes = "modal-sm"
+            else:
+                self.title = "Default Title"
+                self.modal_size_classes = "modal-lg"
+            return super().get(request, **kwargs)
+
+
+2. Via the template tag
+
+.. code-block:: html+django
+
+    <button {% hx_get "modal_example" title="New Title" modal_size_classes="modal-sm" %} hx-target="#hx_modal_container">Open Modal</button>
