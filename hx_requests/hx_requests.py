@@ -501,6 +501,10 @@ class ModalHxRequest(BaseHxRequest):
         return modal_template
 
     def get_response_html(self, **kwargs) -> str:
+        """
+        If it is a GET request, the entire modal template is returned with the body, title and `modal_size_classes`
+        of the modal instead of just the `GET_template`.
+        """
         if self.is_post_request is False:
             return self._get_modal_html(kwargs)
         return super().get_response_html(**kwargs)
@@ -541,12 +545,19 @@ class FormModalHxRequest(ModalHxRequest, FormHxRequest):
         return getattr(settings, "HX_REQUESTS_MODAL_BODY_ID", "#hx_modal_body")
 
     def get_triggers(self, **kwargs) -> list:
+        """
+        If the form is valid and the modal is set to close on save, closeHxModal is added to the triggers.
+        """
         triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
             triggers.append("closeHxModal")
         return triggers
 
     def get_headers(self, **kwargs) -> Dict:
+        """
+        If the form is invalid, headers are set to retarget the innerHTML of the modal body.
+        This is done to show the form errors.
+        """
         headers = super().get_headers(**kwargs)
         if self.is_post_request and self.form.is_valid() is False:
             headers["HX-Retarget"] = self.modal_body_selector
