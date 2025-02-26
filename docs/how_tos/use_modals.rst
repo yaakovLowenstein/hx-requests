@@ -96,7 +96,7 @@ Trigger the Modal
 
 .. note::
 
-        This is using a bootstrap 5 modal and therefore needs bootstrap 5 to be included in the project.
+        This how-to is using a bootstrap 5 modal.
 
 
 Using Forms in Modals
