@@ -2,6 +2,50 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.4 (2025-02-26)
+
+### Fix
+
+* Allow django greater than 3.2 ([`ea0cc49`](https://github.com/yaakovLowenstein/hx-requests/commit/ea0cc495806c8515eb8a2b965478c40d0ad46f9c))
+
+### Documentation
+
+* Fix language in use_modals.rst ([`c7a9015`](https://github.com/yaakovLowenstein/hx-requests/commit/c7a9015e62d3aab331de2da8fa30829c77fd5809))
+* Fix type ([`fbfc080`](https://github.com/yaakovLowenstein/hx-requests/commit/fbfc0807549c766d63d8c1aebc9304628069b180))
+* Add refresh context explanation ([`b035c1a`](https://github.com/yaakovLowenstein/hx-requests/commit/b035c1a0c60b3b003a7fb5a993d139c1a7191b48))
+* Fix typo ([`4abdc81`](https://github.com/yaakovLowenstein/hx-requests/commit/4abdc8159d224d55e4fc2beef6796de1f4f4fe15))
+* Add modal explanation ([`4735c70`](https://github.com/yaakovLowenstein/hx-requests/commit/4735c708ef82f96bb29ca4a992cf469385e356c9))
+* Updates ([`43eade9`](https://github.com/yaakovLowenstein/hx-requests/commit/43eade987043230063c560791b11de37c797aaa4))
+* Updates ([`ee79edb`](https://github.com/yaakovLowenstein/hx-requests/commit/ee79edbf16bd14029baed263783af63dcf3aa321))
+* Explanation on the serialization process ([`059a67b`](https://github.com/yaakovLowenstein/hx-requests/commit/059a67b2862af0e3a7b6f11cf5c2f09b29d38698))
+* Update to docs ([`e51ad14`](https://github.com/yaakovLowenstein/hx-requests/commit/e51ad14f3184d9a489b28f39f9c1776e4adffcac))
+* Add explanation to top level index ([`ea934ed`](https://github.com/yaakovLowenstein/hx-requests/commit/ea934ed45e017cbbe566cc730eb59c16ce35ab5d))
+* Add explanation for how HxRequests work ([`c6b9058`](https://github.com/yaakovLowenstein/hx-requests/commit/c6b905890075272fad53de9d19c9b7617d1acec5))
+* Add how to opt out of views context ([`d53f4ab`](https://github.com/yaakovLowenstein/hx-requests/commit/d53f4abd78beddbef4fe987986ded0acd6dceff2))
+* Fixup index ([`0759538`](https://github.com/yaakovLowenstein/hx-requests/commit/0759538b48223b5bb2aa2bdd4fe343d94f8b9179))
+* Add more how tos ([`06f29f0`](https://github.com/yaakovLowenstein/hx-requests/commit/06f29f0342d5ada59a24afef173556879cabfc17))
+* Add how to for GET params in POST request ([`b516c23`](https://github.com/yaakovLowenstein/hx-requests/commit/b516c235154b6139b11fe6375f5ea40ee3d1fb67))
+* Add how to access hx object in template ([`9be215f`](https://github.com/yaakovLowenstein/hx-requests/commit/9be215f07d7f29cfcd96595d9ca9fea72ecbe017))
+* Fixup ([`3add63f`](https://github.com/yaakovLowenstein/hx-requests/commit/3add63f9e4b397d4a8a808ba485c00bd280a3527))
+* Add headers to how-tos ([`35b9445`](https://github.com/yaakovLowenstein/hx-requests/commit/35b9445e0348399659dc0d14c9e915b7dec691ac))
+* Fixup how-to add add_context ([`7bc2f54`](https://github.com/yaakovLowenstein/hx-requests/commit/7bc2f541ab2c48de62f72395282ce25e341d3900))
+* Fix typo in how_tos/delete.rst ([`15bbc14`](https://github.com/yaakovLowenstein/hx-requests/commit/15bbc144316f17b6f5d01f39feae5ebfcb52818e))
+* Add how to form kwargs to index ([`97faaec`](https://github.com/yaakovLowenstein/hx-requests/commit/97faaecca2ea7af74864ed299b21a20753232393))
+* Remove old form docs ([`8057c76`](https://github.com/yaakovLowenstein/hx-requests/commit/8057c76c8b5ccac0c17f21e9ac0563b4bb590f2e))
+* Add how to for adding form kwargs ([`ca95966`](https://github.com/yaakovLowenstein/hx-requests/commit/ca95966be94b2e92b8209a496401bab7917aba1b))
+* Remove quickstart guide ([`028b92e`](https://github.com/yaakovLowenstein/hx-requests/commit/028b92ec204ebaa521b203e13fd6bcda33fadeca))
+* Add context how to - to index ([`178fd5f`](https://github.com/yaakovLowenstein/hx-requests/commit/178fd5f833f987de65fdaab6f247f800e4b28b6f))
+* Add docs for how to add context to an HxRequest ([`21f01f5`](https://github.com/yaakovLowenstein/hx-requests/commit/21f01f54a375b130f4a695448174852c4d1ca6ed))
+* Add note about use_full_path ([`8f7a90a`](https://github.com/yaakovLowenstein/hx-requests/commit/8f7a90a56d4fdca7f6617ba47b8857cc7cfc17fa))
+* Add links to hx tags reference docs ([`fd61a4e`](https://github.com/yaakovLowenstein/hx-requests/commit/fd61a4e369ec2ed4ec21c847942018c94fc0de61))
+* Redo hx tags reference ([`d4432a7`](https://github.com/yaakovLowenstein/hx-requests/commit/d4432a75622d8a8f41d11c8824a5c462b4aa764e))
+* Redo config docs ([`48b5481`](https://github.com/yaakovLowenstein/hx-requests/commit/48b5481e9129bfb9a00a815b055548e8ce7beb1e))
+* Update ([`bcc268b`](https://github.com/yaakovLowenstein/hx-requests/commit/bcc268ba44adbc7bfbdc2839baa9bfcea102d701))
+* Update ([`7a5b64c`](https://github.com/yaakovLowenstein/hx-requests/commit/7a5b64c3876820aac5954a07e977530c89d94244))
+* Updates ([`ece6130`](https://github.com/yaakovLowenstein/hx-requests/commit/ece61301a76d878ed1cd008ad4c4e81e0b9c63a5))
+* Updates ([`ae29e0a`](https://github.com/yaakovLowenstein/hx-requests/commit/ae29e0a3f9063a96c3399ce6f62b2be957a1cd27))
+* Remove old modals docs ([`c231335`](https://github.com/yaakovLowenstein/hx-requests/commit/c23133556cfbdfb6c6963914e390aee2063142a8))
+
 ## v0.35.3 (2025-02-09)
 
 ### Fix
