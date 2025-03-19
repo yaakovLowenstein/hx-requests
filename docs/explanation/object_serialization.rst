@@ -37,10 +37,16 @@ If the received value is not a model instance, it is treated as a standard JSON 
 
 This process ensures that Django objects can be reconstructed properly when handling HTMX requests.
 
-Handling :code:`kwargs` Serialization
+Handling kwargs Serialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Each keyword argument is prefixed with :code:`___` to differentiate it from standard query parameters.
 When deserializing, the prefix is removed, and values are restored to their original form.
 
 This allows :code:`hx_requests` to safely pass complex parameters in HTMX requests.
+
+.. note::
+
+    Since keyword arguments (:code:`kwargs`) are prefixed with :code:`___` during serialization, they are not recognized as standard query parameters.
+    If you need to pass a GET parameter through an HTMX request, use the :code:`hx-include` or :code:`hx-vals` attribute instead of a passing as a :code:`kwarg`.
+    For example, when implementing pagination, the :code:`page` parameter must be sent as a standard GET parameter. Passing it as a :code:`kwarg` will result in it being prefixed and ignored by the request handler.

@@ -21,7 +21,7 @@ Behavior
     - Kwargs
         - Accessible in the :code:`HxRequest` through :code:`**kwargs` in each method.
         - Available in the template as context variables, unless :code:`kwargs_as_context = False` is set on the :code:`HxRequest`, in which case they are stored in :code:`hx_kwargs`, accessible as {{ hx_kwargs.key }}.
-
+        - :code:`kwargs` are prefixed with :code:`___` to differentiate them from standard query parameters (see :ref:`Handling kwargs Serialization`).
 
 Example
 ~~~~~~~
