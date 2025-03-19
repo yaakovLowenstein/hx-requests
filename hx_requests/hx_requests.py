@@ -35,8 +35,10 @@ class BaseHxRequest:
         Name that the hx_object is passed into the context with
     GET_template : str,list, optional
         Template rendered for a GET request. If a list is passed in, all the templates are rendered
+        If unset, the views template_name is used
     POST_template : str,list, optional
         Template rendered for a POST request. If a list is passed in, all the templates are rendered
+        If unset, the views template_name is used
     GET_block : str,list, optional
         Block of the GET_template to be used instead of rendering the whole template
         If a list is passed in, all the blocks are rendered per the GET_template
@@ -159,7 +161,7 @@ class BaseHxRequest:
         self.renderer = Renderer()
         self.GET_template = self.GET_template or self.view.template_name
         self.POST_template = self.POST_template or self.view.template_name
-        # TODO maybe remove this line (why is it there?)
+
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request)
 
