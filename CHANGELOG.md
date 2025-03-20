@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.5 (2025-03-20)
+
+### Fix
+
+* Add reference that views template is used by default ([`76e5cfd`](https://github.com/yaakovLowenstein/hx-requests/commit/76e5cfd12454cacbb3bd085aaf42778809f58256))
+
+### Documentation
+
+* Small changes ([`f1a8fd5`](https://github.com/yaakovLowenstein/hx-requests/commit/f1a8fd51a1ce6d17ed5cf20c81ce3601304cdfc1))
+* Add to index ([`e50aa94`](https://github.com/yaakovLowenstein/hx-requests/commit/e50aa94de87cc7459fcd97999fc17cb16947fe73))
+* Add link to demo site ([`ff492ce`](https://github.com/yaakovLowenstein/hx-requests/commit/ff492ce198017b101f1f847b764ba6dc6f2e3f51))
+* Add docs about passing through GET parameters not as kwargs ([`ba9d938`](https://github.com/yaakovLowenstein/hx-requests/commit/ba9d938196d17fe0d52a000b33b064de44493ca0))
+
 ## v0.35.4 (2025-02-26)
 
 ### Fix
