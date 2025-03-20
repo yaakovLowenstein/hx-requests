@@ -14,4 +14,5 @@ How Tos
    add_headers
    access_hx_object_in_template
    get_params_post_request
+   list_page_with_crud
    more_how_tos
