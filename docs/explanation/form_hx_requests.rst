@@ -3,7 +3,7 @@ What Are FormHxRequests?
 
 
 The :code:`FormHxRequest` is modeled after Django's :code:`FormView`, :code:`CreateView` and :code:`UpdateView`.
-If the package was being rewritten it coulde be there would be three separate classes, but for now they are all combined into one.
+If the package was being rewritten it could be there would be three separate classes, but for now they are all combined into one.
 Which on one hand makes it easier to use, but on the other hand can make it a little more coupled.
 
 It simplifies working with forms in Django and HTMX by providing built-in methods, `attributes <https://hx-requests.readthedocs.io/en/latest/autoapi/hx_requests/hx_requests/index.html#id1>`_ , and behaviors that streamline form handling.
@@ -31,7 +31,7 @@ hx_object
 ~~~~~~~~~
 
 The :code:`hx_object` is the object passed into the template tag and as mentioned above is used as the instance for the form if the form is a model form.
-It is accessible in the templates (:code:`GE_tempalte` and :code:`POST_template`) as :code:`hx_object` by default, but can be :ref:`renamed <How To Access hx_object In Template>` by setting :code:`hx_object_name` in the :code:`FormHxRequest` class.
+It is accessible in the templates (:code:`GET_template` and :code:`POST_template`) as :code:`hx_object` by default, but can be :ref:`renamed <How To Access hx_object In Template>` by setting :code:`hx_object_name` in the :code:`FormHxRequest` class.
 
 This can be a little confusing, for example:
 
