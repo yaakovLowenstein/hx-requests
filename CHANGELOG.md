@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.36.0 (2025-07-04)
+
+### Feature
+
+* Add use_current_url option to BaseHxRequest ([`919c833`](https://github.com/yaakovLowenstein/hx-requests/commit/919c83309cccefd45d780ea5f5d5a39aebd46622))
+
+### Documentation
+
+* Fix typos in docs ([`343dd46`](https://github.com/yaakovLowenstein/hx-requests/commit/343dd46fa1327527fe7f406c2dea34606ce36960))
+
 ## v0.35.5 (2025-03-20)
 
 ### Fix
