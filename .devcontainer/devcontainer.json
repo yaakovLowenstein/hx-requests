@@ -7,7 +7,7 @@
 	"remoteUser": "vscode",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {},
-		"ghcr.io/devcontainers-contrib/features/poetry:2": {},
+		"ghcr.io/devcontainers-extra/features/poetry:2": {},
 		"ghcr.io/prulloac/devcontainer-features/pre-commit:1": {}
 	}
 	// Features to add to the dev container. More info: https://containers.dev/features.
