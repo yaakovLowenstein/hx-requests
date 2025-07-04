@@ -68,6 +68,11 @@ class BaseHxRequest:
     refresh_views_context_on_POST: bool
         If True, the view's context is refreshed on a POST request.
         Useful if the context needs to be updated after the POST.
+    use_current_url: bool (Experimental)
+        If True, the request adds the GET params from the current browser URL to the request.
+        The GET params submitted with the request (I.e via hx-vals) override the ones in the
+        current URL.
+
 
     **Note**: Cannot use blocks with a list of templates
 
@@ -87,6 +92,7 @@ class BaseHxRequest:
     get_views_context: bool = True
     kwargs_as_context: bool = True
     refresh_views_context_on_POST: bool = False
+    use_current_url: bool = False
 
     @cached_property
     def is_post_request(self):
