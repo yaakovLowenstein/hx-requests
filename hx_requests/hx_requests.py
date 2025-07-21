@@ -1,3 +1,4 @@
+import contextlib
 from functools import partial
 from typing import Dict, Union
 
@@ -144,10 +145,8 @@ class BaseHxRequest:
         context = {}
         # Refresh the object in case it was updated.
         if self.hx_object and self.hx_object.pk:
-            try:
+            with contextlib.suppress(ObjectDoesNotExist):
                 self.hx_object.refresh_from_db()
-            except ObjectDoesNotExist:
-                pass
         if self.refresh_views_context_on_POST:
             if hasattr(self.view, "object") and self.view.object:
                 self.view.object.refresh_from_db()
