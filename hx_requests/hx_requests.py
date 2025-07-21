@@ -4,6 +4,7 @@ from typing import Dict, Union
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.template import RequestContext
@@ -143,7 +144,10 @@ class BaseHxRequest:
         context = {}
         # Refresh the object in case it was updated.
         if self.hx_object and self.hx_object.pk:
-            self.hx_object.refresh_from_db()
+            try:
+                self.hx_object.refresh_from_db()
+            except ObjectDoesNotExist:
+                pass
         if self.refresh_views_context_on_POST:
             if hasattr(self.view, "object") and self.view.object:
                 self.view.object.refresh_from_db()
