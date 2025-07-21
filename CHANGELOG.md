@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.36.1 (2025-07-21)
+
+### Fix
+
+* Error handling when refreshing hx object on post ([`3049198`](https://github.com/yaakovLowenstein/hx-requests/commit/3049198be4e7d90e4cd15583a81fa768d9e3fb56))
+* Error handling when refreshing hx object on post ([`9411c8b`](https://github.com/yaakovLowenstein/hx-requests/commit/9411c8b48625e555132a4b93bef87e9b2e3f43fc))
+
 ## v0.36.0 (2025-07-04)
 
 ### Feature
