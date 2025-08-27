@@ -355,7 +355,7 @@ class FormHxRequest(BaseHxRequest):
         else:
             return self.form_invalid(**kwargs)
 
-    def form_valid(self, **kwargs) -> str:
+    def form_valid(self, **kwargs) -> HttpResponse:
         """
         Saves the form and sets a success message.
         Returns self._get_response. Override to add custom behavior.
@@ -364,7 +364,7 @@ class FormHxRequest(BaseHxRequest):
         messages.success(self.request, self.get_success_message(**kwargs))
         return self._get_response(**kwargs)
 
-    def form_invalid(self, **kwargs) -> str:
+    def form_invalid(self, **kwargs) -> HttpResponse:
         """
         Sets an error message.
         Returns self._get_response. Override to add custom behavior.
