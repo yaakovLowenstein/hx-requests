@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.36.2 (2025-08-27)
+
+### Fix
+
+* Set return types to HttpResponse in FormHxRequest ([`22cf268`](https://github.com/yaakovLowenstein/hx-requests/commit/22cf2682b00d2a278c15b2a44d01f677531208a6))
+
 ## v0.36.1 (2025-07-21)
 
 ### Fix
