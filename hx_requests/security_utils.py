@@ -34,12 +34,20 @@ def urlname_from_request(request: HttpRequest) -> str | None:
     Prefer resolver_match (already computed by middleware); fall back to resolve().
     """
     try:
-        return request.resolver_match.view_name
+        view_name = request.resolver_match.view_name
     except Exception:
         try:
-            return resolve(request.path_info).view_name
+            view_name = resolve(request.path_info).view_name
         except Exception:
             return None
+
+    if not view_name:
+        return None
+
+    # Strip "app:" prefix if present
+    if ":" in view_name:
+        return view_name.split(":", 1)[1]
+    return view_name
 
 
 def is_globally_allowed(global_allow_spec, hx_app: str | None, hx_name: str) -> bool:
