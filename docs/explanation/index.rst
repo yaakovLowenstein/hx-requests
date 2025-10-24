@@ -9,3 +9,4 @@ Explanation
    modals
    refreshing_context_on_post
    object_serialization
+   securing_hx_requests
