@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.37.0 (2025-10-24)
+
+### Feature
+
+* Add security controls for HxRequests to enforce app boundaries ([`5fe7060`](https://github.com/yaakovLowenstein/hx-requests/commit/5fe7060cabc1027b3142fba9f3f12618ae4c5224))
+
+### Breaking
+
+* HxRequests are now restricted by default. Update settings and HxRequest classes to allow cross-app usage as needed. ([`5fe7060`](https://github.com/yaakovLowenstein/hx-requests/commit/5fe7060cabc1027b3142fba9f3f12618ae4c5224))
+
+### Documentation
+
+* Fix index ([`7bf28ca`](https://github.com/yaakovLowenstein/hx-requests/commit/7bf28cac0b8cfb0163b10a42e668359a5ac3fd8a))
+* Update docs format ([`76dedb7`](https://github.com/yaakovLowenstein/hx-requests/commit/76dedb7476ca487c8cba182dfe2c5890d2f671c6))
+
 ## v0.36.2 (2025-08-27)
 
 ### Fix
