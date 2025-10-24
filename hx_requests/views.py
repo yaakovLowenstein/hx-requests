@@ -82,7 +82,7 @@ class HtmxViewMixin:
         view_app = app_label_for_object(self)
         hx_app = app_label_for_object(hx_cls)
         url_name = urlname_from_request(request)
-        hx_name = hx_cls.__name__
+        hx_name = hx_cls.name  # name attribute set on the HxRequest class
 
         # If security controls are disabled, always allow
         if not getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True):
