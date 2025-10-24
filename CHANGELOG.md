@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.37.1 (2025-10-24)
+
+### Fix
+
+* Fix hx_name assignment in HtmxViewMixin ([`e8e0f42`](https://github.com/yaakovLowenstein/hx-requests/commit/e8e0f429e3a38ddd9888c24d0bb4adbbb3cc3aa6))
+
 ## v0.37.0 (2025-10-24)
 
 ### Feature
