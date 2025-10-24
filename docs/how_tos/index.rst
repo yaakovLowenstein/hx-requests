@@ -5,6 +5,7 @@ How Tos
    :maxdepth: 1
 
    register_hx_requests
+   securing_hx_requests
    use_modals
    oob_swap
    use_messages
