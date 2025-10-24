@@ -13,7 +13,7 @@ See also: :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 
 
 The Problem
------------
+~~~~~~~~~~~
 
 Without validation, any page or script can issue a request like:
 
@@ -61,18 +61,18 @@ Without additional security controls, any :code:`hx_request_name` becomes a
 global entry point into your application’s internal request logic.
 
 Design Goals
-------------
+~~~~~~~~~~~~
 
 The new HxRequest security layer enforces:
 
-1. **App Isolation** – Prevent cross-app access by default.
+1. **App Isolation** – Prevent cross-app access by default (i.e 3rd party untrusted packages).
 2. **Explicit Trust** – Cross-app usage must be declared via settings or per-request rules.
 3. **Safe Extensibility** – Shared internal libraries can safely opt in to wider access.
 4. **Predictability** – Even if enforcement is disabled, the logic runs consistently.
 
 
 What Happens Without Controls
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you remove these checks, anyone who knows (or guesses) an :code:`hx_request_name`
 can:
@@ -83,7 +83,7 @@ can:
 
 
 Security Model Overview
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 ============================  ============================================
 **Layer**                     **Responsibility**
@@ -96,7 +96,7 @@ Additive Logic                Combines or replaces base rule
 
 
 When To Relax Controls
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 You should loosen restrictions only when you **trust the source** of the request
 and the operation is something that **any user could safely perform**—
@@ -118,7 +118,7 @@ Typical valid cases include:
 
 
 Summary
--------
+~~~~~~~
 
 Without these controls, :code:`hx_request_name` effectively exposes
 a remote-call interface to your entire Django project.
