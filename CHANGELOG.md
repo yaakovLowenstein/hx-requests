@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.37.2 (2025-10-24)
+
+### Fix
+
+* Strip app namespace from view names in urlname_from_request ([`c085240`](https://github.com/yaakovLowenstein/hx-requests/commit/c08524001c64c3fe9ad94bb9a3c341937ed0420c))
+
 ## v0.37.1 (2025-10-24)
 
 ### Fix
