@@ -13,13 +13,13 @@ see :ref:`Why HxRequest Security Is Needed <why-hxrequest-security>`.
 
 
 Global Settings
----------------
+~~~~~~~~~~~~~~~
 
 Global settings define the **default security policy** for all :code:`HxRequests` in your project.
 
 
 Enforce Same-App Rule
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -46,7 +46,7 @@ HxRequests become callable from any app unless restricted by other rules.
 
 
 Global Allowlist
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
 
 The global allowlist defines exceptions to the same-app rule. It lets you mark specific
 apps or individual HxRequests as trusted and callable across apps.
@@ -80,13 +80,13 @@ The value :code:`"__all__"` allows every request in that app.
 
 
 Per-HxRequest Controls
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Each :code:`HxRequest` class can define its own access rules.
 
 
 allowed
-~~~~~~~
+^^^^^^^
 
 The :code:`allowed` attribute defines which apps (or specific views)
 are permitted to call the request.
@@ -114,7 +114,7 @@ url within :code:`app1`.
 
 
 allow_additive
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 Determines whether the :code:`allowed` list **adds to** or **replaces**
 the base same-app rule.
@@ -142,21 +142,9 @@ Allowed if **either**:
 Allowed **only** from the listed apps — not from the same app.
 
 
-Example 4 – Combining Rules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you define both global and per-class allowlists, the system follows this precedence:
-
-1. Global allowlist (always grants access)
-2. Per-class :code:`allowed`
-3. Base same-app rule (if enforced)
-
-Additive mode merges (2) and (3).
-Restrictive mode uses only (2).
-
 
 Summary
--------
+~~~~~~~
 
 ==============================  ===========================================
 **Control**                     **Purpose**
