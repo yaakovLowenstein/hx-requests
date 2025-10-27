@@ -6,7 +6,7 @@ However, without proper access controls, any request can be triggered from any p
 by including the :code:`hx_request_name` parameter in the URL.
 
 This guide explains **how to secure HxRequests**, enforce app boundaries,
-and explicitly allow cross-app usage where appropriate.
+require authentication when appropriate, and explicitly allow cross-app usage where needed.
 
 For an explanation of *why* these controls exist and the risks they prevent,
 see :ref:`Why HxRequest Security Is Needed <why-hxrequest-security>`.
@@ -16,6 +16,47 @@ Global Settings
 ~~~~~~~~~~~~~~~
 
 Global settings define the **default security policy** for all :code:`HxRequests` in your project.
+
+
+Require Authentication
+^^^^^^^^^^^^^^^^^^^^^^
+
+Require users to be authenticated before running any :code:`HxRequest`. You can also
+define exceptions that are allowed without authentication (see *Unauthenticated Allowlist*).
+
+.. code-block:: python
+
+    # settings.py
+    HX_REQUESTS_REQUIRE_AUTH = True
+
+With :code:`HX_REQUESTS_REQUIRE_AUTH = True`, unauthenticated users are blocked from
+executing HxRequests **unless** the request is explicitly whitelisted in
+:code:`HX_REQUESTS_UNAUTHENTICATED_ALLOW` (below).
+
+
+Unauthenticated Allowlist
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Define the subset of HxRequests that may be executed **without authentication**.
+The structure mirrors the global allowlist shapes:
+
+- List/tuple/set of app labels → allow **all** HxRequests in those apps.
+- Dict of :code:`{app_label: "__all__"}` → same as above.
+- Dict of :code:`{app_label: ["HxNameA", "HxNameB"]}` → allow **only** those Hx names.
+
+.. code-block:: python
+
+    # settings.py
+    HX_REQUESTS_UNAUTHENTICATED_ALLOW = {
+        "app1": "__all__",              # all HxRequests in app1
+        "app2": ["hx_request_1", "hx_request_2"], # specific requests in app2
+    }
+
+.. note::
+
+   The authentication check runs **first**. If authentication is required and the user
+   is not authenticated, only HxRequests listed in :code:`HX_REQUESTS_UNAUTHENTICATED_ALLOW`
+   are allowed to proceed to the other access controls.
 
 
 Enforce Same-App Rule
@@ -80,9 +121,10 @@ The value :code:`"__all__"` allows every request in that app.
 
 
 Per-View Controls
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
-Each :code:`View` class can define its own access rules.
+Each :code:`View` class can define its own access rules via an **allowed list** and an
+**additive** flag.
 
 
 allowed_hx_requests
@@ -104,7 +146,7 @@ hx_requests_allow_additive
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Determines whether the :code:`allowed_hx_requests` list **adds to** or **replaces**
-the base same-app rule.
+the base same-app/global rules.
 
 **Additive (default):**
 
@@ -115,8 +157,8 @@ the base same-app rule.
         hx_requests_allow_additive = True
 
 Allowed if **either**:
-- The HxRequest and url are in the same app, **or**
-- The HxRequest is in the allowed list.
+- The HxRequest is in :code:`allowed_hx_requests`, **or**
+- The request passes the base rules (same-app if enforced, or globally allowed).
 
 **Restrictive:**
 
@@ -126,24 +168,54 @@ Allowed if **either**:
         allowed_hx_requests = ["hx_request_3", "hx_request_4"]
         hx_requests_allow_additive = False
 
-Only HxRequests in the allowed list can be called, regardless of app.
+Only HxRequests in :code:`allowed_hx_requests` can be called from this view
+(regardless of same-app/global rules).
 
+
+
+
+Evaluation Order
+~~~~~~~~~~~~~~~~
+
+1. **Authentication gate**
+   - If :code:`HX_REQUESTS_REQUIRE_AUTH` is True and the user is not authenticated:
+     - Allow only if the HxRequest matches :code:`HX_REQUESTS_UNAUTHENTICATED_ALLOW`.
+     - Otherwise, deny.
+
+2. **Per-view allowlist**
+   - If the HxRequest is listed in :code:`allowed_hx_requests`, allow.
+   - If :code:`hx_requests_allow_additive` is False and it’s **not** listed, deny.
+   - If :code:`hx_requests_allow_additive` is True and it’s not listed, proceed to step 3
+
+3. **Base rules**
+   - Allow if **globally allowed** (per :code:`HX_REQUESTS_GLOBAL_ALLOW`), or
+   - Allow if **same-app** and :code:`HX_REQUESTS_ENFORCE_SAME_APP` is True.
+   - Allow if :code:`HX_REQUESTS_ENFORCE_SAME_APP` is False.
 
 
 Summary
 ~~~~~~~
 
-==============================  ===========================================
-**Control**                     **Purpose**
-==============================  ===========================================
-:code:`HX_REQUESTS_ENFORCE_SAME_APP`   Default: restrict to same-app requests
-:code:`HX_REQUESTS_GLOBAL_ALLOW`       Define trusted apps or HxRequests globally
-:code:`allowed_hx_requests`            Per-View allowed HxRequests
-:code:`hx_requests_allow_additive`     Whether per-View list adds to or replaces base rule
-==============================  ===========================================
+=======================================  ===========================================
+**Control**                              **Purpose**
+=======================================  ===========================================
+:code:`HX_REQUESTS_REQUIRE_AUTH`         Require authentication for HxRequests
+:code:`HX_REQUESTS_UNAUTHENTICATED_ALLOW` Allow specific HxRequests/apps without auth
+:code:`HX_REQUESTS_ENFORCE_SAME_APP`     Default: restrict to same-app requests
+:code:`HX_REQUESTS_GLOBAL_ALLOW`         Define trusted apps or HxRequests globally
+:code:`allowed_hx_requests`              Per-view allowed HxRequests
+:code:`hx_requests_allow_additive`       Whether per-view list adds to or replaces base rule
+=======================================  ===========================================
 
 .. warning::
 
     Always follow the **principle of least privilege**.
-    Only grant cross-app access when absolutely necessary
-    and only to trusted, internal apps.
+    Require authentication for HxRequests by default, only whitelist
+    unauthenticated requests when they are demonstrably safe, and grant
+    cross-app access only to trusted, internal apps.
+
+.. info::
+
+   When :code:`HX_REQUESTS_REQUIRE_AUTH = True`, unauthenticated users may only
+   invoke HxRequests listed in :code:`HX_REQUESTS_UNAUTHENTICATED_ALLOW`. After that gate,
+   the per-view rules above still apply.
