@@ -11,8 +11,6 @@ from hx_requests.hx_registry import HxRequestRegistry
 from hx_requests.security_utils import (
     app_label_for_object,
     is_globally_allowed,
-    is_hx_spec_allowed,
-    urlname_from_request,
 )
 from hx_requests.utils import deserialize_kwargs, is_htmx_request
 
@@ -24,6 +22,9 @@ class HtmxViewMixin:
     Hijacks the get and post to route them to the proper
     HxRequest.
     """
+
+    allowed_hx_requests: list[str]
+    hx_requests_allow_additive: bool = False  # Least privilege by default
 
     def dispatch(self, request, *args, **kwargs):
         # Try to dispatch to the right method; if a method doesn't exist,
@@ -76,33 +77,39 @@ class HtmxViewMixin:
         return hx_request
 
     def is_hx_allowed(self, hx_cls: type, request: HttpRequest) -> bool:
-        """
-        Security check: is this HxRequest allowed to be used in this view?
-        """
-        view_app = app_label_for_object(self)
+        hx_name = getattr(hx_cls, "name", None)
+
         hx_app = app_label_for_object(hx_cls)
-        url_name = urlname_from_request(request)
-        hx_name = hx_cls.name  # name attribute set on the HxRequest class
+        view_app = app_label_for_object(self.__class__)
 
-        # If security controls are disabled, always allow
-        if not getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True):
+        enforce_same_app = getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True)
+        global_allow_spec = getattr(settings, "HX_REQUESTS_GLOBAL_ALLOW", None)
+        view_allow_list = set(getattr(self, "allowed_hx_requests", []) or [])
+        additive = bool(getattr(self, "hx_requests_allow_additive", True))
+
+        # Precompute policy signals
+        same_app_ok = bool(hx_app and view_app and hx_app == view_app)
+        global_ok = is_globally_allowed(global_allow_spec, hx_app, hx_name)
+
+        # No view list and same-app enforcement is OFF -> allow all
+        if not view_allow_list and not enforce_same_app:
             return True
 
-        # Global allow for this HxRequest?
-        global_allow = getattr(settings, "HX_REQUESTS_GLOBAL_ALLOW", []) or []
-        if is_globally_allowed(global_allow, hx_app, hx_name):
+        # If there is a view allow list and the hx_name is in it -> allow
+        if hx_name in view_allow_list:
             return True
 
-        # Class-level allow spec
-        allowed_spec = getattr(hx_cls, "allowed", None)
-        additive = bool(getattr(hx_cls, "allow_additive", False))
-        return is_hx_spec_allowed(
-            allowed_spec,
-            hx_app,
-            view_app,
-            url_name,
-            additive,
-        )
+        # If additive = False it must be in the view allow list to be allowed
+        if additive is False and hx_name not in view_allow_list:
+            return False
+
+        #  At this point we know it's not explicitly allowed by the view
+        # Check global and same-app conditions if additive is set
+        if view_allow_list and additive:
+            return global_ok or same_app_ok
+
+        #  No view list -> base on global and same-app enforcement
+        return global_ok or (enforce_same_app and same_app_ok)
 
     def _use_current_url(self, request):
         # Start with the current GET params
