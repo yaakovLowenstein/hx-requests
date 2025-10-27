@@ -117,7 +117,7 @@ class HtmxViewMixin:
             return True
 
         # If additive = False it must be in the view allow list to be allowed
-        if additive is False and hx_name not in view_allow_list:
+        if view_allow_list and additive is False and hx_name not in view_allow_list:
             return False
 
         # View list present + additive=True -> list OR policy
