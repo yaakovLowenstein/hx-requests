@@ -92,7 +92,7 @@ class HtmxViewMixin:
         # --- policy settings ---
         enforce_same_app = getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True)
         global_allow_spec = getattr(settings, "HX_REQUESTS_GLOBAL_ALLOW", None)
-        view_allow_list = set(getattr(self, "hx_requests_allow", []) or [])
+        view_allow_list = set(getattr(self, "allowed_hx_requests", []) or [])
         additive = bool(getattr(self, "hx_requests_allow_additive", True))
 
         # --- auth gate ---
