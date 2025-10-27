@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v0.38.0 (2025-10-27)
+
+### Feature
+
+* Add security controls for requiring authentication ([`d43ce23`](https://github.com/yaakovLowenstein/hx-requests/commit/d43ce23943ddcb0a8406c6d8840d32f209c09cd7))
+* Change security contorls to be on view and not hxrequest class ([`b35fb01`](https://github.com/yaakovLowenstein/hx-requests/commit/b35fb01d8b9498591a4a90987a889d8e64910a91))
+
+### Breaking
+
+* The new setting HX_REQUESTS_REQUIRE_AUTH defaults to True, meaning that all HxRequests now require an authenticated user by default. Existing projects must explicitly set HX_REQUESTS_REQUIRE_AUTH = False in their settings to restore the previous behavior of allowing unauthenticated HxRequests or add HX_REQUESTS_UNAUTHENTICATED_ALLOW to specify which HxRequests are allowed without authentication. ([`d43ce23`](https://github.com/yaakovLowenstein/hx-requests/commit/d43ce23943ddcb0a8406c6d8840d32f209c09cd7))
+* The security controls for HxRequests have been reworked. Instead of defining allowed apps and urls on the HxRequest class, views can now define an allow list of HxRequest names that are permitted to be used in that view. ([`b35fb01`](https://github.com/yaakovLowenstein/hx-requests/commit/b35fb01d8b9498591a4a90987a889d8e64910a91))
+
+### Documentation
+
+* Docs for securing HxRequests via authentication ([`d632c41`](https://github.com/yaakovLowenstein/hx-requests/commit/d632c418fb5d031cc3e1955ee679a30ac45ef511))
+* Update docs to reflect per-view HxRequest controls ([`0d147e1`](https://github.com/yaakovLowenstein/hx-requests/commit/0d147e1617c99bcff0e13c32ea868b2ef0642259))
+
 ## v0.37.2 (2025-10-24)
 
 ### Fix
