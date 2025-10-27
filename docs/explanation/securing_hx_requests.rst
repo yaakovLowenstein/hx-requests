@@ -66,8 +66,8 @@ Design Goals
 The new HxRequest security layer enforces:
 
 1. **App Isolation** – Prevent cross-app access by default (i.e 3rd party untrusted packages).
-2. **Explicit Trust** – Cross-app usage must be declared via settings or per-request rules.
-3. **Safe Extensibility** – Shared internal libraries can safely opt in to wider access.
+2. **Explicit Trust** – Cross-app usage must be declared via settings or per-view rules.
+3. **Safe Extensibility** – Shared internal libraries can safely opt in to wider access via settings.
 4. **Predictability** – Even if enforcement is disabled, the logic runs consistently.
 
 
@@ -90,7 +90,7 @@ Security Model Overview
 ============================  ============================================
 Base Rule                     Enforces same-app isolation (default)
 Global Allowlist              Declares trusted apps or HxRequests
-Per-HxRequest Controls        Adds fine-grained access (apps or URLs)
+Per-View Controls             Adds fine-grained access (allowed HxRequests)
 Additive Logic                Combines or replaces base rule
 ============================  ============================================
 

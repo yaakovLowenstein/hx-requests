@@ -79,67 +79,54 @@ The value :code:`"__all__"` allows every request in that app.
     Only include internal apps or trusted apps.
 
 
-Per-HxRequest Controls
+Per-View Controls
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each :code:`HxRequest` class can define its own access rules.
+Each :code:`View` class can define its own access rules.
 
 
-allowed
-^^^^^^^
+allowed_hx_requests
+^^^^^^^^^^^^^^^^^^^
 
-The :code:`allowed` attribute defines which apps (or specific views)
-are permitted to call the request.
-
-.. code-block:: python
-
-    class SampleHx(BaseHxRequest):
-        allowed = ["app1", "app2"]
-
-This allows the request to be triggered from any url in the
-:code:`app1` or :code:`app2` apps.
-
-You can also specify URL-level granularity:
+The :code:`allowed_hx_requests` attribute defines which :code:`HxRequests`
+are permitted to be triggered from that view.
 
 .. code-block:: python
 
-    class SampleHx(BaseHxRequest):
-        allowed = {
-            "app1": ["url_name_1"],
-            "app2": "__all__"
-        }
+    class TestView(View):
+        allowed_hx_requests = ["hx_request_1", "hx_request_2"]
 
-This allows all :code:`app2` urls and only the :code:`url_name_1`
-url within :code:`app1`.
+This allows only the specified :code:`HxRequests` to be called from this view,
+regardless of the app they belong to.
 
 
-allow_additive
-^^^^^^^^^^^^^^
+hx_requests_allow_additive
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Determines whether the :code:`allowed` list **adds to** or **replaces**
+Determines whether the :code:`allowed_hx_requests` list **adds to** or **replaces**
 the base same-app rule.
 
 **Additive (default):**
 
 .. code-block:: python
 
-    class SampleHx(BaseHxRequest):
-        allowed = ["app1"]
-        allow_additive = True
+    class TestView(View):
+        allowed_hx_requests = ["hx_request_1", "hx_request_2"]
+        hx_requests_allow_additive = True
 
 Allowed if **either**:
 - The HxRequest and url are in the same app, **or**
-- The url's app is in the :code:`allowed` list.
+- The HxRequest is in the allowed list.
 
 **Restrictive:**
 
 .. code-block:: python
 
-    class SampleHx(BaseHxRequest):
-        allowed = ["app1"]
-        allow_additive = False
+    class TestView(View):
+        allowed_hx_requests = ["hx_request_3", "hx_request_4"]
+        hx_requests_allow_additive = False
 
-Allowed **only** from the listed apps — not from the same app.
+Only HxRequests in the allowed list can be called, regardless of app.
 
 
 
@@ -151,8 +138,8 @@ Summary
 ==============================  ===========================================
 :code:`HX_REQUESTS_ENFORCE_SAME_APP`   Default: restrict to same-app requests
 :code:`HX_REQUESTS_GLOBAL_ALLOW`       Define trusted apps or HxRequests globally
-:code:`allowed`                        Per-request allowlist (apps or URLs)
-:code:`allow_additive`                 Whether to combine with same-app rule
+:code:`allowed_hx_requests`            Per-View allowed HxRequests
+:code:`hx_requests_allow_additive`     Whether per-View list adds to or replaces base rule
 ==============================  ===========================================
 
 .. warning::
