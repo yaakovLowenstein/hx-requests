@@ -11,6 +11,7 @@ from hx_requests.hx_registry import HxRequestRegistry
 from hx_requests.security_utils import (
     app_label_for_object,
     is_globally_allowed,
+    is_unauthenticated_allowed,
 )
 from hx_requests.utils import deserialize_kwargs, is_htmx_request
 
@@ -78,16 +79,32 @@ class HtmxViewMixin:
 
     def is_hx_allowed(self, hx_cls: type, request: HttpRequest) -> bool:
         hx_name = getattr(hx_cls, "name", None)
+        if not hx_name:
+            return False
 
         hx_app = app_label_for_object(hx_cls)
         view_app = app_label_for_object(self.__class__)
 
+        # --- auth settings ---
+        require_auth = getattr(settings, "HX_REQUESTS_REQUIRE_AUTH", True)
+        unauth_allow_spec = getattr(settings, "HX_REQUESTS_UNAUTHENTICATED_ALLOW", None)
+
+        # --- policy settings ---
         enforce_same_app = getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True)
         global_allow_spec = getattr(settings, "HX_REQUESTS_GLOBAL_ALLOW", None)
-        view_allow_list = set(getattr(self, "allowed_hx_requests", []) or [])
+        view_allow_list = set(getattr(self, "hx_requests_allow", []) or [])
         additive = bool(getattr(self, "hx_requests_allow_additive", True))
 
-        # Precompute policy signals
+        # --- auth gate ---
+        user_is_authed = bool(getattr(request, "user", None) and request.user.is_authenticated)
+        if (
+            require_auth
+            and not user_is_authed
+            and not is_unauthenticated_allowed(unauth_allow_spec, hx_app, hx_name)
+        ):
+            return False
+
+        # --- policy signals ---
         same_app_ok = bool(hx_app and view_app and hx_app == view_app)
         global_ok = is_globally_allowed(global_allow_spec, hx_app, hx_name)
 
@@ -103,12 +120,11 @@ class HtmxViewMixin:
         if additive is False and hx_name not in view_allow_list:
             return False
 
-        #  At this point we know it's not explicitly allowed by the view
-        # Check global and same-app conditions if additive is set
+        # View list present + additive=True -> list OR policy
         if view_allow_list and additive:
             return global_ok or same_app_ok
 
-        #  No view list -> base on global and same-app enforcement
+        # No view list -> policy
         return global_ok or (enforce_same_app and same_app_ok)
 
     def _use_current_url(self, request):
