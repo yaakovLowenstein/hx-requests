@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.38.1 (2025-10-27)
+
+### Fix
+
+* Fix bug in HxRequests allowlist logic ([`bf5f4d3`](https://github.com/yaakovLowenstein/hx-requests/commit/bf5f4d39650674724568a6b5e13263985ab2aee7))
+
 ## v0.38.0 (2025-10-27)
 
 ### Feature
