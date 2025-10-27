@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.38.2 (2025-10-27)
+
+### Fix
+
+* Fix wrong named attribute for allowed_hx_requests in HtmxViewMixin ([`764d8cb`](https://github.com/yaakovLowenstein/hx-requests/commit/764d8cb68543b4a054187ba4b9a5b7890bb2c167))
+
 ## v0.38.1 (2025-10-27)
 
 ### Fix
