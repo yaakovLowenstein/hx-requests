@@ -74,15 +74,7 @@ class BaseHxRequest:
         If True, the request adds the GET params from the current browser URL to the request.
         The GET params submitted with the request (I.e via hx-vals) override the ones in the
         current URL.
-    allowed: Union[None, list, dict]
-        Specification of which apps/ urls this HxRequest is allowed to be used in.
-        Structure:
-            [app_label1, app_label2, ...] or
-            {app_label1: ["HxRequestNameA", "HxRequestNameB", ...], app_label2: "__all__"}
-        If None, only allowed in the same app as the view using it (if settings.HX_REQUESTS_ENFORCE_SAME_APP is True)
-    allow_additive: bool
-        If True, anything defined in allowed is additive to the default same-app allowance.
-        If False, only what is defined in allowed is permitted.
+
 
 
 
@@ -105,8 +97,6 @@ class BaseHxRequest:
     kwargs_as_context: bool = True
     refresh_views_context_on_POST: bool = False
     use_current_url: bool = False
-    allowed: Union[None, list, dict] = None
-    allow_additive: bool = False
 
     @cached_property
     def is_post_request(self):
