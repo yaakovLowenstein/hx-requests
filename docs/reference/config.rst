@@ -105,3 +105,42 @@ Use :code:`"__all__"` to allow all requests from that app.
 .. warning::
     Avoid whitelisting untrusted or third-party apps.
     Doing so allows them to execute their :code:`HxRequests` anywhere in your project.
+
+HX_REQUESTS_REQUIRE_AUTH
+~~~~~~~~~~~~~~~~~~~~~~~~
+**Default:** `True`
+
+When set to `True`, all `HxRequests` require an authenticated user by default.
+Unauthenticated users will be blocked unless the request is explicitly listed
+in the unauthenticated allowlist below.
+
+.. code-block:: python
+
+    HX_REQUESTS_REQUIRE_AUTH = True
+
+
+HX_REQUESTS_UNAUTHENTICATED_ALLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default:** `{}`
+
+Defines specific `HxRequests` that may be executed **without authentication**.
+This setting uses the same structure as the global allowlist.
+
+**List form:** allow all `HxRequests` from the listed apps.
+
+.. code-block:: python
+
+    HX_REQUESTS_UNAUTHENTICATED_ALLOW = ["app1"]
+
+**Dict form:** map app labels to specific `HxRequest` names, or `"__all__"` to allow every request in that app.
+
+.. code-block:: python
+
+    HX_REQUESTS_UNAUTHENTICATED_ALLOW = {
+        "app1": "__all__",
+        "app2": ["hx_request_1", "hx_request_2"]
+    }
+
+.. warning::
+    Only include safe, read-only, or non-sensitive `HxRequests` here.
+    Requests listed in this allowlist can be executed by unauthenticated users.
