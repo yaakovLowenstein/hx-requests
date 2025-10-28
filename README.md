@@ -140,4 +140,4 @@ Full documentation: [hx-requests Documentation](https://hx-requests.readthedocs.
 
 ## Committing
 
-Must follow [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/).
+Must follow [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)
