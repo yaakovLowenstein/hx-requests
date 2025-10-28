@@ -25,7 +25,7 @@ class HtmxViewMixin:
     """
 
     allowed_hx_requests: list[str]
-    hx_requests_allow_additive: bool = False  # Least privilege by default
+    use_global_hx_rules: bool = True  # True by default
 
     def dispatch(self, request, *args, **kwargs):
         # Try to dispatch to the right method; if a method doesn't exist,
@@ -93,7 +93,7 @@ class HtmxViewMixin:
         enforce_same_app = getattr(settings, "HX_REQUESTS_ENFORCE_SAME_APP", True)
         global_allow_spec = getattr(settings, "HX_REQUESTS_GLOBAL_ALLOW", None)
         view_allow_list = set(getattr(self, "allowed_hx_requests", []) or [])
-        additive = bool(getattr(self, "hx_requests_allow_additive", True))
+        use_global_hx_rules = bool(getattr(self, "use_global_hx_rules", True))
 
         # --- auth gate ---
         user_is_authed = bool(getattr(request, "user", None) and request.user.is_authenticated)
@@ -117,11 +117,11 @@ class HtmxViewMixin:
             return True
 
         # If additive = False it must be in the view allow list to be allowed
-        if view_allow_list and additive is False and hx_name not in view_allow_list:
+        if view_allow_list and use_global_hx_rules is False and hx_name not in view_allow_list:
             return False
 
         # View list present + additive=True -> list OR policy
-        if view_allow_list and additive:
+        if view_allow_list and use_global_hx_rules:
             return global_ok or same_app_ok
 
         # No view list -> policy

@@ -142,7 +142,7 @@ This allows only the specified :code:`HxRequests` to be called from this view,
 regardless of the app they belong to.
 
 
-hx_requests_allow_additive
+use_global_hx_rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Determines whether the :code:`allowed_hx_requests` list **adds to** or **replaces**
@@ -154,7 +154,7 @@ the base same-app/global rules.
 
     class TestView(View):
         allowed_hx_requests = ["hx_request_1", "hx_request_2"]
-        hx_requests_allow_additive = True
+        use_global_hx_rules = True
 
 Allowed if **either**:
 - The HxRequest is in :code:`allowed_hx_requests`, **or**
@@ -166,7 +166,7 @@ Allowed if **either**:
 
     class TestView(View):
         allowed_hx_requests = ["hx_request_3", "hx_request_4"]
-        hx_requests_allow_additive = False
+        use_global_hx_rules = False
 
 Only HxRequests in :code:`allowed_hx_requests` can be called from this view
 (regardless of same-app/global rules).
@@ -184,8 +184,8 @@ Evaluation Order
 
 2. **Per-view allowlist**
    - If the HxRequest is listed in :code:`allowed_hx_requests`, allow.
-   - If :code:`hx_requests_allow_additive` is False and it’s **not** listed, deny.
-   - If :code:`hx_requests_allow_additive` is True and it’s not listed, proceed to step 3
+   - If :code:`use_global_hx_rules` is False and it’s **not** listed, deny.
+   - If :code:`use_global_hx_rules` is True and it’s not listed, proceed to step 3
 
 3. **Base rules**
    - Allow if **globally allowed** (per :code:`HX_REQUESTS_GLOBAL_ALLOW`), or
@@ -204,7 +204,7 @@ Summary
 :code:`HX_REQUESTS_ENFORCE_SAME_APP`     Default: restrict to same-app requests
 :code:`HX_REQUESTS_GLOBAL_ALLOW`         Define trusted apps or HxRequests globally
 :code:`allowed_hx_requests`              Per-view allowed HxRequests
-:code:`hx_requests_allow_additive`       Whether per-view list adds to or replaces base rule
+:code:`use_global_hx_rules`              Whether per-view list builds upon the global list or restricts it further
 =======================================  ===========================================
 
 .. warning::
