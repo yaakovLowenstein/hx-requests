@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.39.0 (2025-10-28)
+
+### Feature
+
+* Just to update version 🤦 ([`6a8bd6f`](https://github.com/yaakovLowenstein/hx-requests/commit/6a8bd6f73ade6170984c7bb8f612a0f7c73289eb))
+
+### Breaking
+
+* The attribute `hx_requests_allow_additive` on `HtmxViewMixin` has been renamed to `use_global_hx_rules` and its default value changed from `False` to `True`. Update your views accordingly. ([`6a8bd6f`](https://github.com/yaakovLowenstein/hx-requests/commit/6a8bd6f73ade6170984c7bb8f612a0f7c73289eb))
+
 ## v0.38.2 (2025-10-27)
 
 ### Fix
