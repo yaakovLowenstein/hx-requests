@@ -44,3 +44,35 @@ Example directory structure:
     |── urls.py
     |── templates/
     |── static/
+
+Using Nested Subdirectories
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can also organize your :code:`hx_requests` into nested subdirectories for better organization
+in larger applications. Each subdirectory must contain an :code:`__init__.py` file.
+
+Example directory structure:
+
+.. code-block:: text
+
+    my_app/
+    |── __init__.py
+    |── models.py
+    |── views.py
+    |── hx_requests/
+    |   |── __init__.py
+    |   |── common.py  # Root-level hx_requests
+    |   |── users/
+    |   |   |── __init__.py
+    |   |   |── profile.py  # User-related hx_requests
+    |   |   |── settings.py
+    |   |── products/
+    |   |   |── __init__.py
+    |   |   |── crud.py  # Product-related hx_requests
+    |   |   |── search.py
+    |── urls.py
+    |── templates/
+    |── static/
+
+All :code:`.py` files in the :code:`hx_requests` directory and its subdirectories will be
+automatically discovered and registered.
