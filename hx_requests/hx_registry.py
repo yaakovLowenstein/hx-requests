@@ -41,15 +41,26 @@ class HxRequestRegistry:
 
     @classmethod
     def _process_hx_requests_directory(cls, directory_path, app_label):
-        """Process all modules in the root-level hx_requests directory."""
-        for file in os.listdir(directory_path):
-            if file.endswith(".py") and file != "__init__.py":
-                module_name = f"{app_label}.hx_requests.{os.path.splitext(file)[0]}"
-                try:
-                    module = importlib.import_module(module_name)
-                    cls._process_module(module)
-                except ModuleNotFoundError:
-                    continue
+        """Process all modules in the hx_requests directory, including nested subdirectories."""
+        for root, _, files in os.walk(directory_path):
+            # Calculate the relative path from the hx_requests directory
+            rel_path = os.path.relpath(root, directory_path)
+
+            for file in files:
+                if file.endswith(".py") and file != "__init__.py":
+                    # Build the module name based on the relative path
+                    if rel_path == ".":
+                        module_name = f"{app_label}.hx_requests.{os.path.splitext(file)[0]}"
+                    else:
+                        # Convert path separators to dots for module path
+                        subpackage = rel_path.replace(os.sep, ".")
+                        module_name = f"{app_label}.hx_requests.{subpackage}.{os.path.splitext(file)[0]}"
+
+                    try:
+                        module = importlib.import_module(module_name)
+                        cls._process_module(module)
+                    except ModuleNotFoundError:
+                        continue
 
     @classmethod
     def _process_module(cls, module):
