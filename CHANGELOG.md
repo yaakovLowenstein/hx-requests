@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.40.0 (2025-12-30)
+
+### Feature
+
+* Add support for nested subdirectories in hx_requests folder ([`e258c0e`](https://github.com/yaakovLowenstein/hx-requests/commit/e258c0e165b3eaf2eadf45beb77083dfbe848638))
+
+### Documentation
+
+* Add documentation for nested subdirectories in hx_requests folder ([`3a0662f`](https://github.com/yaakovLowenstein/hx-requests/commit/3a0662f0c87ab6d4e8fa63bfd88d3aa0f39f3f86))
+
 ## v0.39.0 (2025-10-28)
 
 ### Feature
