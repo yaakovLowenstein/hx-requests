@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.40.1 (2026-01-14)
+
+### Fix
+
+* Change HxRequestRegistry to use AST parsing and lazy imports ([`0f57ca7`](https://github.com/yaakovLowenstein/hx-requests/commit/0f57ca7b0e51146fd671aa5f250a4b95fdf3b877))
+
 ## v0.40.0 (2025-12-30)
 
 ### Feature
