@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.0 (2026-03-11)
+
+### Feature
+
+* Add support for passing additional kwargs to get_hx_object ([`cbb7d10`](https://github.com/yaakovLowenstein/hx-requests/commit/cbb7d10e9bd806d2721403fe7ef6a5a4cb9c2835))
+
+### Fix
+
+* Don't break on deserializing kwargs if NoneType is passed in ([`6859edc`](https://github.com/yaakovLowenstein/hx-requests/commit/6859edcf4288894146cac2456f6162f9b41e39d7))
+
+### Breaking
+
+* The get_hx_object method now accepts additional kwargs, which may require updates to any custom implementations of this method. ([`cbb7d10`](https://github.com/yaakovLowenstein/hx-requests/commit/cbb7d10e9bd806d2721403fe7ef6a5a4cb9c2835))
+
 ## v0.40.1 (2026-01-14)
 
 ### Fix
