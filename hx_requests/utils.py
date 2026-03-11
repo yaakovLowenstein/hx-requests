@@ -19,7 +19,7 @@ def serialize(value):
 
 
 def deserialize(value):
-    if value.startswith(MODEL_INSTANCE_PREFIX):
+    if value and value.startswith(MODEL_INSTANCE_PREFIX):
         value = value.replace(MODEL_INSTANCE_PREFIX, "")
         app_label, model_name, pk = value.split(__)
         model = apps.get_model(app_label, model_name)
