@@ -158,7 +158,7 @@ class BaseHxRequest:
 
         return context
 
-    def get_hx_object(self, request):
+    def get_hx_object(self, request, **kwargs):
         """
         If an 'object' was passed in, deserialize it.
         """
@@ -174,7 +174,7 @@ class BaseHxRequest:
         self.POST_template = self.POST_template or self.view.template_name
 
         if not hasattr(self, "hx_object"):
-            self.hx_object = self.get_hx_object(request)
+            self.hx_object = self.get_hx_object(request, **kwargs)
 
     def hx_object_to_str(self) -> str:
         return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
