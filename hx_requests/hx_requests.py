@@ -1,6 +1,7 @@
 import contextlib
+import json
 from functools import partial
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 from django.conf import settings
 from django.contrib import messages
@@ -192,16 +193,44 @@ class BaseHxRequest:
         if self.no_swap:
             headers["HX-Reswap"] = "none"
 
-        triggers = self.get_triggers(**kwargs)
+        triggers = self.format_triggers(**kwargs)
         if triggers:
-            headers["HX-Trigger"] = ", ".join(triggers)
+            headers["HX-Trigger"] = triggers
         return headers
 
-    def get_triggers(self, **kwargs) -> list:
+    def get_triggers(self, **kwargs) -> List[Union[str, dict]]:
         """
         Override to set the triggers for the response.
+
+        Return a list of triggers. Each trigger can be:
+        - A string for a simple trigger (e.g. ``"myEvent"``).
+        - A dict to pass details with the trigger
+          (e.g. ``{"showMessage": {"level": "info", "message": "Saved!"}}``).
+
+        When any dict is present, the header is formatted as a JSON object
+        per the `HX-Trigger response header spec <https://htmx.org/headers/hx-trigger/>`_.
         """
         return []
+
+    def format_triggers(self, **kwargs) -> str:
+        """
+        Format triggers for the ``HX-Trigger`` header.
+
+        If all triggers are plain strings, they are comma-separated.
+        If any trigger carries details (dict), the header is JSON-encoded.
+        """
+        triggers = self.get_triggers(**kwargs)
+        has_details = any(isinstance(t, dict) for t in triggers)
+        if not has_details:
+            return ", ".join(triggers)
+
+        merged = {}
+        for trigger in triggers:
+            if isinstance(trigger, str):
+                merged[trigger] = True
+            elif isinstance(trigger, dict):
+                merged.update(trigger)
+        return json.dumps(merged)
 
     def get_response_html(self, **kwargs) -> str:
         """
