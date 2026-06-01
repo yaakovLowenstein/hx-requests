@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.42.0 (2026-06-01)
+
+### Feature
+
+* Support passing details with HX-Trigger headers ([`1226238`](https://github.com/yaakovLowenstein/hx-requests/commit/1226238f26f90559aef0a7a6e6a9e3d07643ff66))
+
 ## v0.41.0 (2026-03-11)
 
 ### Feature
