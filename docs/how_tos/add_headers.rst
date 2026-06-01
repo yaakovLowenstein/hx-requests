@@ -46,6 +46,37 @@ Since triggers are commonly used, a helper method is available to add them to th
             triggers.append("some_trigger")
             return triggers
 
+Hx-Trigger With Details
+~~~~~~~~~~~~~~~~~~~~~~~
+
+You can pass details along with a trigger by using a dict instead of a string.
+When any trigger carries details, the header is automatically formatted as a JSON object
+per the `HX-Trigger spec <https://htmx.org/headers/hx-trigger/>`_.
+
+.. code-block:: python
+
+    from hx_requests.hx_requests import BaseHxRequest
+
+    class MyHxRequest(BaseHxRequest):
+        ....
+
+        def get_triggers(self, **kwargs):
+            triggers = super().get_triggers(**kwargs)
+            triggers.append({"showMessage": {"level": "info", "message": "Saved!"}})
+            return triggers
+
+You can also mix plain triggers and triggers with details:
+
+.. code-block:: python
+
+    def get_triggers(self, **kwargs):
+        triggers = super().get_triggers(**kwargs)
+        triggers.append("refreshList")
+        triggers.append({"showMessage": "Item saved successfully"})
+        return triggers
+
+This produces the header: ``HX-Trigger: {"refreshList": true, "showMessage": "Item saved successfully"}``
+
 Refresh and Redirect
 ~~~~~~~~~~~~~~~~~~~~
 
