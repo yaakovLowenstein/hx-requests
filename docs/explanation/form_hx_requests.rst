@@ -26,6 +26,9 @@ If you want to do something else you can override the :code:`form_valid` method,
 rendered back to the :code:`GET_template` so that the form will be still visible but now with the errors. The error message can be
 suppressed by setting :code:`show_form_invalid_message` to False (useful when the form already renders inline field errors).
 
+When overriding :code:`form_valid` or :code:`form_invalid` you do not need to return anything; returning :code:`None` lets the
+response be built for you. Return an :code:`HttpResponse` only when you want to short-circuit with custom output.
+
 Other built in behavior includes support for setting :ref:`form_kwargs <How To Add Form Kwargs>` (even the ability to automatically set from the :ref:`template tag <Adding Initial Form Values From The Template>`),
 
 hx_object

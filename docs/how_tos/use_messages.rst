@@ -52,19 +52,19 @@ You can set a message anywhere within an :code:`HxRequest` the same way you woul
 
     from django.contrib import messages
 
-    def form_valid(self, **kwargs) -> str:
+    def form_valid(self, **kwargs):
         self.form.save()
 
         # Set a message
         messages.success(self.request, "Form saved successfully")
 
-        return ...
-
-    def form_invalid(self, **kwargs) -> str:
+    def form_invalid(self, **kwargs):
         # Set a message
         messages.error(self.request, "Form is invalid")
 
-        return ...
+:code:`form_valid` and :code:`form_invalid` do not need to return anything. When they
+return :code:`None` the response is built for you. Return an :code:`HttpResponse` only
+if you need to short-circuit with custom output.
 
 Disabling Messages
 ~~~~~~~~~~~~~~~~~~
