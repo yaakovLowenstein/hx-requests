@@ -141,6 +141,20 @@ class StaleViewsContextHx(RefreshViewsContextHx):
     refresh_views_context_on_POST = False
 
 
+class AddWidgetRefreshContextHx(BaseHxRequest):
+    name = "add_widget_refresh_context"
+    refresh_views_context_on_POST = True
+
+    def post(self, request, *args, **kwargs):
+        Widget.objects.create(name="added-in-post")
+        return super().post(request, *args, **kwargs)
+
+
+class AddWidgetStaleContextHx(AddWidgetRefreshContextHx):
+    name = "add_widget_stale_context"
+    refresh_views_context_on_POST = False
+
+
 class CurrentUrlHx(BaseHxRequest):
     name = "current_url_hx"
     GET_template = "current_url.html"

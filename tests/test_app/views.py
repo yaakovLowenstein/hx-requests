@@ -18,6 +18,22 @@ class WidgetListView(HtmxViewMixin, ListView):
     template_name = "widget_list.html"
 
 
+class WidgetContextView(HtmxViewMixin, TemplateView):
+    """View whose context mixes lazy and evaluated (snapshotted) values."""
+
+    template_name = "widget_context.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # A separate, never-evaluated queryset: stays lazy until render time.
+        context["widget_qs"] = Widget.objects.order_by("name")
+        snapshot = list(Widget.objects.order_by("name"))
+        context["widget_list"] = snapshot  # evaluated snapshot
+        context["widget_count"] = len(snapshot)  # scalar snapshot
+        context["widget_names"] = [widget.name for widget in snapshot]  # array snapshot
+        return context
+
+
 class WidgetUpdateView(HtmxViewMixin, UpdateView):
     model = Widget
     fields = ["name", "description"]
