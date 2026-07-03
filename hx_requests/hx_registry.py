@@ -13,11 +13,12 @@ Notes:
   That only becomes known at import time.
 """
 
+from __future__ import annotations
+
 import ast
 import importlib
 import os
 import threading
-from typing import Dict, Optional, Tuple, Type, Union
 
 from django.apps import apps
 
@@ -26,7 +27,7 @@ from hx_requests.hx_requests import BaseHxRequest
 
 class HxRequestRegistry:
     # name -> class OR (module_path, class_name)
-    _registry: Dict[str, Union[Type[BaseHxRequest], Tuple[str, str]]] = {}
+    _registry: dict[str, type[BaseHxRequest] | tuple[str, str]] = {}
     _initialized = False
     _lock = threading.Lock()
 
@@ -103,7 +104,7 @@ class HxRequestRegistry:
             return
 
     @classmethod
-    def _get_class_name_attribute(cls, class_node: ast.ClassDef) -> Optional[str]:
+    def _get_class_name_attribute(cls, class_node: ast.ClassDef) -> str | None:
         """
         Extract the `name` class attribute from a class definition.
 
@@ -132,7 +133,7 @@ class HxRequestRegistry:
         return None
 
     @classmethod
-    def register_hx_request(cls, name: str, hx_request_class: Type[BaseHxRequest]):
+    def register_hx_request(cls, name: str, hx_request_class: type[BaseHxRequest]):
         """
         Manual registration
         """
