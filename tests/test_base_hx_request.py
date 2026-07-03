@@ -187,7 +187,7 @@ def test_refresh_context_on_post_picks_up_new_queryset_rows(widget):
     assert "qs-count:2" in html
     assert "list-count:2" in html
     assert "count:2" in html
-    assert "names:added-in-post,gizmo," in html
+    assert "names:added-in-post,gizmo" in html
 
 
 def test_stale_context_keeps_snapshotted_values_but_lazy_querysets_reevaluate(widget):
@@ -196,7 +196,7 @@ def test_stale_context_keeps_snapshotted_values_but_lazy_querysets_reevaluate(wi
     # Values evaluated when the view context was captured stay stale.
     assert "list-count:1" in html
     assert "count:1" in html
-    assert "names:gizmo," in html
+    assert "names:gizmo" in html
     # But a lazy queryset in the context re-evaluates at render time and sees
     # the new row even without refresh_views_context_on_POST.
     assert "qs-count:2" in html
