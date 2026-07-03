@@ -353,11 +353,15 @@ class FormHxRequest(BaseHxRequest):
     set_initial_from_kwargs : bool
         If True sets the initial values in the form from the kwargs as long as the key
         matches a field in the form
+    show_form_invalid_message : bool
+        If True (default) sets an error message on form_invalid. Set to False to suppress it
+        (useful when the form already renders inline field errors).
     """
 
     form_class: Form = None
     add_form_errors_to_error_message: bool = False
     set_initial_from_kwargs: bool = False
+    show_form_invalid_message: bool = True
 
     def get_context_data(self, **kwargs) -> Dict:
         """
@@ -397,10 +401,11 @@ class FormHxRequest(BaseHxRequest):
 
     def form_invalid(self, **kwargs) -> HttpResponse:
         """
-        Sets an error message.
+        Sets an error message unless ``show_form_invalid_message`` is False.
         Returns self._get_response. Override to add custom behavior.
         """
-        messages.error(self.request, self.get_error_message(**kwargs))
+        if self.show_form_invalid_message:
+            messages.error(self.request, self.get_error_message(**kwargs))
         return self._get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
