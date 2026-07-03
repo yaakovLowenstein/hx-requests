@@ -99,6 +99,14 @@ class BaseHxRequest:
     refresh_views_context_on_POST: bool = False
     use_current_url: bool = False
 
+    #: Maps the friendly phase keys accepted in a dict return from
+    #: :meth:`get_triggers` to their HTMX response-header names.
+    trigger_header_map: dict[str, str] = {
+        "trigger": "HX-Trigger",
+        "after_settle": "HX-Trigger-After-Settle",
+        "after_swap": "HX-Trigger-After-Swap",
+    }
+
     @cached_property
     def is_post_request(self):
         """
@@ -193,33 +201,78 @@ class BaseHxRequest:
         if self.no_swap:
             headers["HX-Reswap"] = "none"
 
-        triggers = self.format_triggers(**kwargs)
-        if triggers:
-            headers["HX-Trigger"] = triggers
+        headers.update(self.get_trigger_headers(**kwargs))
         return headers
 
-    def get_triggers(self, **kwargs) -> List[Union[str, dict]]:
+    def get_triggers(self, **kwargs) -> Union[List[Union[str, dict]], Dict[str, list]]:
         """
         Override to set the triggers for the response.
 
-        Return a list of triggers. Each trigger can be:
-        - A string for a simple trigger (e.g. ``"myEvent"``).
-        - A dict to pass details with the trigger
-          (e.g. ``{"showMessage": {"level": "info", "message": "Saved!"}}``).
+        Return either:
 
-        When any dict is present, the header is formatted as a JSON object
-        per the `HX-Trigger response header spec <https://htmx.org/headers/hx-trigger/>`_.
+        - A **list** of triggers, emitted on the ``HX-Trigger`` header (fired
+          as soon as the response is received). Each item can be:
+
+          - A string for a simple trigger (e.g. ``"myEvent"``).
+          - A dict to pass details with the trigger
+            (e.g. ``{"showMessage": {"level": "info", "message": "Saved!"}}``).
+
+        - A **dict** keyed by trigger phase to target the full set of HTMX
+          trigger headers, where each value is a list of the same shape::
+
+              {
+                  "trigger": ["eventA"],  # HX-Trigger
+                  "after_settle": ["eventB"],  # HX-Trigger-After-Settle
+                  "after_swap": [{"eventC": {...}}],  # HX-Trigger-After-Swap
+              }
+
+        Within any list, when a dict trigger is present the header value is
+        formatted as a JSON object per the `HX-Trigger response header spec
+        <https://htmx.org/headers/hx-trigger/>`_.
         """
         return []
 
-    def format_triggers(self, **kwargs) -> str:
+    def get_trigger_headers(self, **kwargs) -> Dict[str, str]:
         """
-        Format triggers for the ``HX-Trigger`` header.
+        Build the HTMX trigger response headers from :meth:`get_triggers`.
 
-        If all triggers are plain strings, they are comma-separated.
-        If any trigger carries details (dict), the header is JSON-encoded.
+        Returns a ``{header_name: header_value}`` dict covering ``HX-Trigger``,
+        ``HX-Trigger-After-Settle`` and ``HX-Trigger-After-Swap`` as needed.
+        Phases with no triggers are omitted.
         """
         triggers = self.get_triggers(**kwargs)
+        # A plain list keeps the historical behavior: everything on HX-Trigger.
+        if not isinstance(triggers, dict):
+            triggers = {"trigger": triggers}
+
+        headers = {}
+        for key, header_name in self.trigger_header_map.items():
+            value = self._format_trigger_value(triggers.get(key) or [])
+            if value:
+                headers[header_name] = value
+        return headers
+
+    def format_triggers(self, **kwargs) -> str:
+        """
+        Format the ``HX-Trigger`` header value from :meth:`get_triggers`.
+
+        Retained for backwards compatibility; only covers the ``HX-Trigger``
+        header. For the full set of trigger headers see
+        :meth:`get_trigger_headers`.
+        """
+        triggers = self.get_triggers(**kwargs)
+        if isinstance(triggers, dict):
+            triggers = triggers.get("trigger") or []
+        return self._format_trigger_value(triggers)
+
+    @staticmethod
+    def _format_trigger_value(triggers: List[Union[str, dict]]) -> str:
+        """
+        Format a single list of triggers into one header value.
+
+        If all triggers are plain strings, they are comma-separated. If any
+        trigger carries details (dict), the value is JSON-encoded.
+        """
         has_details = any(isinstance(t, dict) for t in triggers)
         if not has_details:
             return ", ".join(triggers)
@@ -621,7 +674,11 @@ class FormModalHxRequest(ModalHxRequest, FormHxRequest):
         """
         triggers = super().get_triggers(**kwargs)
         if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
-            triggers.append("closeHxModal")
+            # Support both the list return and the phase-keyed dict return.
+            if isinstance(triggers, dict):
+                triggers.setdefault("trigger", []).append("closeHxModal")
+            else:
+                triggers.append("closeHxModal")
         return triggers
 
     def get_headers(self, **kwargs) -> Dict:
