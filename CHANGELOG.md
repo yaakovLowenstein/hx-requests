@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.43.0 (2026-07-03)
+
+### Feature
+
+* Add show_form_invalid_message to opt out of the form-invalid banner ([`09db376`](https://github.com/yaakovLowenstein/hx-requests/commit/09db376e060b74b0336318bac4e36a75e5a26f39))
+
+### Fix
+
+* Build form/delete response in post() so lifecycle hooks can return None ([`f5fd692`](https://github.com/yaakovLowenstein/hx-requests/commit/f5fd69236a45af13041f0ca7a5286a2b9dd48981))
+
 ## v0.42.0 (2026-06-01)
 
 ### Feature
