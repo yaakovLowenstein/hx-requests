@@ -202,6 +202,20 @@ def test_stale_context_keeps_snapshotted_values_but_lazy_querysets_reevaluate(wi
     assert "qs-count:2" in html
 
 
+def test_force_evaluated_queryset_behaves_like_a_snapshot(widget):
+    # A queryset evaluated while building the view context (len() populated
+    # its result cache) no longer re-evaluates at render time: without the
+    # refresh flag it stays stale, unlike its lazy twin.
+    response = hx_post(hx.AddWidgetStaleContextHx, WidgetContextView)
+    html = content_of(response)
+    assert "evaluated-qs-count:1" in html
+    assert "qs-count:2" in html
+
+    # With the refresh flag the context is rebuilt, so it re-evaluates too.
+    response = hx_post(hx.AddWidgetRefreshContextHx, WidgetContextView)
+    assert "evaluated-qs-count:3" in content_of(response)
+
+
 # --------------------------------------------------------------------------
 # hx_object
 # --------------------------------------------------------------------------

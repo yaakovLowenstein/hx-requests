@@ -27,6 +27,11 @@ class WidgetContextView(HtmxViewMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         # A separate, never-evaluated queryset: stays lazy until render time.
         context["widget_qs"] = Widget.objects.order_by("name")
+        # A queryset force-evaluated now: its result cache is populated, so it
+        # behaves like a snapshot from here on.
+        evaluated_qs = Widget.objects.order_by("name")
+        len(evaluated_qs)
+        context["evaluated_qs"] = evaluated_qs
         snapshot = list(Widget.objects.order_by("name"))
         context["widget_list"] = snapshot  # evaluated snapshot
         context["widget_count"] = len(snapshot)  # scalar snapshot
