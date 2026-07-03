@@ -23,7 +23,8 @@ On POST the :code:`form_valid` method is called if the form is valid and the :co
 If you want to do something else you can override the :code:`form_valid` method, ie like sending an email.
 
 :code:`form_invalid` by default sets a :ref:`message <How To Set Messages>` and returns the form with the errors and it does this by changing the template
-rendered back to the :code:`GET_template` so that the form will be still visible but now with the errors.
+rendered back to the :code:`GET_template` so that the form will be still visible but now with the errors. The error message can be
+suppressed by setting :code:`show_form_invalid_message` to False (useful when the form already renders inline field errors).
 
 Other built in behavior includes support for setting :ref:`form_kwargs <How To Add Form Kwargs>` (even the ability to automatically set from the :ref:`template tag <Adding Initial Form Values From The Template>`),
 

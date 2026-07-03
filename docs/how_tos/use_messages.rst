@@ -78,6 +78,16 @@ To disable messages on any :code:`HxRequest` set :code:`show_messages` to False
         ...
         show_messages = False
 
+On a :code:`FormHxRequest`, an error message is set by default when the form is invalid.
+If the form already renders inline field errors this banner can be redundant. Set
+:code:`show_form_invalid_message` to False to suppress it without overriding :code:`form_invalid`.
+
+.. code-block:: python
+
+    class MyHxRequest(FormHxRequest):
+        ...
+        show_form_invalid_message = False
+
 Tip
 ~~~
 
