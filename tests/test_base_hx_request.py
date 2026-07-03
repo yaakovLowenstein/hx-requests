@@ -7,7 +7,7 @@ from django.http import Http404
 from django.test import RequestFactory, override_settings
 from test_app import hx_requests as hx
 from test_app.models import Widget
-from test_app.views import BaseView, WidgetListView, WidgetUpdateView
+from test_app.views import BaseView, WidgetContextView, WidgetListView, WidgetUpdateView
 
 from tests.helpers import add_middleware_to_request, hx_get, hx_post
 
@@ -177,6 +177,29 @@ def test_refresh_views_context_on_post_refreshes_view_object(widget):
 def test_views_context_stale_without_refresh_flag(widget):
     response = hx_post(hx.StaleViewsContextHx, WidgetUpdateView, view_kwargs={"pk": widget.pk})
     assert "refreshed-object:gizmo" in content_of(response)
+
+
+def test_refresh_context_on_post_picks_up_new_queryset_rows(widget):
+    # The POST creates a second widget; the refreshed context re-evaluates
+    # querysets, lists, scalars, and arrays built from them.
+    response = hx_post(hx.AddWidgetRefreshContextHx, WidgetContextView)
+    html = content_of(response)
+    assert "qs-count:2" in html
+    assert "list-count:2" in html
+    assert "count:2" in html
+    assert "names:added-in-post,gizmo," in html
+
+
+def test_stale_context_keeps_snapshotted_values_but_lazy_querysets_reevaluate(widget):
+    response = hx_post(hx.AddWidgetStaleContextHx, WidgetContextView)
+    html = content_of(response)
+    # Values evaluated when the view context was captured stay stale.
+    assert "list-count:1" in html
+    assert "count:1" in html
+    assert "names:gizmo," in html
+    # But a lazy queryset in the context re-evaluates at render time and sees
+    # the new row even without refresh_views_context_on_POST.
+    assert "qs-count:2" in html
 
 
 # --------------------------------------------------------------------------
