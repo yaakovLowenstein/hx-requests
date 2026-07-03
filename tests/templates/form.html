@@ -1,2 +1,4 @@
-FORM-TEMPLATE{% if form.errors %}|HAS-ERRORS{% endif %}|name-value:{{ form.name.value|default_if_none:"-" }}
+FORM-TEMPLATE
+{% if form.errors %}|HAS-ERRORS{% endif %}
+|name-value:{{ form.name.value|default_if_none:"-" }}
 {{ form.as_p }}
