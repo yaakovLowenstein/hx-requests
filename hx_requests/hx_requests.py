@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import contextlib
 import json
 from functools import partial
-from typing import Dict, List, Optional, Union
 
 from django.conf import settings
 from django.contrib import messages
@@ -85,12 +86,12 @@ class BaseHxRequest:
 
     name: str = ""
     hx_object_name: str = "hx_object"
-    GET_template: Union[str, list] = ""
-    POST_template: Union[str, list] = ""
-    GET_block: Union[str, list] = ""
-    POST_block: Union[str, list, dict[str, str]] = ""
+    GET_template: str | list = ""
+    POST_template: str | list = ""
+    GET_block: str | list = ""
+    POST_block: str | list | dict[str, str] = ""
     refresh_page: bool = False
-    redirect: str = None
+    redirect: str | None = None
     return_empty: bool = False
     no_swap = False
     show_messages: bool = True
@@ -118,7 +119,7 @@ class BaseHxRequest:
     def use_messages(self):
         return getattr(settings, "HX_REQUESTS_USE_HX_MESSAGES", False) and self.show_messages
 
-    def get_context_data(self, **kwargs) -> Dict:
+    def get_context_data(self, **kwargs) -> dict:
         """
         Adds the context from the view and additionally adds:
 
@@ -143,7 +144,7 @@ class BaseHxRequest:
         # Turn into dict for template rendering which expects a dict
         return context.flatten()
 
-    def get_context_on_GET(self, **kwargs) -> Dict:
+    def get_context_on_GET(self, **kwargs) -> dict:
         """
         Adds extra context to the context data only on GET.
         """
@@ -188,7 +189,7 @@ class BaseHxRequest:
     def hx_object_to_str(self) -> str:
         return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
 
-    def get_headers(self, **kwargs) -> Dict:
+    def get_headers(self, **kwargs) -> dict:
         """
         Prepare the headers for the response.
         """
@@ -204,7 +205,7 @@ class BaseHxRequest:
         headers.update(self.get_trigger_headers(**kwargs))
         return headers
 
-    def get_triggers(self, **kwargs) -> Union[List[Union[str, dict]], Dict[str, list]]:
+    def get_triggers(self, **kwargs) -> list[str | dict] | dict[str, list]:
         """
         Override to set the triggers for the response.
 
@@ -232,7 +233,7 @@ class BaseHxRequest:
         """
         return []
 
-    def get_trigger_headers(self, **kwargs) -> Dict[str, str]:
+    def get_trigger_headers(self, **kwargs) -> dict[str, str]:
         """
         Build the HTMX trigger response headers from :meth:`get_triggers`.
 
@@ -266,7 +267,7 @@ class BaseHxRequest:
         return self._format_trigger_value(triggers)
 
     @staticmethod
-    def _format_trigger_value(triggers: List[Union[str, dict]]) -> str:
+    def _format_trigger_value(triggers: list[str | dict]) -> str:
         """
         Format a single list of triggers into one header value.
 
@@ -431,7 +432,7 @@ class FormHxRequest(BaseHxRequest):
     set_initial_from_kwargs: bool = False
     show_form_invalid_message: bool = True
 
-    def get_context_data(self, **kwargs) -> Dict:
+    def get_context_data(self, **kwargs) -> dict:
         """
         Additionally adds the form into the context.
         """
@@ -460,7 +461,7 @@ class FormHxRequest(BaseHxRequest):
 
         return response if response is not None else self._get_response(**kwargs)
 
-    def form_valid(self, **kwargs) -> Optional[HttpResponse]:
+    def form_valid(self, **kwargs) -> HttpResponse | None:
         """
         Saves the form and sets a success message.
 
@@ -470,7 +471,7 @@ class FormHxRequest(BaseHxRequest):
         self.form.save()
         messages.success(self.request, self.get_success_message(**kwargs))
 
-    def form_invalid(self, **kwargs) -> Optional[HttpResponse]:
+    def form_invalid(self, **kwargs) -> HttpResponse | None:
         """
         Sets an error message unless ``show_form_invalid_message`` is False.
 
@@ -573,7 +574,7 @@ class DeleteHxRequest(BaseHxRequest):
         response = self.delete(**kwargs)
         return response if response is not None else self._get_response(**kwargs)
 
-    def delete(self, **kwargs) -> Optional[HttpResponse]:
+    def delete(self, **kwargs) -> HttpResponse | None:
         """
         Deletes the hx_object and sets a success message.
 
@@ -681,7 +682,7 @@ class FormModalHxRequest(ModalHxRequest, FormHxRequest):
                 triggers.append("closeHxModal")
         return triggers
 
-    def get_headers(self, **kwargs) -> Dict:
+    def get_headers(self, **kwargs) -> dict:
         """
         If the form is invalid, headers are set to retarget the innerHTML of the modal body.
         This is done to show the form errors.
