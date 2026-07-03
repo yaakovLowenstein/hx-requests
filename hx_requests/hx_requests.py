@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
@@ -312,6 +312,21 @@ class BaseHxRequest:
             html,
             headers=self.get_headers(**kwargs),
         )
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """
+        Entry point for a resolved HxRequest, mirroring Django's
+        ``View.dispatch``.
+
+        Routes the request to ``get`` or ``post`` based on the request
+        method. Override this to run per-handler logic (authorization,
+        setup, logging) before the method handler runs, calling
+        ``super().dispatch(...)`` to continue routing.
+        """
+        handler = getattr(self, request.method.lower(), None)
+        if handler is None:
+            return HttpResponseNotAllowed(["GET", "POST"])
+        return handler(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """

@@ -32,16 +32,15 @@ class HtmxViewMixin:
         # defer to the error handler. Also defer to the error handler if the
         # request method isn't on the approved list.
         if request.method.lower() in self.http_method_names:
-            handler_class = self
-            # If it's an HTMX request, use the HxRequest class to handle the request
-            # otherwise, use the view class to handle the request.
+            # If it's an HTMX request, hand off to the resolved HxRequest's
+            # own dispatch; otherwise, let the view class handle the request.
             if is_htmx_request(request):
                 kwargs.update(self.get_hx_extra_kwargs(request))
-                handler_class = self._setup_hx_request(request, *args, **kwargs)
+                hx_request = self._setup_hx_request(request, *args, **kwargs)
 
                 # Use request from hx_request, in case use_current_url is set to True
-                request = handler_class.request
-            handler = getattr(handler_class, request.method.lower(), self.http_method_not_allowed)
+                return hx_request.dispatch(hx_request.request, *args, **kwargs)
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
