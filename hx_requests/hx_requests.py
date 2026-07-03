@@ -1,7 +1,7 @@
 import contextlib
 import json
 from functools import partial
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from django.conf import settings
 from django.contrib import messages
@@ -382,31 +382,35 @@ class FormHxRequest(BaseHxRequest):
         """
         If the form is valid form_valid.
         If invalid calls form_invalid.
+
+        Builds the response from ``_get_response`` unless ``form_valid`` /
+        ``form_invalid`` return their own ``HttpResponse``.
         """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
-        if self.form.is_valid():
-            return self.form_valid(**kwargs)
-        else:
-            return self.form_invalid(**kwargs)
+        response = self.form_valid(**kwargs) if self.form.is_valid() else self.form_invalid(**kwargs)
 
-    def form_valid(self, **kwargs) -> HttpResponse:
+        return response if response is not None else self._get_response(**kwargs)
+
+    def form_valid(self, **kwargs) -> Optional[HttpResponse]:
         """
         Saves the form and sets a success message.
-        Returns self._get_response. Override to add custom behavior.
+
+        Return ``None`` (default) to let ``post`` build the standard response,
+        or return an ``HttpResponse`` to short-circuit with custom output.
         """
         self.form.save()
         messages.success(self.request, self.get_success_message(**kwargs))
-        return self._get_response(**kwargs)
 
-    def form_invalid(self, **kwargs) -> HttpResponse:
+    def form_invalid(self, **kwargs) -> Optional[HttpResponse]:
         """
         Sets an error message unless ``show_form_invalid_message`` is False.
-        Returns self._get_response. Override to add custom behavior.
+
+        Return ``None`` (default) to let ``post`` build the standard response,
+        or return an ``HttpResponse`` to short-circuit with custom output.
         """
         if self.show_form_invalid_message:
             messages.error(self.request, self.get_error_message(**kwargs))
-        return self._get_response(**kwargs)
 
     def get_response_html(self, **kwargs):
         """
@@ -494,17 +498,22 @@ class DeleteHxRequest(BaseHxRequest):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Calls delete on the hx_object.
-        """
-        return self.delete(**kwargs)
 
-    def delete(self, **kwargs) -> str:
+        Builds the response from ``_get_response`` unless ``delete`` returns
+        its own ``HttpResponse``.
+        """
+        response = self.delete(**kwargs)
+        return response if response is not None else self._get_response(**kwargs)
+
+    def delete(self, **kwargs) -> Optional[HttpResponse]:
         """
         Deletes the hx_object and sets a success message.
-        Override to add custom behavior.
+
+        Return ``None`` (default) to let ``post`` build the standard response,
+        or return an ``HttpResponse`` to short-circuit with custom output.
         """
         self.hx_object.delete()
         messages.success(self.request, self.get_success_message(**kwargs))
-        return self._get_response(**kwargs)
 
     def get_success_message(self, **kwargs) -> str:
         """
