@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.44.0 (2026-07-06)
+
+### Feature
+
+* Support the full HTMX trigger header API ([`e2a4e07`](https://github.com/yaakovLowenstein/hx-requests/commit/e2a4e079e3928f2128d525fcb86c5badc88d67fd))
+* Add dispatch method to HxRequest as a per-handler entry point ([`b54a7ff`](https://github.com/yaakovLowenstein/hx-requests/commit/b54a7ff5a2e692ca5abacfa92c953ec27e4ebf8e))
+
+### Documentation
+
+* Add test suite design spec ([`2b5fe7c`](https://github.com/yaakovLowenstein/hx-requests/commit/2b5fe7c1f139f231b2a62dd600cc2e95047c0e07))
+
 ## v0.43.0 (2026-07-03)
 
 ### Feature
