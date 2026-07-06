@@ -1,19 +1,26 @@
 """Unit tests for hx_requests.utils: serialization, URL building, csrf."""
 
 import datetime
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 from django.test import RequestFactory
 from test_app.models import Widget
 
 from hx_requests.utils import (
+    HX_TOKEN_PARAM,
     deserialize,
     deserialize_kwargs,
     get_csrf_token,
+    get_hx_payload,
+    get_hx_request_name,
     get_url,
     is_htmx_request,
+    is_hx_request,
     serialize,
     serialize_kwargs,
+    sign_hx_payload,
+    unsign_hx_payload,
 )
 
 # --------------------------------------------------------------------------
@@ -97,6 +104,94 @@ def test_is_htmx_request_without_header():
 
 
 # --------------------------------------------------------------------------
+# sign_hx_payload / unsign_hx_payload
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.django_db()
+def test_sign_payload_round_trips_name_object_and_kwargs(widget):
+    token = sign_hx_payload("edit_widget", widget, flavor="spicy")
+    payload = unsign_hx_payload(token)
+    assert payload["name"] == "edit_widget"
+    assert deserialize(payload["object"]) == widget
+    assert deserialize_kwargs(**payload["kwargs"]) == {"flavor": "spicy"}
+
+
+def test_sign_payload_without_object_or_kwargs():
+    payload = unsign_hx_payload(sign_hx_payload("simple_get"))
+    assert payload == {"name": "simple_get", "object": None, "kwargs": {}}
+
+
+def test_tampered_token_fails_verification():
+    from django.core import signing
+
+    token = sign_hx_payload("simple_get")
+    with pytest.raises(signing.BadSignature):
+        unsign_hx_payload(token[:-3] + "xxx")
+
+
+def test_handler_name_is_bound_to_the_signature():
+    # The name lives inside the signed payload, so it cannot be swapped for
+    # another handler without invalidating the token (this is why a per-name
+    # salt is unnecessary).
+    from django.core import signing
+
+    token = sign_hx_payload("view_user")
+    forged = token.replace("view_user", "delete_user")
+    if forged != token:
+        with pytest.raises(signing.BadSignature):
+            unsign_hx_payload(forged)
+
+
+# --------------------------------------------------------------------------
+# get_hx_payload / get_hx_request_name (public introspection accessors)
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.django_db()
+def test_get_hx_payload_returns_verified_contents(widget):
+    token = sign_hx_payload("edit_widget", widget, flavor="spicy")
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: token})
+    payload = get_hx_payload(request)
+    assert payload["name"] == "edit_widget"
+    assert deserialize(payload["object"]) == widget
+    assert deserialize_kwargs(**payload["kwargs"]) == {"flavor": "spicy"}
+
+
+def test_get_hx_payload_none_without_token():
+    assert get_hx_payload(RequestFactory().get("/")) is None
+
+
+def test_get_hx_payload_none_on_bad_signature():
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: "not-a-real-token"})
+    assert get_hx_payload(request) is None
+
+
+def test_get_hx_request_name_reads_name_from_token():
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: sign_hx_payload("simple_get")})
+    assert get_hx_request_name(request) == "simple_get"
+
+
+def test_get_hx_request_name_none_for_plain_htmx():
+    # The plain-htmx fall-through check: no token -> not an hx handler.
+    assert get_hx_request_name(RequestFactory().get("/?page=2")) is None
+
+
+def test_is_hx_request_true_with_valid_token():
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: sign_hx_payload("simple_get")})
+    assert is_hx_request(request) is True
+
+
+def test_is_hx_request_false_without_token():
+    assert is_hx_request(RequestFactory().get("/?page=2")) is False
+
+
+def test_is_hx_request_false_on_bad_signature():
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: "garbage"})
+    assert is_hx_request(request) is False
+
+
+# --------------------------------------------------------------------------
 # get_url
 # --------------------------------------------------------------------------
 
@@ -105,36 +200,49 @@ def make_context(path="/page/", **extra):
     return {"request": RequestFactory().get(path, **extra)}
 
 
+def token_from_url(url):
+    query = parse_qs(urlparse(url).query)
+    return unsign_hx_payload(query[HX_TOKEN_PARAM][0])
+
+
 def test_get_url_basic():
     url = get_url(make_context(), "simple_get", None)
-    assert url == "/page/?hx_request_name=simple_get"
+    assert url.startswith("/page/?")
+    payload = token_from_url(url)
+    assert payload["name"] == "simple_get"
+    assert payload["object"] is None
 
 
 @pytest.mark.django_db()
 def test_get_url_includes_serialized_object(widget):
     url = get_url(make_context(), "simple_get", widget)
-    assert f"object=model_instance__test_app__widget__{widget.pk}" in url
+    assert deserialize(token_from_url(url)["object"]) == widget
 
 
 def test_get_url_appends_serialized_kwargs():
     url = get_url(make_context(), "simple_get", None, flavor="spicy")
-    assert "&___flavor=%22spicy%22" in url
+    assert deserialize_kwargs(**token_from_url(url)["kwargs"]) == {"flavor": "spicy"}
 
 
 def test_get_url_use_full_path_carries_existing_params():
     context = make_context("/page/?q=search&page=1&page=2")
     url = get_url(context, "simple_get", None, use_full_path=True)
-    assert "q=search" in url
-    assert url.count("page=") >= 2  # multi-value params preserved
+    query = parse_qs(urlparse(url).query)
+    assert query["q"] == ["search"]
+    assert query["page"] == ["1", "2"]  # multi-value params preserved
+    assert token_from_url(url)["name"] == "simple_get"
 
 
 def test_get_url_use_full_path_filters_internal_params():
     context = make_context("/page/?q=search&hx_request_name=old&object=x&___junk=%22y%22")
     url = get_url(context, "new_name", None, use_full_path=True)
-    assert "q=search" in url
-    assert "old" not in url
-    assert "junk" not in url
-    assert "object=" not in url
+    query = parse_qs(urlparse(url).query)
+    assert query["q"] == ["search"]
+    # Stale framework params from the current URL are not re-emitted loose.
+    assert "hx_request_name" not in query
+    assert "object" not in query
+    assert "___junk" not in query
+    assert token_from_url(url)["name"] == "new_name"
 
 
 # --------------------------------------------------------------------------

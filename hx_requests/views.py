@@ -7,13 +7,18 @@ from django.http import Http404, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from hx_requests.constants import HX_TOKEN_PARAM, KWARG_PREFIX
 from hx_requests.hx_registry import HxRequestRegistry
 from hx_requests.security_utils import (
     app_label_for_object,
     is_globally_allowed,
     is_unauthenticated_allowed,
 )
-from hx_requests.utils import deserialize_kwargs, is_htmx_request
+from hx_requests.utils import (
+    deserialize_kwargs,
+    get_hx_payload,
+    is_htmx_request,
+)
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
@@ -35,6 +40,7 @@ class HtmxViewMixin:
             # If it's an HTMX request, hand off to the resolved HxRequest's
             # own dispatch; otherwise, let the view class handle the request.
             if is_htmx_request(request):
+                request = self._resolve_hx_token(request)
                 kwargs.update(self.get_hx_extra_kwargs(request))
                 hx_request = self._setup_hx_request(request, *args, **kwargs)
 
@@ -59,13 +65,37 @@ class HtmxViewMixin:
 
         return hx_request_class()
 
+    def _resolve_hx_token(self, request):
+        """
+        Verify the signed ``hx`` token and rebuild ``request.GET`` so the rest
+        of the chain reads *trusted* framework data. Everything the framework
+        controls (name, object, kwargs) comes from the signed token; any
+        client-supplied framework params on the raw query string are dropped so
+        they cannot shadow or forge the verified values. Non-framework params
+        (page filters, runtime hx-vals) are left untouched.
+        """
+        if not request.GET.get(HX_TOKEN_PARAM):
+            raise Http404("Missing required query param 'hx' for HTMX request.")
+        payload = get_hx_payload(request)
+        if payload is None:
+            raise Http404("Invalid or tampered hx token.")
+
+        sanitized = request.GET.copy()
+        for key in list(sanitized.keys()):
+            if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
+                del sanitized[key]
+        sanitized["hx_request_name"] = payload["name"]
+        if payload.get("object"):
+            sanitized["object"] = payload["object"]
+
+        request.GET = sanitized
+        # Verified, serialized kwargs from the token -- the only source of
+        # kwargs-as-context. Raw query params never feed this again.
+        request._hx_kwargs = payload.get("kwargs", {})
+        return request
+
     def get_hx_extra_kwargs(self, request):
-        raw = {}
-        for key in request.GET:
-            if key == "hx_request_name":
-                continue
-            raw[key] = request.GET.get(key)
-        return deserialize_kwargs(**raw)
+        return deserialize_kwargs(**getattr(request, "_hx_kwargs", {}))
 
     def _setup_hx_request(self, request, *args, **kwargs):
         hx_request = self.get_hx_request(request)
@@ -137,8 +167,12 @@ class HtmxViewMixin:
             parsed_url = urlparse(hx_current_url)
             additional_params = parse_qs(parsed_url.query)
 
-            # Add each HX param only if not already present
+            # Add each HX param only if not already present. Framework params
+            # (name/object/kwargs/token) are never merged from the current URL:
+            # those are trusted only via the signed token, not raw query input.
             for key, values in additional_params.items():
+                if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
+                    continue
                 if key not in merged_get:
                     merged_get.setlist(key, values)
 

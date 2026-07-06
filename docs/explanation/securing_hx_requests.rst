@@ -2,12 +2,22 @@ Why HxRequest Security Is Needed
 --------------------------------
 
 HxRequests make it easy to build modular, dynamic interfaces using HTMX.
-However, because they are registered globally, any request can be triggered
-from any view by passing the right :code:`hx_request_name`— unless you explicitly
-restrict it.
+Because they are registered globally, controlling *which* view may invoke *which*
+handler still matters — that is what the controls on this page provide.
 
 This page explains **why these security controls exist**, the risks they prevent,
 and the principles behind their design.
+
+.. note::
+
+    **Request signing comes first.** The :code:`HxRequest` name, object, and
+    kwargs are delivered in a single HMAC-signed :code:`hx` token, so a client
+    **cannot forge or hand-craft** a request for an arbitrary handler — a
+    missing or tampered token is rejected with :code:`Http404` before any
+    routing happens. The controls below are the *next* layer: they scope which
+    registered handlers a given view/app is willing to run, which is what still
+    governs a token that was issued legitimately somewhere and then replayed
+    against a view that shouldn't accept it.
 
 See also: :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 
@@ -15,50 +25,48 @@ See also: :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 The Problem
 ~~~~~~~~~~~
 
-Without validation, any page or script can issue a request like:
+Signing stops a client from *hand-crafting* a request for an arbitrary handler
+— a URL like :code:`/home/?hx=<made-up-token>` is rejected because the token
+won't verify. What signing does **not** decide is *scope*: which registered
+handlers a given view is willing to run.
 
-.. code-block:: html+django
-
-    <button hx-get="/some/unrelated/view/?hx_request_name=delete_all_records_hx">
-        Run Dangerous Request
-    </button>
-
-If :code:`delete_all_records_hx` exists anywhere in your project,
-it would execute—even if the current view or user shouldn’t have access to it.
-
-This can happen because the :code:`HtmxViewMixin` automatically routes
-based on the :code:`hx_request_name` parameter. As long as the target view
-includes this mixin, **any page** pointing to that view can call
-any registered :code:`HxRequest`, regardless of where it was intended to run.
+Because :code:`HtmxViewMixin` routes any HTMX request by the (verified) name
+inside the token, **any view that includes the mixin** is a potential entry
+point for any registered :code:`HxRequest` — provided a valid token for that
+handler exists. Tokens are minted server-side by the template tags, so the risk
+is a legitimately-issued token being **replayed against a view where it was
+never meant to run**.
 
 For example, you may design an :code:`HxRequest` such as
 :code:`delete_all_records_hx` to be used **only** from an internal admin page.
-But a malicious user (or even a public page) could send the same request from:
+If a valid token for it is rendered somewhere a user can see, nothing about the
+signature alone stops them from replaying it against an unrelated view:
 
 .. code-block:: html
 
-    <button hx-get="/home/?hx_request_name=delete_all_records_hx">Run Delete</button>
+    <button hx-post="/home/?hx=<a-real-token-for-delete_all_records_hx>">Run Delete</button>
 
 If :code:`/home` is a simple, public-facing view that includes
-the :code:`HtmxViewMixin`, and does not require authentication,
-this button would still reach and execute the deletion logic.
+the :code:`HtmxViewMixin`, and does not itself require authentication or scope
+its handlers, this request would still reach and execute the deletion logic.
 
 In other words:
-    - The actual page or route doesn’t matter — any page that uses the mixin
-      becomes a potential gateway for any registered HxRequest.
-    - A completely unrelated view (like a homepage) could call an
-      administrative HxRequest simply by passing its name in the query string.
-    - Authentication or permission checks on the original intended view
-      (where the HxRequest was meant to run) are **bypassed entirely**.
+    - The actual page or route doesn’t matter — any view that uses the mixin
+      becomes a potential gateway for any registered HxRequest it doesn't scope.
+    - An unrelated view (like a homepage) could run an administrative HxRequest
+      if it neither restricts which handlers it accepts nor enforces auth.
+    - Authentication or permission checks on the *originally intended* view
+      (where the HxRequest was meant to run) do not automatically apply here.
 
-This means:
-    - Users could trigger private or destructive actions from public pages.
+This means, without the controls below:
+    - Users could replay private or destructive actions from public pages.
     - Views could unintentionally expose data or behavior from other apps.
-    - Third-party templates, plugins, or unreviewed code could invoke internal logic
-      by referencing the right :code:`hx_request_name`.
+    - Third-party templates, plugins, or unreviewed code could invoke internal
+      logic from views that never scoped their handlers.
 
-Without additional security controls, any :code:`hx_request_name` becomes a
-global entry point into your application’s internal request logic.
+So while signing removes the forging vector, app-isolation and per-view scoping
+remain the layer that keeps a registered handler from becoming a global entry
+point into your application’s internal request logic.
 
 Design Goals
 ~~~~~~~~~~~~
@@ -74,11 +82,11 @@ The new HxRequest security layer enforces:
 What Happens Without Controls
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you remove these checks, anyone who knows (or guesses) an :code:`hx_request_name`
-can:
+If you remove these checks, anyone holding a valid token for an
+:code:`HxRequest` (one rendered on any page they can reach) can:
 
-    - Trigger arbitrary requests from unrelated views.
-    - Modify or delete data outside their intended scope.
+    - Replay that request against unrelated views.
+    - Modify or delete data outside its intended scope.
     - Execute sensitive operations from unprotected endpoints.
 
 
@@ -120,11 +128,10 @@ Typical valid cases include:
 Summary
 ~~~~~~~
 
-Without these controls, :code:`hx_request_name` effectively exposes
-a remote-call interface to your entire Django project.
-
-The HxRequest security layer ensures this system respects
-application boundaries and explicit trust.
+Signing ensures a request's name, object, and kwargs can't be forged. On top of
+that, the controls here ensure a registered handler doesn't become a remote-call
+interface to your entire Django project by respecting application boundaries and
+explicit trust.
 
 Continue to :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 for configuration examples.
