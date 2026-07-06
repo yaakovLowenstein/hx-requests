@@ -1,12 +1,18 @@
 import json
-from urllib.parse import quote_plus, urlencode, urlparse
+from urllib.parse import urlencode
 
 from django.apps import apps
+from django.core import signing
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
-MODEL_INSTANCE_PREFIX = "model_instance__"
-KWARG_PREFIX = "___"
+from hx_requests.constants import (
+    HX_SIGNING_SALT,
+    HX_TOKEN_PARAM,
+    KWARG_PREFIX,
+    MODEL_INSTANCE_PREFIX,
+)
+
 __ = "__"
 
 
@@ -50,35 +56,94 @@ def deserialize_kwargs(**kwargs):
     return deserialized_kwargs
 
 
+def sign_hx_payload(hx_request_name, obj=None, **kwargs):
+    """
+    Pack everything the template tag controls -- the handler name, the object,
+    and the extra kwargs -- into a single HMAC-signed token. The client can
+    read the token (it is base64-encoded JSON) but cannot forge it without
+    ``SECRET_KEY``, which closes the object/kwarg/name tampering vectors.
+    """
+    payload = {
+        "name": hx_request_name,
+        "object": serialize(obj) if obj is not None else None,
+        "kwargs": serialize_kwargs(**kwargs),
+    }
+    return signing.dumps(payload, salt=HX_SIGNING_SALT)
+
+
+def unsign_hx_payload(token):
+    """
+    Verify and unpack a signed token. Raises ``signing.BadSignature`` (a base
+    class covering tampered/truncated/hand-crafted tokens) on any failure.
+    """
+    return signing.loads(token, salt=HX_SIGNING_SALT)
+
+
+def get_hx_payload(request):
+    """
+    Return the *verified* contents of the signed ``hx`` token on ``request`` as
+    ``{"name": ..., "object": ..., "kwargs": ...}``, or ``None`` if the request
+    carries no token or the signature is invalid.
+
+    This is the supported way for view code to introspect an inbound
+    hx-requests request (detect it, read its name/object/kwargs) *without*
+    going through ``HtmxViewMixin`` dispatch. The ``object`` and ``kwargs``
+    values are still in serialized form -- pass them through :func:`deserialize`
+    / :func:`deserialize_kwargs` to get live values.
+    """
+    token = request.GET.get(HX_TOKEN_PARAM)
+    if not token:
+        return None
+    try:
+        return unsign_hx_payload(token)
+    except signing.BadSignature:
+        return None
+
+
+def get_hx_request_name(request):
+    """
+    Return the :code:`HxRequest` name from the signed ``hx`` token, or ``None``
+    if the request isn't a (valid) hx-requests request.
+
+    Replaces reading ``request.GET["hx_request_name"]`` directly, which no
+    longer exists on the query string now that routing data is signed.
+    """
+    payload = get_hx_payload(request)
+    return payload["name"] if payload else None
+
+
+def is_hx_request(request):
+    """
+    Return ``True`` if ``request`` is an hx-requests request -- i.e. it carries
+    a valid signed ``hx`` token bound for a registered handler.
+
+    This is distinct from :func:`is_htmx_request`, which only checks the
+    ``HX-Request`` header (*any* htmx request). Use it to tell a plain htmx
+    request (sort / filter / paginate) apart from one routed to an
+    :code:`HxRequest`::
+
+        if is_htmx_request(request) and not is_hx_request(request):
+            ...  # plain htmx -- let the underlying view handle it
+    """
+    return get_hx_payload(request) is not None
+
+
 def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     request = context["request"]
-    url = request.path
 
-    params = {"hx_request_name": hx_request_name}
-
+    # Non-framework params (page filters/pagination) stay as ordinary loose
+    # query params -- they are untrusted runtime input the view already reads.
+    # Only the framework's routing/deserialization data is signed.
+    params = {}
     if use_full_path:
-        get_params = {}
         for k, v in request.GET.lists():
-            if k not in ["hx_request_name", "object"] and not k.startswith(KWARG_PREFIX):
-                get_params[k] = v[0] if len(v) == 1 else v
-        params.update(get_params)
+            if k in (HX_TOKEN_PARAM, "hx_request_name", "object") or k.startswith(KWARG_PREFIX):
+                continue
+            params[k] = v[0] if len(v) == 1 else v
 
-    if obj:
-        params["object"] = serialize(obj)
+    params[HX_TOKEN_PARAM] = sign_hx_payload(hx_request_name, obj, **kwargs)
 
-    # Parse the URL to check if there are existing query parameters
-    parsed_url = urlparse(url)
-    if parsed_url.query:  # If there are existing query parameters
-        url += "&"  # Append using "&"
-    else:
-        url += "?"  # Otherwise, start with "?"
-
-    url += urlencode(params, doseq=True)
-
-    serialized_kwargs = serialize_kwargs(**kwargs)
-    url += "".join(f"&{k}={quote_plus(str(v))}" for k, v in serialized_kwargs.items())
-
-    return url
+    return f"{request.path}?{urlencode(params, doseq=True)}"
 
 
 def get_csrf_token(context):

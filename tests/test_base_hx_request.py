@@ -1,6 +1,7 @@
 """Integration tests for BaseHxRequest driven through HtmxViewMixin."""
 
 import json
+from urllib.parse import urlencode
 
 import pytest
 from django.http import Http404
@@ -9,6 +10,7 @@ from test_app import hx_requests as hx
 from test_app.models import Widget
 from test_app.views import BaseView, WidgetContextView, WidgetListView, WidgetUpdateView
 
+from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
 from tests.helpers import add_middleware_to_request, hx_get, hx_post
 
 pytestmark = pytest.mark.django_db
@@ -315,7 +317,8 @@ def test_messages_disabled_globally():
 
 
 def test_unsupported_method_returns_405():
-    request = RequestFactory().patch("/?hx_request_name=simple_get")
+    token = sign_hx_payload("simple_get")
+    request = RequestFactory().patch(f"/?{urlencode({HX_TOKEN_PARAM: token})}")
     request.META["HTTP_HX_REQUEST"] = True
     add_middleware_to_request(request)
     response = BaseView.as_view()(request)
@@ -336,7 +339,7 @@ def test_non_htmx_request_falls_through_to_the_view():
     assert "view_flavor:from-the-view" in content_of(response)
 
 
-def test_missing_hx_request_name_raises_404():
+def test_missing_hx_token_raises_404():
     request = RequestFactory().get("/")
     request.META["HTTP_HX_REQUEST"] = True
     add_middleware_to_request(request)
@@ -344,8 +347,17 @@ def test_missing_hx_request_name_raises_404():
         BaseView.as_view()(request)
 
 
+def test_tampered_hx_token_raises_404():
+    token = sign_hx_payload("simple_get")
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: token[:-3] + "xxx"})
+    request.META["HTTP_HX_REQUEST"] = True
+    add_middleware_to_request(request)
+    with pytest.raises(Http404, match="Invalid or tampered"):
+        BaseView.as_view()(request)
+
+
 def test_unknown_hx_request_name_raises_404():
-    request = RequestFactory().get("/", data={"hx_request_name": "does_not_exist"})
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: sign_hx_payload("does_not_exist")})
     request.META["HTTP_HX_REQUEST"] = True
     add_middleware_to_request(request)
     with pytest.raises(Http404, match="No HxRequest found"):

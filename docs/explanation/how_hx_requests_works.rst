@@ -11,10 +11,18 @@ When using the :ref:`hx_get <Hx Tags>` and :ref:`hx_post <Hx Tags>` template tag
 
 
 #. The URL of the request is set to the current page's URL.
-#. An :code:`hx_request_name`` GET parameter is added to the request URL (based on the name passed to the template tag).
-#. When the request reaches the view, :code:`HtmxViewMixin` checks if the request is an HTMX request and if the :code:`hx_request_name` is in the request
-   and routes the request to the :code:`HxRequest` with the matching name.
+#. A single :code:`hx` GET parameter is added to the request URL. It carries the
+   :code:`HxRequest` name (along with the serialized object and kwargs).
+#. When the request reaches the view, :code:`HtmxViewMixin` reads the name from
+   the :code:`hx` parameter and routes the request to the :code:`HxRequest` with
+   the matching name.
 #. The :code:`HxRequest` processes the request and returns an Html response.
+
+.. note::
+
+    The :code:`hx` parameter is a signed token, not loose query params — see
+    :ref:`Object Serialization` for what it packs and
+    :ref:`Why HxRequest Security Is Needed` for why it is signed.
 
 
 Why Not Just Use A URL Router?
