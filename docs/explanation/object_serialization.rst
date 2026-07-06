@@ -8,11 +8,18 @@ Since HTMX requests don’t natively support passing complex Python objects,
 :code:`hx_requests` provides a custom serialization method that allows Django models
 and additional data to be included in GET and POST requests.
 
+The serialized values (the object and the kwargs) are not appended to the URL as
+loose query parameters. They are packed, together with the :code:`HxRequest`
+name, into a single HMAC-signed :code:`hx` token. The signature is what makes
+them trustworthy on the way back in — the values below describe the *contents*
+of that token, not editable URL params.
+
 Serializing Model Instances
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When a model instance is serialized, it is converted into a structured string format
-that includes the prefix :code:`model_instance`, to differentiate from other URL parameters, the app label, model name, and primary key.
+that includes the prefix :code:`model_instance`, to distinguish it from a plain JSON
+value, followed by the app label, model name, and primary key.
 
 For example, a :code:`User` instance with :code:`pk=5` in the :code:`auth` app
 would be represented as:
@@ -40,13 +47,16 @@ This process ensures that Django objects can be reconstructed properly when hand
 Handling kwargs Serialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each keyword argument is prefixed with :code:`___` to differentiate it from standard query parameters.
-When deserializing, the prefix is removed, and values are restored to their original form.
+Each keyword argument is prefixed with :code:`___` inside the token so it can be
+told apart from any loose query parameters. When deserializing, the prefix is
+removed, and values are restored to their original form.
 
 This allows :code:`hx_requests` to safely pass complex parameters in HTMX requests.
 
 .. note::
 
-    Since keyword arguments (:code:`kwargs`) are prefixed with :code:`___` during serialization, they are not recognized as standard query parameters.
-    If you need to pass a GET parameter through an HTMX request, use the :code:`hx-include` or :code:`hx-vals` attribute instead of a passing as a :code:`kwarg`.
-    For example, when implementing pagination, the :code:`page` parameter must be sent as a standard GET parameter. Passing it as a :code:`kwarg` will result in it being prefixed and ignored by the request handler.
+    Kwargs live *inside* the signed token, not on the query string — so a kwarg
+    is never read as a standard GET parameter.
+    If you need to pass a real GET parameter through an HTMX request, use the
+    :code:`hx-include` or :code:`hx-vals` attribute instead of passing it as a :code:`kwarg`.
+    For example, when implementing pagination, the :code:`page` parameter must be sent as a standard GET parameter. Passing it as a :code:`kwarg` will bury it in the token and it will be ignored by the request handler.

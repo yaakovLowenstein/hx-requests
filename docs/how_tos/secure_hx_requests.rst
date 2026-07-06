@@ -2,8 +2,10 @@ How To Secure HxRequests
 ------------------------
 
 HxRequests allow modular, component-level interactions between the frontend and backend.
-However, without proper access controls, any request can be triggered from any page
-by including the :code:`hx_request_name` parameter in the URL.
+Request signing already stops a client from forging a request for an arbitrary
+handler, but without per-view access controls a validly-issued request can still
+be replayed against any view that includes the mixin and doesn't scope which
+handlers it accepts.
 
 This guide explains **how to secure HxRequests**, enforce app boundaries,
 require authentication when appropriate, and explicitly allow cross-app usage where needed.

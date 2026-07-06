@@ -11,9 +11,14 @@ When using the :ref:`hx_get <Hx Tags>` and :ref:`hx_post <Hx Tags>` template tag
 
 
 #. The URL of the request is set to the current page's URL.
-#. An :code:`hx_request_name`` GET parameter is added to the request URL (based on the name passed to the template tag).
-#. When the request reaches the view, :code:`HtmxViewMixin` checks if the request is an HTMX request and if the :code:`hx_request_name` is in the request
-   and routes the request to the :code:`HxRequest` with the matching name.
+#. A single :code:`hx` GET parameter is added to the request URL. It is an
+   HMAC-signed token that packs the :code:`HxRequest` name, the serialized
+   object, and any serialized kwargs (based on what is passed to the template tag).
+#. When the request reaches the view, :code:`HtmxViewMixin` checks if the request
+   is an HTMX request and verifies the signed :code:`hx` token. A missing or
+   tampered token raises :code:`Http404`; a valid one yields the trusted name,
+   object, and kwargs, and the request is routed to the :code:`HxRequest` with
+   the matching name.
 #. The :code:`HxRequest` processes the request and returns an Html response.
 
 

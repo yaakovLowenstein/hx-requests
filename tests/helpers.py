@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.views import View
 
-from hx_requests.utils import serialize, serialize_kwargs
+from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
 
 
 def add_middleware_to_request(request):
@@ -46,14 +46,12 @@ def _create_test_request(
             request.user = AnonymousUser()
         return request
 
-    # Used even on POST to set kwargs to GET params
+    # The framework's routing data (name, object, kwargs) rides in one signed
+    # token, exactly as the template tags emit it; get_params stay loose.
     hx_object = hx_kwargs.pop("object", None)
-    hx_kwargs = serialize_kwargs(**hx_kwargs)
-    if hx_object is not None:
-        hx_kwargs["object"] = serialize(hx_object)
-    hx_kwargs["hx_request_name"] = hx_request.name
-    hx_kwargs.update(get_params)
-    request = RequestFactory().get("/", data=hx_kwargs)
+    query = {HX_TOKEN_PARAM: sign_hx_payload(hx_request.name, hx_object, **hx_kwargs)}
+    query.update(get_params)
+    request = RequestFactory().get("/", data=query)
 
     if method == "POST":
         request = RequestFactory().post(f"/?{request.META['QUERY_STRING']}", data=post_data or {})
