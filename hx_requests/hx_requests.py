@@ -222,16 +222,31 @@ class BaseHxRequest:
         except ObjectDoesNotExist:
             raise Http404(f"No {ref[1]} matches the given query for HxRequest '{self.name}'.")
 
+    @cached_property
+    def view_response(self):
+        # Page view's get(); harvests its context_data. Cached, and only read by
+        # get_context_data, so it runs at most once and only when a template renders.
+        return self.view.get(self.request, *self._view_get_args, **self._view_get_kwargs)
+
     def _setup_hx_request(self, request, *args, **kwargs):
-        if self.get_views_context:
-            self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
+        self._view_get_args = args
+        self._view_get_kwargs = kwargs
         self.renderer = Renderer()
         self.GET_template = self.GET_template or self.view.template_name
         self.POST_template = self.POST_template or self.view.template_name
 
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request, **kwargs)
+
+        # POST must snapshot the view context before post() mutates it; skip that
+        # work when the POST renders nothing (refresh_page/redirect/return_empty).
+        if (
+            self.get_views_context
+            and self.is_post_request
+            and not (self.refresh_page or self.redirect or self.return_empty)
+        ):
+            _ = self.view_response
 
     def hx_object_to_str(self) -> str:
         return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
