@@ -5,6 +5,7 @@ from django.apps import apps
 from django.core import signing
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.middleware.csrf import get_token
 
 MODEL_INSTANCE_PREFIX = "model_instance__"
 KWARG_PREFIX = "___"
@@ -179,7 +180,8 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
 
 
 def get_csrf_token(context):
-    cookie = context["request"].headers.get("cookie")
-    if cookie and "csrftoken" in cookie:
-        token = cookie.split("csrftoken=")[1].split(";")[0]
-        return token
+    # Delegate to Django rather than hand-splitting the Cookie header: get_token
+    # handles CSRF_USE_SESSIONS, token masking/rotation, and custom cookie names,
+    # and always returns a usable token (minting one on the request if needed) so
+    # a POST is never left without its CSRF header.
+    return get_token(context["request"])

@@ -264,16 +264,22 @@ current Django versions. Cheap win that also fixes the "looks abandoned" signal.
 
 Three separate items:
 
-**6a. CSRF token (`utils.py:84`).** Hand-splits the raw `Cookie` header on
+**6a. CSRF token (`utils.py:84`). — ✅ DONE.** Hand-splits the raw `Cookie` header on
 `"csrftoken="`. Breaks with `CSRF_USE_SESSIONS = True` (no cookie → all POSTs 403),
 and picks the wrong token if another cookie name contains `csrftoken`.
 → Replace with `django.middleware.csrf.get_token(request)` (handles all CSRF
 configs + masking/rotation).
+> **Fixed** on `fix/string-craft-primitives`. `get_csrf_token` now delegates to
+> `django.middleware.csrf.get_token`, which mints a masked token from the request
+> under any CSRF config — so `hx_post` always carries a valid `X-CSRFTOKEN`.
 
-**6b. Unquoted HTML attributes (`hx_tags.py:17,27-31`).** Emits `hx-get={url}` and
+**6b. Unquoted HTML attributes (`hx_tags.py:17,27-31`). — ✅ DONE.** Emits `hx-get={url}` and
 `hx-headers={...}` with no quotes. Works today only because encoding produces no
 spaces; one space in a value truncates the attribute.
 → Use `format_html('hx-get="{}"', url)` etc.
+> **Fixed** on `fix/string-craft-primitives`. `hx_get`/`hx_post` build attributes
+> with `format_html` (quoted + HTML-escaped); `hx-headers` is single-quoted so its
+> JSON double-quotes survive. Matches the already-documented quoted wire format.
 
 **6c. Deserializer reachable by raw input (`utils.py:28`).** `json.loads` on raw
 query strings → 500 on malformed input. (The recent "don't break on NoneType"

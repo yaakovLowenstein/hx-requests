@@ -1,5 +1,8 @@
 """Tests for the hx_tags template tags."""
 
+import html
+import json
+import re
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -14,16 +17,24 @@ def make_context(path="/page/", **extra):
     return {"request": RequestFactory().get(path, **extra)}
 
 
-def payload_from_attr(attr):
-    # attr looks like `hx-get=/page/?hx=<token>` (optionally with more attrs).
-    url = attr.split("=", 1)[1].split(" ", 1)[0]
+def attr_value(attr, name):
+    # Attributes are emitted quoted, e.g. `hx-get="/page/?hx=<token>"`; the URL
+    # is HTML-escaped inside the quotes, so unescape before parsing.
+    match = re.search(rf"""{name}=(["'])(.*?)\1""", attr)
+    assert match, f"{name} not found in {attr!r}"
+    return html.unescape(match.group(2))
+
+
+def payload_from_attr(attr, name="hx-get"):
+    url = attr_value(attr, name)
     query = parse_qs(urlparse(url).query)
     return unsign_hx_payload(query[HX_TOKEN_PARAM][0])
 
 
-def test_hx_get_renders_attribute():
+def test_hx_get_renders_quoted_attribute():
     out = hx_get(make_context(), "simple_get")
-    assert out.startswith("hx-get=/page/?")
+    assert out.startswith('hx-get="/page/?')
+    assert out.endswith('"')
     assert payload_from_attr(out)["name"] == "simple_get"
 
 
@@ -36,17 +47,25 @@ def test_hx_get_includes_object_and_kwargs(widget):
     assert deserialize_kwargs(**payload["kwargs"]) == {"flavor": "spicy"}
 
 
-def test_hx_post_includes_csrf_headers_from_cookie():
-    context = make_context(HTTP_COOKIE="csrftoken=tok123")
-    out = hx_post(context, "simple_get")
-    assert out.startswith("hx-post=/page/?")
-    assert payload_from_attr(out)["name"] == "simple_get"
-    assert 'hx-headers={"X-CSRFTOKEN":"tok123"}' in out
-
-
-def test_hx_post_without_csrf_cookie_omits_headers():
+def test_hx_post_renders_quoted_attribute_and_csrf_headers():
     out = hx_post(make_context(), "simple_get")
-    assert "hx-headers" not in out
+    assert out.startswith('hx-post="/page/?')
+    assert payload_from_attr(out, "hx-post")["name"] == "simple_get"
+
+    # hx-headers is emitted as a quoted attribute carrying JSON; the JSON's
+    # double quotes are HTML-escaped inside the attribute value.
+    headers = json.loads(attr_value(out, "hx-headers"))
+    token = headers["X-CSRFTOKEN"]
+    assert isinstance(token, str)
+    assert token
+
+
+def test_hx_post_always_includes_csrf_headers():
+    # get_token mints a token from the request regardless of cookies, so the
+    # CSRF header is always present (previously it was dropped when no
+    # csrftoken cookie was set, silently breaking POSTs).
+    assert "hx-headers" in hx_post(make_context(), "simple_get")
+    assert "hx-headers" in hx_post(make_context(HTTP_COOKIE="a=b"), "simple_get")
 
 
 def test_hx_url_returns_bare_url():

@@ -290,16 +290,19 @@ def test_get_url_use_full_path_filters_internal_params():
 # --------------------------------------------------------------------------
 
 
-def test_get_csrf_token_reads_cookie():
-    context = make_context(HTTP_COOKIE="csrftoken=tok123; other=1")
-    assert get_csrf_token(context) == "tok123"
+def test_get_csrf_token_returns_a_token():
+    # Delegates to django.middleware.csrf.get_token, which always mints a
+    # masked token (64 chars) regardless of how CSRF is configured.
+    token = get_csrf_token(make_context())
+    assert isinstance(token, str)
+    assert len(token) == 64
 
 
-def test_get_csrf_token_with_leading_cookies():
-    context = make_context(HTTP_COOKIE="a=b; csrftoken=tok456")
-    assert get_csrf_token(context) == "tok456"
-
-
-def test_get_csrf_token_missing_returns_none():
-    assert get_csrf_token(make_context(HTTP_COOKIE="a=b")) is None
-    assert get_csrf_token(make_context()) is None
+def test_get_csrf_token_does_not_depend_on_the_cookie_header():
+    # The old implementation hand-split the Cookie header and returned None
+    # when no `csrftoken` cookie was present -- which breaks CSRF_USE_SESSIONS
+    # and any config where the token isn't delivered as that cookie. get_token
+    # mints a token from the request either way, so a POST is never left
+    # without a CSRF header.
+    assert get_csrf_token(make_context(HTTP_COOKIE="a=b")) is not None
+    assert get_csrf_token(make_context()) is not None
