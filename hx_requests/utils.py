@@ -56,18 +56,23 @@ def deserialize_kwargs(**kwargs):
     return deserialized_kwargs
 
 
-def sign_hx_payload(hx_request_name, obj=None, **kwargs):
+def sign_hx_payload(hx_request_name, obj=None, bind_path=None, **kwargs):
     """
     Pack everything the template tag controls -- the handler name, the object,
     and the extra kwargs -- into a single HMAC-signed token. The client can
     read the token (it is base64-encoded JSON) but cannot forge it without
     ``SECRET_KEY``, which closes the object/kwarg/name tampering vectors.
+
+    When ``bind_path`` is given, it is packed into the token too, binding the
+    token to that URL path (see :func:`get_url` and ``bind_to_path``).
     """
     payload = {
         "name": hx_request_name,
         "object": serialize(obj) if obj is not None else None,
         "kwargs": serialize_kwargs(**kwargs),
     }
+    if bind_path is not None:
+        payload["path"] = bind_path
     return signing.dumps(payload, salt=HX_SIGNING_SALT)
 
 
@@ -141,9 +146,27 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
                 continue
             params[k] = v[0] if len(v) == 1 else v
 
-    params[HX_TOKEN_PARAM] = sign_hx_payload(hx_request_name, obj, **kwargs)
+    # The token is bound to the path it is rendered on (so it only verifies when
+    # replayed back to this same path) unless the handler opts out.
+    bind_path = request.path if _handler_binds_to_path(hx_request_name) else None
+    params[HX_TOKEN_PARAM] = sign_hx_payload(hx_request_name, obj, bind_path=bind_path, **kwargs)
 
     return f"{request.path}?{urlencode(params, doseq=True)}"
+
+
+def _handler_binds_to_path(hx_request_name):
+    from django.conf import settings
+
+    # Global kill switch (e.g. when a proxy/middleware rewrites request.path).
+    if not getattr(settings, "HX_REQUESTS_BIND_TOKEN_TO_PATH", True):
+        return False
+
+    # Lazy import: avoids a utils <-> hx_registry <-> hx_requests import cycle.
+    from hx_requests.hx_registry import HxRequestRegistry
+
+    hx_request_class = HxRequestRegistry.get_hx_request(hx_request_name)
+    # Path-binding is on by default; a handler opts out with bind_to_path = False.
+    return bool(getattr(hx_request_class, "bind_to_path", True))
 
 
 def get_csrf_token(context):

@@ -29,6 +29,13 @@ class SimpleGetHx(BaseHxRequest):
     GET_template = "simple.html"
 
 
+class UnboundHx(BaseHxRequest):
+    # Opts out of the default path-binding.
+    name = "unbound"
+    GET_template = "simple.html"
+    bind_to_path = False
+
+
 class ViewTemplateFallbackHx(BaseHxRequest):
     name = "view_template_fallback"
 

@@ -176,6 +176,54 @@ Only HxRequests in :code:`allowed_hx_requests` can be called from this view
 
 
 
+Path-Binding
+~~~~~~~~~~~~
+
+By default, every signed token is bound to the URL path it was rendered on, so it
+only verifies when replayed back to that same path (see
+:ref:`Why HxRequest Security Is Needed <why-hxrequest-security>`). This is
+automatic — there is nothing to enable.
+
+You only need to relax it when the path Django sees at dispatch can legitimately
+differ from the path a token was rendered on. That comes up in two shapes.
+
+
+Disabling Globally
+^^^^^^^^^^^^^^^^^^
+
+If your whole project sits behind a proxy or middleware that rewrites or strips
+part of the path (a locale prefix, a mount sub-path / :code:`SCRIPT_NAME`)
+between the browser and Django, the rendered path and the dispatched path won't
+match. Turn path-binding off project-wide:
+
+.. code-block:: python
+
+    # settings.py
+    HX_REQUESTS_BIND_TOKEN_TO_PATH = False
+
+This disables both minting new bound tokens **and** enforcing existing ones, so
+it takes effect immediately — already-rendered pages stop failing without a
+reload.
+
+
+Opting Out Per Handler
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+For a single handler whose token must work from a path other than where it was
+rendered — e.g. you build the request URL yourself, or reuse one token across
+several URLs instead of letting the tags emit it — opt that handler out:
+
+.. code-block:: python
+
+    class CrossPageHx(BaseHxRequest):
+        name = "cross_page"
+        bind_to_path = False
+
+In ordinary usage you never hit either case: the template tags bake the render
+path into the request URL, so the token is always posted back to the path it was
+bound to.
+
+
 Evaluation Order
 ~~~~~~~~~~~~~~~~
 
@@ -207,6 +255,8 @@ Summary
 :code:`HX_REQUESTS_GLOBAL_ALLOW`         Define trusted apps or HxRequests globally
 :code:`allowed_hx_requests`              Per-view allowed HxRequests
 :code:`use_global_hx_rules`              Whether per-view list builds upon the global list or restricts it further
+:code:`HX_REQUESTS_BIND_TOKEN_TO_PATH`   Default: bind each token to its render path (set False to disable project-wide)
+:code:`bind_to_path`                     Per-handler opt-out of path-binding
 =======================================  ===========================================
 
 .. warning::
