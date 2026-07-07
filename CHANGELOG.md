@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.48.0 (2026-07-07)
+
+### Fix
+
+* Use Django CSRF/HTML primitives for template-tag string-craft ([`762fea7`](https://github.com/yaakovLowenstein/hx-requests/commit/762fea78fe5edd6b515106d8345aedec594d8639))
+
+### Breaking
+
+* the template tags' rendered output and CSRF handling changed. To upgrade: ([`762fea7`](https://github.com/yaakovLowenstein/hx-requests/commit/762fea78fe5edd6b515106d8345aedec594d8639))
+
 ## v0.47.0 (2026-07-07)
 
 ### Fix
