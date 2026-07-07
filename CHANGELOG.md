@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.45.0 (2026-07-07)
+
+### Feature
+
+* Bind the signed hx token to its render path by default ([`1a1f456`](https://github.com/yaakovLowenstein/hx-requests/commit/1a1f4560b9b203b5379aa9a977cd4ca221dd74b6))
+* Sign the serialized round-trip token ([`00a625b`](https://github.com/yaakovLowenstein/hx-requests/commit/00a625ba3622d59857984e36c538e0aa3ad599bc))
+
+### Breaking
+
+* signed tokens are now bound to their render path by default. Any flow that submits a token to a different path than it was rendered on -- an app behind a proxy/middleware that rewrites request.path, or code that hand-builds the request URL or reuses one token across URLs -- will get an Http404. Restore the previous behavior per handler with `bind_to_path = False`, or project-wide with `HX_REQUESTS_BIND_TOKEN_TO_PATH = False`. Pages rendered before the upgrade also 404 on hx interactions until reloaded. ([`1a1f456`](https://github.com/yaakovLowenstein/hx-requests/commit/1a1f4560b9b203b5379aa9a977cd4ca221dd74b6))
+* the template tags now emit `?hx=<signed-token>` instead of `?hx_request_name=...&object=...&___kwarg=...`. The `{% hx_get %}`/`{% hx_post %}` tags and HxRequest classes are unchanged, but any code that read the framework's routing data off request.GET -- e.g. sniffing `request.GET["hx_request_name"]` to detect an hx request, or hand-building/parsing these URLs -- must switch to `?hx=<token>` and the is_hx_request()/get_hx_request_name()/get_hx_payload() helpers. Pages already rendered by the old version also 404 on hx interactions until reloaded. ([`00a625b`](https://github.com/yaakovLowenstein/hx-requests/commit/00a625ba3622d59857984e36c538e0aa3ad599bc))
+
+### Documentation
+
+* Warn that path-binding/scoping don't authorize individual users ([`c38dbb7`](https://github.com/yaakovLowenstein/hx-requests/commit/c38dbb7ac4a4a94f7f95c2744c99441632d05bc9))
+* Correct who-vs-where in the signing section ([`133ec33`](https://github.com/yaakovLowenstein/hx-requests/commit/133ec33eeb606314630cb265912c6c8c0df44d55))
+* Give signing its own section and reconcile the threat with path-binding ([`1fa34bd`](https://github.com/yaakovLowenstein/hx-requests/commit/1fa34bdbb8c3ca4641d3419aaee7504b038e49f0))
+
 ## v0.44.0 (2026-07-06)
 
 ### Feature
