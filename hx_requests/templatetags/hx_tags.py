@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from django import template
+import json
 
-from hx_requests.utils import get_csrf_token, get_url
+from django import template
+from django.middleware.csrf import get_token
+from django.utils.html import format_html
+
+from hx_requests.utils import get_url
 
 register = template.Library()
 
@@ -14,7 +18,7 @@ def hx_get(context: dict, hx_request_name: str, object=None, use_full_path=False
     And includes the hx_request_name, object, and any additional kwargs.
     """
     url = get_url(context, hx_request_name, object, use_full_path, **kwargs)
-    return f"hx-get={url}"
+    return format_html('hx-get="{}"', url)
 
 
 @register.simple_tag(takes_context=True)
@@ -25,10 +29,15 @@ def hx_post(context: dict, hx_request_name: str, object=None, use_full_path=Fals
     Also includes the CSRF token if available.
     """
     url = get_url(context, hx_request_name, object, use_full_path, **kwargs)
-    hx_attrs = f"hx-post={url}"
-    token = get_csrf_token(context)
+    hx_attrs = format_html('hx-post="{}"', url)
+    # get_token delegates to Django: it handles CSRF_USE_SESSIONS, token
+    # masking/rotation, and custom cookie names, and always mints a usable token
+    # from the request (so a POST is never left without its CSRF header).
+    token = get_token(context["request"])
     if token:
-        hx_attrs += f' hx-headers={{"X-CSRFTOKEN":"{token}"}}'
+        # Single-quote the attribute so the JSON's double quotes survive; they
+        # are HTML-escaped by format_html and decoded by the browser at parse time.
+        hx_attrs += format_html(" hx-headers='{}'", json.dumps({"X-CSRFTOKEN": token}))
     return hx_attrs
 
 

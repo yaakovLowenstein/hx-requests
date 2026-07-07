@@ -11,7 +11,6 @@ from hx_requests.utils import (
     HX_TOKEN_PARAM,
     deserialize,
     deserialize_kwargs,
-    get_csrf_token,
     get_hx_payload,
     get_hx_request_name,
     get_url,
@@ -283,23 +282,3 @@ def test_get_url_use_full_path_filters_internal_params():
     assert "object" not in query
     assert "___junk" not in query
     assert token_from_url(url)["name"] == "new_name"
-
-
-# --------------------------------------------------------------------------
-# get_csrf_token
-# --------------------------------------------------------------------------
-
-
-def test_get_csrf_token_reads_cookie():
-    context = make_context(HTTP_COOKIE="csrftoken=tok123; other=1")
-    assert get_csrf_token(context) == "tok123"
-
-
-def test_get_csrf_token_with_leading_cookies():
-    context = make_context(HTTP_COOKIE="a=b; csrftoken=tok456")
-    assert get_csrf_token(context) == "tok456"
-
-
-def test_get_csrf_token_missing_returns_none():
-    assert get_csrf_token(make_context(HTTP_COOKIE="a=b")) is None
-    assert get_csrf_token(make_context()) is None

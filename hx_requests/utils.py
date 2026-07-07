@@ -195,10 +195,3 @@ def _handler_binds_to_path(hx_request_name):
     hx_request_class = HxRequestRegistry.get_hx_request(hx_request_name)
     # Path-binding is on by default; a handler opts out with bind_to_path = False.
     return bool(getattr(hx_request_class, "bind_to_path", True))
-
-
-def get_csrf_token(context):
-    cookie = context["request"].headers.get("cookie")
-    if cookie and "csrftoken" in cookie:
-        token = cookie.split("csrftoken=")[1].split(";")[0]
-        return token
