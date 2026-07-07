@@ -12,24 +12,54 @@ and when it is safe to relax it.
 
 .. note::
 
-    **Request signing comes first.** The :code:`HxRequest` name, object, and
-    kwargs are delivered in a single HMAC-signed :code:`hx` token, so a client
-    **cannot forge or hand-craft** a request for an arbitrary handler — a
-    missing or tampered token is rejected with :code:`Http404` before any
-    routing happens. Everything on this page is the *next* layer: it governs a
-    token that was issued legitimately somewhere and then replayed against a
-    view that shouldn't accept it.
+    **Request signing comes first** (see :ref:`Request Signing`): a client
+    **cannot forge or tamper with** a request's routing data. The layers after it
+    govern a *legitimately-issued* token — used from a page, or by a user, it
+    shouldn't be.
 
 See also: :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
+
+
+Request Signing
+~~~~~~~~~~~~~~~
+
+The routing data an :code:`HxRequest` runs on — the handler **name**, the
+**object** it acts on, and any **kwargs** — travels in a single HMAC-signed
+:code:`hx` token instead of as loose, client-editable query parameters. The
+token is produced with :code:`django.core.signing` and your project's
+:code:`SECRET_KEY`: a client can read it (it is base64-encoded JSON) but cannot
+alter or fabricate one, because any change invalidates the signature.
+:code:`HtmxViewMixin` rebuilds the request from the *verified* payload only, and
+returns :code:`Http404` on a missing, tampered, or hand-crafted token before any
+deserializer or handler runs.
+
+**What signing protects.** When the name, object, and kwargs were loose query
+parameters, a client could edit them on the URL. Signing closes those tampering
+vectors:
+
+    - **Object tampering / IDOR** — a client can't change the serialized
+      :code:`object` (e.g. swap a primary key) to make a handler act on a record
+      that isn't theirs.
+    - **Cross-model instance swap** — the serialized object can't be repointed at
+      a different model.
+    - **Context / kwarg forgery** — a client can't inject kwargs (e.g. a
+      :code:`___can_edit` flag) to force values into the handler's context.
+    - **Handler spoofing** — a client can't hand-craft a token that routes to an
+      arbitrary handler name.
+    - **Garbage-input 500s** — malformed routing data fails the signature check
+      and 404s, instead of reaching a deserializer and raising.
+
+**What signing does not decide.** A signature proves a token was issued by your
+server and hasn't been altered. It does **not** decide *who* may use a token or
+*where*: a legitimately-issued token can still be replayed by another user or
+from another page. Path-binding and the scoping controls below are those layers.
 
 
 The Threat: Replaying a Valid Token
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Signing stops a client from *hand-crafting* a request for an arbitrary handler
-— a URL like :code:`/home/?hx=<made-up-token>` is rejected because the token
-won't verify. What signing does **not** decide is *scope*: which registered
-handlers a given view is willing to run.
+Signing proves a token is genuine, but it doesn't decide *scope*: which
+registered handlers a given view is willing to run.
 
 Because :code:`HtmxViewMixin` routes any HTMX request by the (verified) name
 inside the token, **any view that includes the mixin** is a potential entry
@@ -49,7 +79,19 @@ signature alone stops them from replaying it against an unrelated view:
 
 If :code:`/home` is a simple, public-facing view that includes the
 :code:`HtmxViewMixin` and neither scopes its handlers nor enforces auth, this
-request would still reach and execute the deletion logic. The consequences:
+request would still reach and execute the deletion logic.
+
+.. note::
+
+    By default this exact cross-page replay is **already blocked**: tokens are
+    :ref:`path-bound <path-binding>`, so a token minted on the admin page is
+    rejected on :code:`/home`. The scenario here is what happens *without* that
+    layer — or when it is relaxed. App-isolation and scoping remain necessary for
+    the case path-binding can't cover: a handler minted from a view or app that
+    should never render it (e.g. a third-party template), where the token is
+    bound to *that* page and posting it back there succeeds.
+
+The consequences:
 
     - The route doesn't matter — any view using the mixin is a potential gateway
       for any registered :code:`HxRequest` it doesn't scope.
@@ -88,6 +130,8 @@ Additive Logic                Combines or replaces base rule
 See :ref:`How To Secure HxRequests <how-to-secure-hxrequests>` for configuration
 examples of each layer.
 
+
+.. _path-binding:
 
 Path-Binding
 ~~~~~~~~~~~~
