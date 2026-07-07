@@ -50,9 +50,13 @@ vectors:
       and 404s, instead of reaching a deserializer and raising.
 
 **What signing does not decide.** A signature proves a token was issued by your
-server and hasn't been altered. It does **not** decide *who* may use a token or
-*where*: a legitimately-issued token can still be replayed by another user or
-from another page. Path-binding and the scoping controls below are those layers.
+server and hasn't been altered — not *where* it may be used or *who* may use it.
+A legitimately-issued token can still be sent from another page, or by another
+user. *Where* is constrained by path-binding (below). *Who* is **not** answered
+by the scoping controls here — it comes from requiring authentication
+(:code:`HX_REQUESTS_REQUIRE_AUTH`) and the permissions on the view a request
+routes through. The scoping controls below are a third axis: which handlers a
+given view or app may run at all.
 
 
 The Threat: Replaying a Valid Token
