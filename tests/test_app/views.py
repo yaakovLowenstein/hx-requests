@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, TemplateView, UpdateView
 from test_app.models import Widget
 
@@ -56,3 +57,24 @@ class StrictAllowListView(BaseView):
 
     allowed_hx_requests = ["simple_get"]
     use_global_hx_rules = False
+
+
+class AuthAfterHxView(HtmxViewMixin, LoginRequiredMixin, TemplateView):
+    """
+    Auth mixin ordered *after* HtmxViewMixin -- the trap the system check flags.
+    Non-HTMX requests are still gated now that dispatch chains via super(); the
+    HTMX path is not (that needs per-handler auth).
+
+    ``raise_exception`` makes an unauthenticated request 403 instead of
+    redirecting, so the test doesn't depend on a login URL / URLconf.
+    """
+
+    template_name = "base_view.html"
+    raise_exception = True
+
+
+class AuthBeforeHxView(LoginRequiredMixin, HtmxViewMixin, TemplateView):
+    """Correct ordering: auth mixin before HtmxViewMixin gates every path."""
+
+    template_name = "base_view.html"
+    login_url = "/login/"

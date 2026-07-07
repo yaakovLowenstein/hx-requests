@@ -14,6 +14,33 @@ For an explanation of *why* these controls exist and the risks they prevent,
 see :ref:`Why HxRequest Security Is Needed <why-hxrequest-security>`.
 
 
+Ordering Django auth mixins on the view
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you combine :code:`HtmxViewMixin` with a Django auth mixin
+(:code:`LoginRequiredMixin`, :code:`PermissionRequiredMixin`,
+:code:`UserPassesTestMixin`), **put the auth mixin first**:
+
+.. code-block:: python
+
+    # Correct: LoginRequiredMixin.dispatch runs before the HTMX handoff, so it
+    # gates both full page loads AND HTMX requests.
+    class MyView(LoginRequiredMixin, HtmxViewMixin, ListView):
+        ...
+
+    # Trap: the auth mixin is skipped on the HTMX path.
+    class MyView(HtmxViewMixin, LoginRequiredMixin, ListView):
+        ...
+
+:code:`HtmxViewMixin.dispatch` hands HTMX requests to the resolved
+:code:`HxRequest` without calling :code:`super().dispatch()`, so an auth mixin
+listed *after* it never runs for HTMX requests. Full page loads chain through
+:code:`super().dispatch()` normally, so the mixin still gates those — but the
+HTMX path would be silently unauthenticated. A Django system check
+(:code:`hx_requests.W001`) warns at startup / :code:`manage.py check` when the
+ordering is wrong.
+
+
 Global Settings
 ~~~~~~~~~~~~~~~
 
