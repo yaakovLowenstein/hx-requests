@@ -307,7 +307,22 @@ to generate server errors that scanners flag.
 
 ---
 
-## 7. 🟡 Reduce API surface
+## 7. 🟡 Reduce API surface — ✅ DONE
+
+> **Fixed** on `refactor/api-surface`.
+> - **7a.** `_render_templates` no longer silently returns `""` on an unmatched
+>   shape — it raises a descriptive `ValueError` naming the bad
+>   `templates`/`blocks` types. A single template with `None` block now renders the
+>   whole template (a falsy block name means "no block") instead of falling through
+>   to blank.
+> - **7b.** `get_error_message` builds its markup with `format_html` (escaped +
+>   `SafeString`) instead of `mark_safe` on an interpolated f-string, and emits the
+>   valid `<br>` (was the invalid `</br>`). `mark_safe` is gone from the module.
+>   Kept as an overridable method rather than extracting a template, to avoid
+>   churning the `get_error_message`/`get_success_message` override contract.
+> - **7c.** `hx_object_to_str` uses `_meta.verbose_name` (upper-casing the first
+>   char) instead of `str.capitalize()` on the class name, which mangled CamelCase
+>   (`MyModel` → `Mymodel`).
 
 **7a.** `GET_template`/`GET_block` each accept `str | list | dict` with a
 four-branch case analysis in `_render_templates` (`hx_requests.py:250-291`) that
