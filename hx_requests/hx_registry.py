@@ -17,12 +17,19 @@ from __future__ import annotations
 
 import ast
 import importlib
+import logging
 import os
 import threading
 
 from django.apps import apps
 
 from hx_requests.hx_requests import BaseHxRequest
+
+logger = logging.getLogger(__name__)
+
+
+class DuplicateHxRequestNameError(Exception):
+    """Raised when two HxRequest classes declare the same ``name``."""
 
 
 class HxRequestRegistry:
@@ -94,13 +101,27 @@ class HxRequestRegistry:
                         continue
 
                     if hx_name in cls._registry:
-                        raise Exception(f"Duplicate HxRequest name found: {hx_name}")
+                        raise DuplicateHxRequestNameError(
+                            f"Duplicate HxRequest name found: {hx_name} "
+                            f"(in {module_name}). HxRequest names must be unique across all apps."
+                        )
 
                     # Store for lazy loading: (module_path, class_name)
                     cls._registry[hx_name] = (module_name, node.name)
 
-        except (OSError, SyntaxError):
-            # Skip unreadable or unparsable files
+        except SyntaxError as exc:
+            # A syntax error in a user's hx_requests file would otherwise make
+            # its handlers vanish silently and resurface as a mystifying 404.
+            # Skip the file but say so loudly.
+            logger.warning(
+                "hx_requests: skipping %s -- could not parse it (%s). "
+                "Any HxRequests defined there will not be registered.",
+                file_path,
+                exc,
+            )
+            return
+        except OSError as exc:
+            logger.warning("hx_requests: skipping %s -- could not read it (%s).", file_path, exc)
             return
 
     @classmethod
@@ -138,7 +159,9 @@ class HxRequestRegistry:
         Manual registration
         """
         if name in cls._registry:
-            raise Exception(f"Duplicate HxRequest name found: {name}")
+            raise DuplicateHxRequestNameError(
+                f"Duplicate HxRequest name found: {name}. HxRequest names must be unique across all apps."
+            )
         cls._registry[name] = hx_request_class
 
     @classmethod

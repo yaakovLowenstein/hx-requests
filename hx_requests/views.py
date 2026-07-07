@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
@@ -19,6 +20,8 @@ from hx_requests.utils import (
     get_hx_payload,
     is_htmx_request,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
@@ -58,13 +61,27 @@ class HtmxViewMixin:
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
         if not hx_request_name:
+            logger.debug(
+                "hx_requests: denied (404) on %s -- verified token carried no HxRequest name.",
+                self.__class__.__name__,
+            )
             raise Http404("Missing required query param 'hx_request_name' for HTMX request.")
 
         hx_request_class = HxRequestRegistry.get_hx_request(hx_request_name)
         if not hx_request_class:
+            logger.debug(
+                "hx_requests: denied (404) -- no HxRequest registered under the name '%s'.",
+                hx_request_name,
+            )
             raise Http404(f"No HxRequest found with the name '{hx_request_name}'.")
 
         if not self.is_hx_allowed(hx_request_class, request):
+            logger.debug(
+                "hx_requests: denied (404) -- HxRequest '%s' is not allowed on view %s "
+                "(auth / same-app / allow-list policy). See is_hx_allowed.",
+                hx_request_name,
+                self.__class__.__name__,
+            )
             raise Http404(f"HxRequest '{hx_request_name}' is not allowed here.")
 
         return hx_request_class()
@@ -79,9 +96,14 @@ class HtmxViewMixin:
         (page filters, runtime hx-vals) are left untouched.
         """
         if not request.GET.get(HX_TOKEN_PARAM):
+            logger.debug("hx_requests: denied (404) -- request carried no '%s' token.", HX_TOKEN_PARAM)
             raise Http404("Missing required query param 'hx' for HTMX request.")
         payload = get_hx_payload(request)
         if payload is None:
+            logger.debug(
+                "hx_requests: denied (404) -- '%s' token was missing, tampered, or unsigned.",
+                HX_TOKEN_PARAM,
+            )
             raise Http404("Invalid or tampered hx token.")
 
         # A path-bound token (bind_to_path handler) only verifies on the path it
