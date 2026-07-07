@@ -13,8 +13,7 @@ from django.http import Http404, HttpRequest, HttpResponse, HttpResponseNotAllow
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
-from django.utils.html import strip_tags
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html, strip_tags
 from render_block import render_block_to_string
 
 from hx_requests.utils import deserialize, parse_model_ref, resolve_model_ref
@@ -249,7 +248,14 @@ class BaseHxRequest:
             _ = self.view_response
 
     def hx_object_to_str(self) -> str:
-        return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""
+        if not self.hx_object:
+            return ""
+        # Use the model's verbose_name rather than str.capitalize() on the class
+        # name -- capitalize() lower-cased the tail of CamelCase names ("MyModel"
+        # -> "Mymodel"). Upper-case only the first character so the name reads as
+        # a proper noun at the start of the success/error messages.
+        verbose_name = str(self.hx_object._meta.verbose_name)
+        return verbose_name[:1].upper() + verbose_name[1:]
 
     def get_headers(self, **kwargs) -> dict:
         """
@@ -371,8 +377,9 @@ class BaseHxRequest:
         render_with_context = partial(self.renderer.render, context=context, request=self.request)
         html = []
 
-        # Case: Single template, single block
-        if isinstance(templates, str) and isinstance(blocks, str):
+        # Case: Single template, single block (or no block). A falsy block name
+        # renders the whole template, so `None` and `""` both mean "no block".
+        if isinstance(templates, str) and (blocks is None or isinstance(blocks, str)):
             return render_with_context(templates, blocks)
 
         # Case: Multiple templates and blocks provided as a dictionary
@@ -404,7 +411,13 @@ class BaseHxRequest:
                 )
             return "".join(render_with_context(templates, block) for block in blocks)
 
-        return ""
+        # No branch matched: the template/block types are unsupported. Fail loud
+        # instead of silently returning an empty partial (which surfaces later as
+        # a mystifying blank swap).
+        raise ValueError(
+            f"Unsupported template/block combination: templates={templates!r}, blocks={blocks!r}. "
+            "templates must be a str or list; blocks must be a str, list, dict, or None."
+        )
 
     def _get_messages_html(self, **kwargs) -> str:
         messages = get_messages(self.request)
@@ -599,14 +612,15 @@ class FormHxRequest(BaseHxRequest):
         Message set when the form is invalid. Override to set
         a custom message.
         """
-        message = (
-            f"<b>{self.hx_object_to_str()} did not save  successfully.</b>"
-            if self.hx_object
-            else "<b>Did not save successfully</b>"
-        )
+        if self.hx_object:
+            message = format_html("<b>{} did not save successfully.</b>", self.hx_object_to_str())
+        else:
+            message = format_html("<b>{}</b>", "Did not save successfully")
         if self.add_form_errors_to_error_message:
-            message += mark_safe("</br>") + self.get_form_errors(**kwargs)
-        return mark_safe(message)
+            # format_html escapes each interpolated part and returns a SafeString;
+            # <br> is the valid line break (the old code emitted the invalid </br>).
+            message = format_html("{}<br>{}", message, self.get_form_errors(**kwargs))
+        return message
 
     def get_form_errors(self, **kwargs) -> str:
         """
