@@ -80,6 +80,15 @@ class HtmxViewMixin:
         if payload is None:
             raise Http404("Invalid or tampered hx token.")
 
+        # A path-bound token (bind_to_path handler) only verifies on the path it
+        # was minted for -- replaying it against another view's path is rejected.
+        # The global HX_REQUESTS_BIND_TOKEN_TO_PATH switch disables the check so
+        # already-minted bound tokens stop 404ing the moment it is turned off.
+        bound_path = payload.get("path")
+        binding_enabled = getattr(settings, "HX_REQUESTS_BIND_TOKEN_TO_PATH", True)
+        if binding_enabled and bound_path is not None and bound_path != request.path:
+            raise Http404("hx token is bound to a different path.")
+
         sanitized = request.GET.copy()
         for key in list(sanitized.keys()):
             if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):

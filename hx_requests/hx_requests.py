@@ -76,6 +76,12 @@ class BaseHxRequest:
         If True, the request adds the GET params from the current browser URL to the request.
         The GET params submitted with the request (I.e via hx-vals) override the ones in the
         current URL.
+    bind_to_path: bool (default True)
+        The signed token is bound to the URL path it was rendered on, so it only
+        verifies when replayed back to that same path. On by default; set to False
+        for a handler whose token must work across paths. Origin hardening layered on
+        top of authorization -- it narrows the "replay from another page" surface, it
+        does not replace an authorization check.
 
 
 
@@ -99,6 +105,7 @@ class BaseHxRequest:
     kwargs_as_context: bool = True
     refresh_views_context_on_POST: bool = False
     use_current_url: bool = False
+    bind_to_path: bool = True
 
     #: Maps the friendly phase keys accepted in a dict return from
     #: :meth:`get_triggers` to their HTMX response-header names.
