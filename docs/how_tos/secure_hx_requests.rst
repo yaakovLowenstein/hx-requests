@@ -176,8 +176,8 @@ Only HxRequests in :code:`allowed_hx_requests` can be called from this view
 
 
 
-Path-Binding
-~~~~~~~~~~~~
+Relaxing Path-Binding
+~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, every signed token is bound to the URL path it was rendered on, so it
 only verifies when replayed back to that same path (see
