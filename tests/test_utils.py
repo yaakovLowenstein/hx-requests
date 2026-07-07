@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 from django.test import RequestFactory
-from test_app.models import Widget
+from test_app.models import Gadget, Widget
 
 from hx_requests.utils import (
     HX_TOKEN_PARAM,
@@ -17,6 +17,8 @@ from hx_requests.utils import (
     get_url,
     is_htmx_request,
     is_hx_request,
+    parse_model_ref,
+    resolve_model_ref,
     serialize,
     serialize_kwargs,
     sign_hx_payload,
@@ -56,11 +58,49 @@ def test_dates_serialize_via_django_json_encoder():
 
 
 @pytest.mark.django_db()
-def test_deserialize_uses_base_manager():
-    # Objects hidden by a default manager would still resolve; at minimum the
-    # base manager must be able to fetch a plain instance by pk.
-    widget = Widget.objects.create(name="managed")
-    assert deserialize(serialize(widget)).pk == widget.pk
+def test_deserialize_uses_default_manager():
+    # Resolution goes through the *default* manager, so anything the default
+    # manager hides (soft-delete / tenant scoping) cannot be resolved. A
+    # visible row still resolves fine.
+    gadget = Gadget.objects.create(name="visible")
+    assert deserialize(serialize(gadget)).pk == gadget.pk
+
+    archived = Gadget.all_objects.create(name="archived", archived=True)
+    with pytest.raises(Gadget.DoesNotExist):
+        deserialize(serialize(archived))
+
+
+# --------------------------------------------------------------------------
+# parse_model_ref / resolve_model_ref
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.django_db()
+def test_parse_model_ref_splits_a_model_reference(widget):
+    assert parse_model_ref(serialize(widget)) == ("test_app", "widget", str(widget.pk))
+
+
+@pytest.mark.parametrize("value", ['"hello"', "5", "true", "null", '{"a": 1}'])
+def test_parse_model_ref_returns_none_for_non_model_values(value):
+    assert parse_model_ref(value) is None
+
+
+@pytest.mark.django_db()
+def test_resolve_model_ref_uses_default_manager_by_default():
+    gadget = Gadget.objects.create(name="visible")
+    ref = ("test_app", "gadget", str(gadget.pk))
+    assert resolve_model_ref(*ref) == gadget
+
+
+@pytest.mark.django_db()
+def test_resolve_model_ref_honors_a_scoped_queryset(widget):
+    other = Widget.objects.create(name="out-of-scope")
+    scoped = Widget.objects.filter(pk=widget.pk)
+    # In-scope pk resolves...
+    assert resolve_model_ref("test_app", "widget", str(widget.pk), queryset=scoped) == widget
+    # ...out-of-scope pk is not found (the object-authz boundary).
+    with pytest.raises(Widget.DoesNotExist):
+        resolve_model_ref("test_app", "widget", str(other.pk), queryset=scoped)
 
 
 # --------------------------------------------------------------------------
