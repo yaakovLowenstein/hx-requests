@@ -42,3 +42,12 @@ However, there may be cases where you want to opt out of this behavior (slow per
 
     class MyHxRequest(BaseHxRequest):
         get_views_context = False
+
+.. note::
+
+    The view's context is only harvested when the response actually renders it.
+    A POST that renders nothing from the view (:code:`refresh_page`,
+    :code:`redirect`, or :code:`return_empty`) skips running the view's
+    :code:`get()` entirely, so you don't pay its query cost on those paths.
+    Setting :code:`get_views_context = False` is therefore mainly useful for
+    handlers that *do* render a template but don't need the view's context.
