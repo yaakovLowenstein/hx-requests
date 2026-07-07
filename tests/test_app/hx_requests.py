@@ -9,7 +9,7 @@ fixture. Names must be unique across the whole test project.
 from django.contrib import messages
 from django.http import HttpResponse
 from test_app.forms import WidgetForm
-from test_app.models import Widget
+from test_app.models import Gadget, Widget
 
 from hx_requests.hx_requests import (
     BaseHxRequest,
@@ -182,6 +182,25 @@ class NamedObjectHx(BaseHxRequest):
 class ListEchoHx(BaseHxRequest):
     name = "list_echo"
     GET_template = "list_echo.html"
+
+
+class ScopedGadgetHx(BaseHxRequest):
+    """Scopes resolution via ``model`` -> the Gadget default manager, which
+    hides archived rows."""
+
+    name = "scoped_gadget"
+    GET_template = "object.html"
+    model = Gadget
+
+
+class QuerysetScopedHx(BaseHxRequest):
+    """Scopes resolution via an explicit ``get_queryset`` override."""
+
+    name = "queryset_scoped"
+    GET_template = "object.html"
+
+    def get_queryset(self):
+        return Widget.objects.filter(name__startswith="ok-")
 
 
 # --------------------------------------------------------------------------

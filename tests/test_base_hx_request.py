@@ -241,6 +241,41 @@ def test_no_object_leaves_hx_object_none():
 
 
 # --------------------------------------------------------------------------
+# object scoping (get_queryset / model)
+# --------------------------------------------------------------------------
+
+
+def test_scoped_model_resolves_visible_object():
+    from test_app.models import Gadget
+
+    gadget = Gadget.objects.create(name="visible")
+    response = hx_get(hx.ScopedGadgetHx, BaseView, hx_kwargs={"object": gadget})
+    assert "object|visible" in content_of(response)
+
+
+def test_scoped_model_404s_object_hidden_by_default_manager():
+    from test_app.models import Gadget
+
+    # Archived rows are excluded by the default manager, so the handler's
+    # scoped queryset cannot resolve them -> 404 (not a silent load or 500).
+    archived = Gadget.all_objects.create(name="secret", archived=True)
+    with pytest.raises(Http404):
+        hx_get(hx.ScopedGadgetHx, BaseView, hx_kwargs={"object": archived})
+
+
+def test_get_queryset_override_scopes_resolution():
+    in_scope = Widget.objects.create(name="ok-mine")
+    response = hx_get(hx.QuerysetScopedHx, BaseView, hx_kwargs={"object": in_scope})
+    assert "object|ok-mine" in content_of(response)
+
+
+def test_get_queryset_override_404s_out_of_scope_object():
+    out_of_scope = Widget.objects.create(name="someone-elses")
+    with pytest.raises(Http404):
+        hx_get(hx.QuerysetScopedHx, BaseView, hx_kwargs={"object": out_of_scope})
+
+
+# --------------------------------------------------------------------------
 # use_current_url
 # --------------------------------------------------------------------------
 

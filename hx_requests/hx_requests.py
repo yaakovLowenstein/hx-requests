@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
-from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
@@ -17,7 +17,7 @@ from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from render_block import render_block_to_string
 
-from hx_requests.utils import deserialize
+from hx_requests.utils import deserialize, parse_model_ref, resolve_model_ref
 
 
 class Renderer:
@@ -91,6 +91,10 @@ class BaseHxRequest:
     """
 
     name: str = ""
+    #: Optional model used to scope object resolution. When set, the default
+    #: :meth:`get_queryset` resolves the round-trip object through this model's
+    #: default manager. Mirrors Django's ``SingleObjectMixin.model``.
+    model = None
     hx_object_name: str = "hx_object"
     GET_template: str | list = ""
     POST_template: str | list = ""
@@ -175,12 +179,48 @@ class BaseHxRequest:
 
         return context
 
+    def get_queryset(self):
+        """
+        The object-scoping seam. Return the queryset the round-trip object is
+        resolved through, or ``None`` to fall back to the object's own model
+        default manager.
+
+        This is the idiomatic slot for row-level authorization -- the way
+        Django CBVs teach ``get_queryset`` for the URL-pk trust boundary.
+        Override it (or set :attr:`model`) to scope resolution to objects the
+        current user may act on; a pk outside the queryset raises ``Http404``
+        rather than silently loading someone else's row::
+
+            def get_queryset(self):
+                return Invoice.objects.filter(owner=self.request.user)
+        """
+        if self.model is not None:
+            return self.model._default_manager.all()
+        return None
+
     def get_hx_object(self, request, **kwargs):
         """
-        If an 'object' was passed in, deserialize it.
+        Resolve the object carried by the (verified) round-trip token.
+
+        Model instances are resolved through :meth:`get_queryset` when it is
+        provided, so ownership scoping is honored; otherwise they fall back to
+        the model's default manager. A pk that is absent from the resolved
+        queryset raises ``Http404`` (object-level authorization), not a 500.
+        Non-model values are deserialized as plain JSON.
         """
-        if request.GET.get("object"):
-            return deserialize(request.GET.get("object"))
+        serialized = request.GET.get("object")
+        if not serialized:
+            return None
+
+        ref = parse_model_ref(serialized)
+        if ref is None:
+            return deserialize(serialized)
+
+        queryset = self.get_queryset()
+        try:
+            return resolve_model_ref(*ref, queryset=queryset)
+        except ObjectDoesNotExist:
+            raise Http404(f"No {ref[1]} matches the given query for HxRequest '{self.name}'.")
 
     def _setup_hx_request(self, request, *args, **kwargs):
         if self.get_views_context:

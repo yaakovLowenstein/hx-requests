@@ -7,6 +7,7 @@ How Tos
    register_hx_requests
    detect_hx_request
    secure_hx_requests
+   scope_hx_objects
    use_modals
    oob_swap
    use_messages
