@@ -397,3 +397,18 @@ def test_unknown_hx_request_name_raises_404():
     add_middleware_to_request(request)
     with pytest.raises(Http404, match="No HxRequest found"):
         BaseView.as_view()(request)
+
+
+def test_non_htmx_request_chains_through_auth_mixin_after_htmxviewmixin():
+    from django.contrib.auth.models import AnonymousUser
+    from django.core.exceptions import PermissionDenied
+    from test_app.views import AuthAfterHxView
+
+    # A full page load by an anonymous user must be gated by LoginRequiredMixin
+    # even though it sits after HtmxViewMixin -- proving dispatch now chains via
+    # super() instead of short-circuiting straight to the view's get().
+    request = RequestFactory().get("/")
+    request.user = AnonymousUser()
+    add_middleware_to_request(request)
+    with pytest.raises(PermissionDenied):
+        AuthAfterHxView.as_view()(request)

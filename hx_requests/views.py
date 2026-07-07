@@ -33,23 +33,27 @@ class HtmxViewMixin:
     use_global_hx_rules: bool = True  # True by default
 
     def dispatch(self, request, *args, **kwargs):
-        # Try to dispatch to the right method; if a method doesn't exist,
-        # defer to the error handler. Also defer to the error handler if the
-        # request method isn't on the approved list.
-        if request.method.lower() in self.http_method_names:
-            # If it's an HTMX request, hand off to the resolved HxRequest's
-            # own dispatch; otherwise, let the view class handle the request.
-            if is_htmx_request(request):
-                request = self._resolve_hx_token(request)
-                kwargs.update(self.get_hx_extra_kwargs(request))
-                hx_request = self._setup_hx_request(request, *args, **kwargs)
+        # HTMX requests are handed off to the resolved HxRequest's own dispatch.
+        # super().dispatch() is deliberately NOT called on this path: it would
+        # route to the page view's own get/post and defeat the handoff. As a
+        # consequence the page view's dispatch-based auth mixins
+        # (LoginRequiredMixin, PermissionRequiredMixin, ...) only gate this path
+        # when they sit *before* HtmxViewMixin in the MRO -- otherwise the
+        # handoff runs first and skips them. `check_auth_mixin_ordering`
+        # (checks.py) warns at startup when an auth mixin is ordered after this
+        # mixin; enforce per-handler authorization on the HxRequest itself.
+        if is_htmx_request(request) and request.method.lower() in self.http_method_names:
+            request = self._resolve_hx_token(request)
+            kwargs.update(self.get_hx_extra_kwargs(request))
+            hx_request = self._setup_hx_request(request, *args, **kwargs)
 
-                # Use request from hx_request, in case use_current_url is set to True
-                return hx_request.dispatch(hx_request.request, *args, **kwargs)
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
-        else:
-            handler = self.http_method_not_allowed
-        return handler(request, *args, **kwargs)
+            # Use request from hx_request, in case use_current_url is set to True
+            return hx_request.dispatch(hx_request.request, *args, **kwargs)
+
+        # Non-HTMX requests (full page loads, plain-htmx the view handles
+        # itself) chain through super().dispatch() so the page view's own
+        # mixins run normally instead of being short-circuited.
+        return super().dispatch(request, *args, **kwargs)
 
     def get_hx_request(self, request):
         hx_request_name = request.GET.get("hx_request_name")
