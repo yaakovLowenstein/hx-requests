@@ -27,14 +27,43 @@ def serialize(value):
     return json.dumps(value, cls=DjangoJSONEncoder)
 
 
+def parse_model_ref(value):
+    """
+    If ``value`` is a serialized model-instance reference
+    (``model_instance__<app>__<model>__<pk>``), return ``(app_label,
+    model_name, pk)``; otherwise return ``None``. Uses a length-based slice
+    (not ``str.replace``) so a pk/label that happens to contain the prefix
+    can't be mangled.
+    """
+    if isinstance(value, str) and value.startswith(MODEL_INSTANCE_PREFIX):
+        app_label, model_name, pk = value[len(MODEL_INSTANCE_PREFIX) :].split(__)
+        return app_label, model_name, pk
+    return None
+
+
 def deserialize(value):
-    if value and value.startswith(MODEL_INSTANCE_PREFIX):
-        value = value.replace(MODEL_INSTANCE_PREFIX, "")
-        app_label, model_name, pk = value.split(__)
-        model = apps.get_model(app_label, model_name)
-        manager = model._base_manager
-        return manager.get(pk=pk)
+    ref = parse_model_ref(value)
+    if ref is not None:
+        return resolve_model_ref(*ref)
     return json.loads(value)
+
+
+def resolve_model_ref(app_label, model_name, pk, queryset=None):
+    """
+    Fetch a model instance from a parsed reference. Resolution goes through
+    ``queryset`` when one is supplied (the object-scoping seam -- see
+    ``BaseHxRequest.get_queryset``); otherwise it falls back to the model's
+    ``_default_manager``.
+
+    The default manager (not ``_base_manager``) is deliberate: soft-delete and
+    tenant scoping expressed on the default manager are respected automatically,
+    so an object hidden by the default manager cannot be resolved unless a
+    handler explicitly widens the queryset. Raises the model's
+    ``DoesNotExist`` when the pk is absent from the resolved queryset.
+    """
+    if queryset is None:
+        queryset = apps.get_model(app_label, model_name)._default_manager.all()
+    return queryset.get(pk=pk)
 
 
 def is_htmx_request(request):
