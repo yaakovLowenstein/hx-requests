@@ -215,16 +215,43 @@ class BaseHxRequest:
         except ObjectDoesNotExist:
             raise Http404(f"No {ref[1]} matches the given query for HxRequest '{self.name}'.")
 
+    @cached_property
+    def view_response(self):
+        # Runs the page view's get() to harvest its context_data. Backed by a
+        # cached_property so it runs at most once; assigning view_response
+        # directly (as some unit tests do) pre-populates the cache and skips the
+        # call. Normally triggered eagerly in _setup_hx_request when the context
+        # will be rendered -- see _renders_view_context.
+        return self.view.get(self.request, *self._view_get_args, **self._view_get_kwargs)
+
+    def _renders_view_context(self) -> bool:
+        # A POST that renders nothing from the view (refresh_page / redirect /
+        # return_empty) discards the view context, so it need not be harvested.
+        # Every other case -- all GETs, and POSTs that render a template -- uses
+        # it, and on POST it must be captured *before* post() runs to preserve
+        # the pre-mutation ("stale") context semantics.
+        if self.is_post_request and (self.refresh_page or self.redirect or self.return_empty):
+            return False
+        return True
+
     def _setup_hx_request(self, request, *args, **kwargs):
-        if self.get_views_context:
-            self.view_response = self.view.get(request, *args, **kwargs)
         self.request = request
+        self._view_get_args = args
+        self._view_get_kwargs = kwargs
         self.renderer = Renderer()
         self.GET_template = self.GET_template or self.view.template_name
         self.POST_template = self.POST_template or self.view.template_name
 
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request, **kwargs)
+
+        # Harvest the page view's context up front when it will be rendered, so
+        # that on POST it reflects state captured before post() mutates anything
+        # (the documented stale-context behavior). When the POST renders nothing
+        # from the view, the harvest -- and the page view's query cost -- is
+        # skipped entirely.
+        if self.get_views_context and self._renders_view_context():
+            _ = self.view_response
 
     def hx_object_to_str(self) -> str:
         return self.hx_object._meta.model.__name__.capitalize() if self.hx_object else ""

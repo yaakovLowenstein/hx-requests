@@ -221,7 +221,19 @@ by overriding dispatch and chaining via super. Consequences:
 
 ---
 
-## 4. 🟠 Make `view.get()` context-harvest lazy (perf)
+## 4. 🟠 Make `view.get()` context-harvest lazy (perf) — ✅ DONE
+
+> **Fixed** on `perf/lazy-view-context`. `view_response` is now a `cached_property`;
+> `_setup_hx_request` only triggers the harvest when the view context will actually
+> be rendered (`_renders_view_context`), so a POST that renders nothing from the view
+> (`refresh_page` / `redirect` / `return_empty`) never runs `view.get()` and never
+> pays the page-view query cost. The harvest still happens *before* `post()` on every
+> rendering path, so the pre-mutation ("stale") context semantics are preserved
+> exactly — the pure-lazy-in-`get_context_data` version the note below sketched would
+> have moved the snapshot *after* the POST mutation and broken that contract, so the
+> trigger is kept at setup for rendering paths and skipped only for no-render POSTs.
+> The explicit-opt-in redesign and the non-`TemplateResponse` no-op doc remain open
+> (they belong with #10).
 
 **Problem.** `_setup_hx_request` eagerly calls `self.view.get(request, ...)`
 (`views.py`/`hx_requests.py:170-171`) to harvest `context_data` — on **POST** too,

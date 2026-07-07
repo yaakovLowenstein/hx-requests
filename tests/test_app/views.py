@@ -46,6 +46,22 @@ class WidgetUpdateView(HtmxViewMixin, UpdateView):
     template_name = "widget_update.html"
 
 
+class CountingView(HtmxViewMixin, TemplateView):
+    """Records how many times its get() runs.
+
+    Used to prove the page view's context harvest is deferred until the
+    context is actually rendered -- and skipped entirely when a POST renders
+    nothing (refresh_page / redirect / return_empty).
+    """
+
+    template_name = "base_view.html"
+    get_call_count = 0
+
+    def get(self, request, *args, **kwargs):
+        type(self).get_call_count += 1
+        return super().get(request, *args, **kwargs)
+
+
 class AllowListView(BaseView):
     """View that explicitly allows a cross-app HxRequest (additive rules)."""
 
