@@ -4,145 +4,91 @@ Why HxRequest Security Is Needed
 --------------------------------
 
 HxRequests make it easy to build modular, dynamic interfaces using HTMX.
-Because they are registered globally, controlling *which* view may invoke *which*
-handler still matters — that is what the controls on this page provide.
+Because they are registered globally and routed by name, deciding *whether the
+current user may run a given handler* still matters — that is what per-handler
+authorization provides.
 
-This page explains the risk these controls prevent, the model that prevents it,
-and when it is safe to relax it.
+This page explains **why that layer exists**, the risk it prevents, and why it
+lives on the handler.
 
 .. note::
 
-    **Request signing comes first** (see :ref:`Request Signing`): a client
-    **cannot forge or tamper with** a request's routing data. The layers after it
-    govern a *legitimately-issued* token — used from a page, or by a user, it
-    shouldn't be.
+    **Request signing comes first.** The :code:`HxRequest` name, object, and
+    kwargs are delivered in a single HMAC-signed :code:`hx` token, so a client
+    **cannot forge or hand-craft** a request for an arbitrary handler — a
+    missing or tampered token is rejected with :code:`Http404` before any
+    routing happens. Authorization is the *next* layer: it decides whether the
+    user behind a legitimately-issued token is allowed to run the handler.
 
 See also: :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 
 
-Request Signing
-~~~~~~~~~~~~~~~
+The Problem
+~~~~~~~~~~~
 
-The routing data an :code:`HxRequest` runs on — the handler **name**, the
-**object** it acts on, and any **kwargs** — travels in a single HMAC-signed
-:code:`hx` token instead of as loose, client-editable query parameters. The
-token is produced with :code:`django.core.signing` and your project's
-:code:`SECRET_KEY`: a client can read it (it is base64-encoded JSON) but cannot
-alter or fabricate one, because any change invalidates the signature.
-:code:`HtmxViewMixin` rebuilds the request from the *verified* payload only, and
-returns :code:`Http404` on a missing, tampered, or hand-crafted token before any
-deserializer or handler runs.
-
-**What signing protects.** When the name, object, and kwargs were loose query
-parameters, a client could edit them on the URL. Signing closes those tampering
-vectors:
-
-    - **Object tampering / IDOR** — a client can't change the serialized
-      :code:`object` (e.g. swap a primary key) to make a handler act on a record
-      that isn't theirs.
-    - **Cross-model instance swap** — the serialized object can't be repointed at
-      a different model.
-    - **Context / kwarg forgery** — a client can't inject kwargs (e.g. a
-      :code:`___can_edit` flag) to force values into the handler's context.
-    - **Handler spoofing** — a client can't hand-craft a token that routes to an
-      arbitrary handler name.
-    - **Garbage-input 500s** — malformed routing data fails the signature check
-      and 404s, instead of reaching a deserializer and raising.
-
-**What signing does not decide.** A signature proves a token was issued by your
-server and hasn't been altered — not *where* it may be used or *who* may use it.
-A legitimately-issued token can still be sent from another page, or by another
-user. *Where* is constrained by path-binding (below). *Who* is **not** answered
-by the scoping controls here — it comes from requiring authentication
-(:code:`HX_REQUESTS_REQUIRE_AUTH`) and the permissions on the view a request
-routes through. The scoping controls below are a third axis: which handlers a
-given view or app may run at all.
-
-.. warning::
-
-    None of the layers on this page authorize *individual users*. Signing,
-    path-binding, and app/handler scoping establish that a request is genuine, on
-    its own page, and allowed for the view — **not** that *this user* may perform
-    the action. To restrict who can run a handler you still have to require
-    authentication (:code:`HX_REQUESTS_REQUIRE_AUTH`) and enforce your own
-    permission checks on the view each :code:`HxRequest` routes through, exactly
-    as you would protect any other view.
-
-
-The Threat: Replaying a Valid Token
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Signing proves a token is genuine, but it doesn't decide *scope*: which
-registered handlers a given view is willing to run.
+Signing stops a client from *hand-crafting* a request for an arbitrary handler
+— a URL like :code:`/home/?hx=<made-up-token>` is rejected because the token
+won't verify. What signing does **not** decide is *authorization*: whether the
+user making the request is allowed to run that handler.
 
 Because :code:`HtmxViewMixin` routes any HTMX request by the (verified) name
-inside the token, **any view that includes the mixin** is a potential entry
-point for any registered :code:`HxRequest` — provided a valid token for that
-handler exists. Tokens are minted server-side by the template tags, so the risk
-isn't forgery; it's a legitimately-issued token being **replayed against a view
-where it was never meant to run**.
+inside the token, a legitimately-issued token can be used by **a different user
+than the one it was rendered for**. Anyone who can load a page holds valid tokens
+for every handler rendered on it; the signature proves a token is genuine, not
+that *this* user may run it. Tokens are minted server-side by the template tags,
+so the risk isn't forgery — it's a real token being used by someone who
+shouldn't be able to.
 
-For example, you may design an :code:`HxRequest` such as
-:code:`delete_all_records_hx` to be used **only** from an internal admin page.
-If a valid token for it is rendered somewhere a user can see, nothing about the
-signature alone stops them from replaying it against an unrelated view:
+For example, suppose a :code:`delete_all_records_hx` button is rendered on a
+dashboard that ordinary users can also load. Its token is genuine and is posted
+back to the same page it was rendered on, so signing **and** path-binding
+(below) both pass:
 
 .. code-block:: html
 
-    <button hx-post="/home/?hx=<a-real-token-for-delete_all_records_hx>">Run Delete</button>
+    <button hx-post="/dashboard/?hx=<a-real-token-for-delete_all_records_hx>">Run Delete</button>
 
-If :code:`/home` is a simple, public-facing view that includes the
-:code:`HtmxViewMixin` and neither scopes its handlers nor enforces auth, this
-request would still reach and execute the deletion logic.
-
-.. note::
-
-    By default this exact cross-page replay is **already blocked**: tokens are
-    :ref:`path-bound <path-binding>`, so a token minted on the admin page is
-    rejected on :code:`/home`. The scenario here is what happens *without* that
-    layer — or when it is relaxed. App-isolation and scoping remain necessary for
-    the case path-binding can't cover: a handler minted from a view or app that
-    should never render it (e.g. a third-party template), where the token is
-    bound to *that* page and posting it back there succeeds.
-
-The consequences:
-
-    - The route doesn't matter — any view using the mixin is a potential gateway
-      for any registered :code:`HxRequest` it doesn't scope.
-    - Permission checks on the *originally intended* view do not automatically
-      apply where the token is replayed.
-    - So users could replay private or destructive actions from public pages, and
-      third-party or unreviewed templates could invoke internal logic from views
-      that never scoped their handlers.
-
-Signing removes the *forging* vector; app-isolation and per-view scoping are the
-layer that keeps a registered handler from becoming a global entry point into
-your application's internal request logic.
+The token verifies and it is on the right path. The only thing left to stop a
+non-admin from running it is the handler asking *"may this user do this?"* — and
+getting that answer wrong (or not asking) is the whole vulnerability.
 
 
-The Controls: App Isolation and Scoping
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Why per-handler authorization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The security layer is built around four goals:
+The natural question is *"may this **user** run this **handler**"* — a property
+of the handler and the request, not of which view happened to include the mixin.
+So the check lives on the :code:`HxRequest`, enforced in its :code:`dispatch`
+before :code:`get` / :code:`post`, no matter where the request originated:
 
-1. **App Isolation** – Prevent cross-app access by default (i.e. 3rd-party untrusted packages).
-2. **Explicit Trust** – Cross-app usage must be declared via settings or per-view rules.
-3. **Safe Extensibility** – Shared internal libraries can safely opt in to wider access via settings.
-4. **Predictability** – Even if enforcement is disabled, the logic runs consistently.
+- :code:`login_required` (default ``True``) — a handler requires an
+  authenticated user unless it explicitly opts out. Secure by default: a new
+  handler is not anonymously reachable by accident.
+- :code:`permission_required` — a permission (or list) the user must hold.
+- :code:`has_permission` — an override for row-level / ownership / tenancy
+  checks, the same seam Django CBVs give you.
 
-They are enforced through four layers:
+Answering the authorization question *at the handler* means the
+:code:`delete_all_records_hx` example above is safe wherever its token is
+replayed: the handler itself refuses a user who lacks the permission, regardless
+of which view routed the request.
 
-============================  ============================================
-**Layer**                     **Responsibility**
-============================  ============================================
-Base Rule                     Enforces same-app isolation (default)
-Global Allowlist              Declares trusted apps or HxRequests
-Per-View Controls             Adds fine-grained access (allowed HxRequests)
-Additive Logic                Combines or replaces base rule
-============================  ============================================
 
-See :ref:`How To Secure HxRequests <how-to-secure-hxrequests>` for configuration
-examples of each layer.
+What Happens Without It
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If a handler declares no authorization (and opts out of the login default),
+anyone holding a valid token for it — one rendered on any page they can reach —
+can:
+
+    - Run that handler themselves, from any page its token is rendered on
+      (and, if it opts out of path-binding, from other pages too).
+    - Modify or delete data they were never meant to touch.
+    - Execute sensitive operations they aren't authorized for.
+
+The defense is to make each handler responsible for its own authorization —
+which the secure-by-default :code:`login_required` makes the path of least
+resistance.
 
 
 .. _path-binding:
@@ -150,18 +96,18 @@ examples of each layer.
 Path-Binding
 ~~~~~~~~~~~~
 
-The controls above answer *which handlers a given view may run*. On top of them,
+Per-handler authorization answers *who* may run a handler. On a separate axis,
 every signed token is, by default, **bound to the URL path it was rendered on**:
 the token records the server-side :code:`request.path` at mint time (never the
 client-supplied :code:`HX-Current-URL` header), and it verifies only when
-replayed back to that same path. The
-:code:`/home/?hx=<a-real-token-for-delete_all_records_hx>` replay above therefore
-fails and returns :code:`Http404` before the request is routed.
+replayed back to that same path. So the dashboard token above cannot be lifted
+and posted to a different view — :code:`/somewhere-else/?hx=<that-token>` returns
+:code:`Http404` before the request is routed.
 
-This narrows *where* a token can be used; it is **not** an authorization check. A
-user who can load the page a token was minted on still holds a token valid for
-that path — so the scoping controls (and any auth on the originating view) remain
-the layer that decides *who* may run the handler.
+This blocks *cross-page* replay, but it is **not** an authorization check, and it
+does nothing for the dashboard example above: that request is posted back to the
+very page the token was minted on, so path-binding passes and only per-handler
+authorization decides *who* may run the handler.
 
 Path-binding is automatic. For the rare case where a token must work across paths
 (e.g. a proxy that rewrites :code:`request.path`), a handler can opt out with
@@ -170,37 +116,17 @@ Path-binding is automatic. For the rare case where a token must work across path
 :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`.
 
 
-When To Relax Controls
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-You should loosen restrictions only when you **trust the source** of the request
-and the operation is something that **any user could safely perform** —
-for example, when triggering a non-sensitive UI component or an action that does
-not expose or modify private data.
-
-Typical valid cases include:
-
-    - Shared internal UI libraries that are reviewed and sandboxed.
-    - Administrative tools explicitly designed for cross-app access.
-    - Controlled internal environments (single-tenant, internal users only).
-
-.. warning::
-
-    Do not disable app enforcement globally or allow untrusted apps.
-    Doing so allows external or third-party code to trigger
-    **any HxRequest** in your project.
-
-
 Summary
 ~~~~~~~
 
-- **Signing** ensures a request's name, object, and kwargs can't be forged.
-- **App-isolation and scoping** ensure a registered handler doesn't become a
-  remote-call interface to your whole project, by respecting application
-  boundaries and explicit trust.
-- **Path-binding** binds each token to the page it was rendered on by default, so
-  a token can't be replayed against a different view's path; opt out per handler
-  with :code:`bind_to_path = False`.
+Signing ensures a request's name, object, and kwargs can't be forged.
+Per-handler authorization ensures a *legitimate* token can't be used by someone
+who shouldn't run the handler — because the handler decides, every time,
+regardless of which view routed the request.
+
+Path-binding adds a *where* constraint on top: a token verifies only on the
+path it was rendered on, unless a handler opts out with
+:code:`bind_to_path = False`.
 
 Continue to :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 for configuration examples.

@@ -7,7 +7,7 @@ from functools import partial
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms import Form
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.template import RequestContext
@@ -109,6 +109,19 @@ class BaseHxRequest:
     refresh_views_context_on_POST: bool = False
     use_current_url: bool = False
     bind_to_path: bool = True
+
+    #: Per-handler authorization, checked in :meth:`dispatch` before ``get`` /
+    #: ``post`` run. This is *the* authorization seam: a handler is responsible
+    #: for deciding whether the current user may run it, regardless of which view
+    #: or template triggered it.
+    #:
+    #: - ``login_required`` (default ``True``): an anonymous user gets a 404
+    #:   (bodiless, so nothing about the handler leaks).
+    #: - ``permission_required``: a permission string or list of them; an
+    #:   authenticated user missing any of them gets a 403.
+    #: - Override :meth:`has_permission` for arbitrary per-user/per-object logic.
+    login_required: bool = True
+    permission_required: str | list[str] | None = None
 
     #: Maps the friendly phase keys accepted in a dict return from
     #: :meth:`get_triggers` to their HTMX response-header names.
@@ -442,16 +455,58 @@ class BaseHxRequest:
             headers=self.get_headers(**kwargs),
         )
 
+    def has_permission(self, request: HttpRequest) -> bool:
+        """
+        Whether the current user may run this handler. Called by
+        :meth:`check_permissions` only for *authenticated* users (the
+        ``login_required`` gate runs first).
+
+        The default enforces :attr:`permission_required`. Override for custom
+        row-level or role logic::
+
+            def has_permission(self, request):
+                return self.hx_object.owner_id == request.user.pk
+        """
+        if not self.permission_required:
+            return True
+        perms = (
+            [self.permission_required]
+            if isinstance(self.permission_required, str)
+            else list(self.permission_required)
+        )
+        return request.user.has_perms(perms)
+
+    def check_permissions(self, request: HttpRequest) -> None:
+        """
+        Enforce per-handler authorization before routing to ``get`` / ``post``.
+
+        - Anonymous user + auth needed -> ``Http404`` (bodiless; leaks nothing).
+        - Authenticated user failing :meth:`has_permission` -> ``PermissionDenied``
+          (403), the honest response for "logged in but not allowed".
+        """
+        user = getattr(request, "user", None)
+        authenticated = bool(user and user.is_authenticated)
+
+        if not authenticated:
+            if self.login_required or self.permission_required:
+                raise Http404(f"HxRequest '{self.name}' requires an authenticated user.")
+            return
+
+        if not self.has_permission(request):
+            raise PermissionDenied(f"Not permitted to run HxRequest '{self.name}'.")
+
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Entry point for a resolved HxRequest, mirroring Django's
         ``View.dispatch``.
 
-        Routes the request to ``get`` or ``post`` based on the request
-        method. Override this to run per-handler logic (authorization,
-        setup, logging) before the method handler runs, calling
-        ``super().dispatch(...)`` to continue routing.
+        Checks per-handler authorization (:meth:`check_permissions`), then
+        routes the request to ``get`` or ``post`` based on the request method.
+        Override this to run additional per-handler logic (setup, logging)
+        before the method handler runs, calling ``super().dispatch(...)`` to
+        continue routing.
         """
+        self.check_permissions(request)
         handler = getattr(self, request.method.lower(), None)
         if handler is None:
             return HttpResponseNotAllowed(["GET", "POST"])

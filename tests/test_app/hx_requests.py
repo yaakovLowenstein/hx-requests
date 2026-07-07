@@ -347,3 +347,40 @@ class ExtraTriggersFormModalHx(WidgetFormModalHx):
 
 class NotAnHxRequest:
     name = "not_an_hx_request"
+
+
+# --------------------------------------------------------------------------
+# Per-handler authorization
+# --------------------------------------------------------------------------
+
+
+class PublicGetHx(BaseHxRequest):
+    """Opts out of the login_required default -- anyone may run it."""
+
+    name = "public_get"
+    GET_template = "simple.html"
+    login_required = False
+
+
+class PermRequiredHx(BaseHxRequest):
+    """Requires a specific model permission."""
+
+    name = "perm_required"
+    GET_template = "simple.html"
+    permission_required = "test_app.change_widget"
+
+
+class MultiPermRequiredHx(BaseHxRequest):
+    name = "multi_perm_required"
+    GET_template = "simple.html"
+    permission_required = ["test_app.change_widget", "test_app.add_widget"]
+
+
+class OwnerOnlyHx(BaseHxRequest):
+    """Custom row-level authorization via has_permission override."""
+
+    name = "owner_only"
+    GET_template = "simple.html"
+
+    def has_permission(self, request):
+        return getattr(request.user, "username", None) == "owner"

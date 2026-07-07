@@ -66,6 +66,7 @@ TEMPLATES = [
 HX_REQUESTS_USE_HX_MESSAGES = True
 HX_REQUESTS_HX_MESSAGES_TEMPLATE = "hx_messages.html"
 HX_REQUESTS_MODAL_TEMPLATE = "hx_modal.html"
-# Most tests exercise behavior, not auth; the security tests turn this on
-# explicitly via override_settings.
-HX_REQUESTS_REQUIRE_AUTH = False
+# Authorization is per-handler now (login_required / permission_required on the
+# HxRequest), so there is no global auth setting. The test helpers send an
+# authenticated user by default; auth tests pass an anonymous / unprivileged
+# user explicitly.

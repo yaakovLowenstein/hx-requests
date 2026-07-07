@@ -1,178 +1,144 @@
-"""Tests for the HtmxViewMixin security policy (is_hx_allowed and friends)."""
+"""Tests for per-handler authorization on HxRequests.
+
+Authorization lives on the HxRequest itself (login_required /
+permission_required / has_permission), enforced in dispatch before get/post --
+not in a view-boundary policy matrix. A request the handler rejects raises
+Http404 for anonymous users (leaks nothing) and PermissionDenied (403) for an
+authenticated user who lacks permission.
+"""
 
 import logging
 
 import pytest
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser, Permission, User
+from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.test import RequestFactory, override_settings
-from test_app.hx_requests import SimpleGetHx, TriggerListHx
-from test_app.views import AllowListView, BaseView, StrictAllowListView
-from test_app_two.hx_requests.widgets import OtherAppHx
+from test_app.hx_requests import (
+    MultiPermRequiredHx,
+    OwnerOnlyHx,
+    PermRequiredHx,
+    PublicGetHx,
+    SimpleGetHx,
+)
+from test_app.views import BaseView
 
 from hx_requests.hx_requests import BaseHxRequest
 from tests.helpers import hx_get
 
-
-def is_allowed(view_cls, hx_cls, user=None, **overrides):
-    request = RequestFactory().get("/")
-    request.user = user or AnonymousUser()
-    with override_settings(**overrides):
-        return view_cls().is_hx_allowed(hx_cls, request)
+pytestmark = pytest.mark.django_db
 
 
-def authed_user():
-    # An unsaved User instance is enough: is_authenticated is always True.
-    return User()
+def perm(codename):
+    return Permission.objects.get(content_type__app_label="test_app", codename=codename)
 
 
 # --------------------------------------------------------------------------
-# Auth gate
+# login_required (the default)
 # --------------------------------------------------------------------------
 
 
-def test_require_auth_blocks_anonymous():
-    assert is_allowed(BaseView, SimpleGetHx, HX_REQUESTS_REQUIRE_AUTH=True) is False
+def test_login_required_is_the_default():
+    assert BaseHxRequest.login_required is True
 
 
-def test_require_auth_allows_authenticated():
-    assert is_allowed(BaseView, SimpleGetHx, user=authed_user(), HX_REQUESTS_REQUIRE_AUTH=True)
+def test_anonymous_user_gets_404_by_default():
+    with pytest.raises(Http404):
+        hx_get(SimpleGetHx, BaseView, request_attrs={"user": AnonymousUser()})
 
 
-def test_require_auth_off_allows_anonymous():
-    assert is_allowed(BaseView, SimpleGetHx, HX_REQUESTS_REQUIRE_AUTH=False)
+def test_authenticated_user_passes_the_login_gate():
+    response = hx_get(SimpleGetHx, BaseView, request_attrs={"user": User()})
+    assert response.status_code == 200
 
 
-@pytest.mark.parametrize(
-    "spec",
-    [
-        ["test_app"],
-        {"test_app": "__all__"},
-        {"test_app": ["simple_get"]},
-    ],
-)
-def test_unauthenticated_allow_specs_open_the_auth_gate(spec):
-    assert is_allowed(
-        BaseView,
-        SimpleGetHx,
-        HX_REQUESTS_REQUIRE_AUTH=True,
-        HX_REQUESTS_UNAUTHENTICATED_ALLOW=spec,
-    )
-
-
-def test_unauthenticated_allow_does_not_match_other_names():
-    assert (
-        is_allowed(
-            BaseView,
-            SimpleGetHx,
-            HX_REQUESTS_REQUIRE_AUTH=True,
-            HX_REQUESTS_UNAUTHENTICATED_ALLOW={"test_app": ["some_other_name"]},
-        )
-        is False
-    )
+def test_public_handler_allows_anonymous():
+    response = hx_get(PublicGetHx, BaseView, request_attrs={"user": AnonymousUser()})
+    assert response.status_code == 200
 
 
 # --------------------------------------------------------------------------
-# Same-app enforcement and global allow
+# permission_required
 # --------------------------------------------------------------------------
 
 
-def test_same_app_is_allowed_by_default():
-    assert is_allowed(BaseView, SimpleGetHx)
+def test_permission_required_blocks_user_without_permission(user):
+    with pytest.raises(PermissionDenied):
+        hx_get(PermRequiredHx, BaseView, request_attrs={"user": user})
 
 
-def test_cross_app_is_blocked_by_default():
-    assert is_allowed(BaseView, OtherAppHx) is False
+def test_permission_required_allows_user_with_permission(user):
+    user.user_permissions.add(perm("change_widget"))
+    user = User.objects.get(pk=user.pk)  # reload so the perm cache is fresh
+    response = hx_get(PermRequiredHx, BaseView, request_attrs={"user": user})
+    assert response.status_code == 200
 
 
-def test_enforce_same_app_off_with_no_allow_list_allows_everything():
-    assert is_allowed(BaseView, OtherAppHx, HX_REQUESTS_ENFORCE_SAME_APP=False)
+def test_permission_required_anonymous_gets_404_not_403():
+    # Anonymous users leak nothing: a missing permission on an anonymous request
+    # is a 404, not a 403.
+    with pytest.raises(Http404):
+        hx_get(PermRequiredHx, BaseView, request_attrs={"user": AnonymousUser()})
 
 
-@pytest.mark.parametrize(
-    "spec",
-    [
-        ["test_app_two"],
-        {"test_app_two": "__all__"},
-        {"test_app_two": ["other_app_hx"]},
-    ],
-)
-def test_global_allow_specs_permit_cross_app(spec):
-    assert is_allowed(BaseView, OtherAppHx, HX_REQUESTS_GLOBAL_ALLOW=spec)
+def test_multiple_permissions_requires_all(user):
+    user.user_permissions.add(perm("change_widget"))  # only one of two
+    user = User.objects.get(pk=user.pk)
+    with pytest.raises(PermissionDenied):
+        hx_get(MultiPermRequiredHx, BaseView, request_attrs={"user": user})
 
-
-def test_global_allow_does_not_match_other_names():
-    assert is_allowed(BaseView, OtherAppHx, HX_REQUESTS_GLOBAL_ALLOW={"test_app_two": ["nope"]}) is False
-
-
-def test_hx_request_without_a_name_is_never_allowed():
-    assert is_allowed(BaseView, BaseHxRequest) is False
-
-
-# --------------------------------------------------------------------------
-# View allow lists
-# --------------------------------------------------------------------------
-
-
-def test_view_allow_list_permits_cross_app():
-    assert is_allowed(AllowListView, OtherAppHx)
-
-
-def test_view_allow_list_is_additive_by_default():
-    # simple_get is not on AllowListView's list, but same-app still allows it.
-    assert is_allowed(AllowListView, SimpleGetHx)
-
-
-def test_strict_allow_list_permits_listed():
-    assert is_allowed(StrictAllowListView, SimpleGetHx)
-
-
-def test_strict_allow_list_blocks_unlisted_even_same_app():
-    assert is_allowed(StrictAllowListView, TriggerListHx) is False
+    user.user_permissions.add(perm("add_widget"))
+    user = User.objects.get(pk=user.pk)
+    response = hx_get(MultiPermRequiredHx, BaseView, request_attrs={"user": user})
+    assert response.status_code == 200
 
 
 # --------------------------------------------------------------------------
-# Integration: disallowed requests raise 404 through the view
+# has_permission override
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.django_db()
-class TestSecurityIntegration:
-    def test_allowed_request_succeeds(self):
-        response = hx_get(SimpleGetHx, BaseView)
+def test_has_permission_override_allows_matching_user():
+    response = hx_get(OwnerOnlyHx, BaseView, request_attrs={"user": User(username="owner")})
+    assert response.status_code == 200
+
+
+def test_has_permission_override_denies_other_users():
+    with pytest.raises(PermissionDenied):
+        hx_get(OwnerOnlyHx, BaseView, request_attrs={"user": User(username="someone_else")})
+
+
+# --------------------------------------------------------------------------
+# Cross-app is no longer gated by the framework (the matrix is gone)
+# --------------------------------------------------------------------------
+
+
+def test_cross_app_handler_runs_when_the_handler_authorizes_it():
+    # With the six-knob matrix removed, a handler from another app is reachable;
+    # its own authorization (here PublicGetHx opts out of login) is the boundary.
+    from test_app_two.hx_requests.widgets import OtherAppHx
+
+    OtherAppHx.login_required = False
+    try:
+        response = hx_get(OtherAppHx, BaseView, request_attrs={"user": AnonymousUser()})
         assert response.status_code == 200
+    finally:
+        OtherAppHx.login_required = True
 
-    def test_cross_app_request_raises_404(self):
-        with pytest.raises(Http404, match="not allowed here"):
-            hx_get(OtherAppHx, BaseView)
 
-    @override_settings(HX_REQUESTS_REQUIRE_AUTH=True)
-    def test_anonymous_request_raises_404_when_auth_required(self):
-        with pytest.raises(Http404, match="not allowed here"):
-            hx_get(SimpleGetHx, BaseView)
+# --------------------------------------------------------------------------
+# Denial logging (debug line explaining a 404)
+# --------------------------------------------------------------------------
 
-    @override_settings(HX_REQUESTS_REQUIRE_AUTH=True)
-    def test_authenticated_request_succeeds_when_auth_required(self, user):
-        response = hx_get(SimpleGetHx, BaseView, request_attrs={"user": user})
-        assert response.status_code == 200
 
-    @override_settings(HX_REQUESTS_GLOBAL_ALLOW=["test_app_two"])
-    def test_globally_allowed_cross_app_request_succeeds(self):
-        response = hx_get(OtherAppHx, BaseView)
-        assert response.status_code == 200
+def test_unknown_name_logs_a_debug_explanation(caplog):
+    from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
 
-    def test_view_allow_list_permits_cross_app_request(self):
-        response = hx_get(OtherAppHx, AllowListView)
-        assert response.status_code == 200
+    request_query = {HX_TOKEN_PARAM: sign_hx_payload("does_not_exist", None)}
+    from django.test import RequestFactory
 
-    def test_strict_view_blocks_unlisted_same_app_request(self):
-        with pytest.raises(Http404, match="not allowed here"):
-            hx_get(TriggerListHx, StrictAllowListView)
-
-    def test_denial_logs_a_debug_explanation(self, caplog):
-        # A denial is a 404 with no body; the debug log is the only way to tell
-        # "why is my request 404ing" apart from a genuine missing route.
-        with caplog.at_level(logging.DEBUG, logger="hx_requests.views"), pytest.raises(Http404):
-            hx_get(OtherAppHx, BaseView)
-        assert "not allowed" in caplog.text
-        assert "other_app_hx" in caplog.text
+    request = RequestFactory().get("/", data=request_query)
+    request.META["HTTP_HX_REQUEST"] = True
+    request.user = User()
+    with caplog.at_level(logging.DEBUG, logger="hx_requests.views"), pytest.raises(Http404):
+        BaseView.as_view()(request)
+    assert "no HxRequest registered" in caplog.text
