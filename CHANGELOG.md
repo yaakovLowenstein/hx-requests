@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.47.0 (2026-07-07)
+
+### Fix
+
+* Chain non-HTMX dispatch through super() and check auth-mixin order ([`a92b56f`](https://github.com/yaakovLowenstein/hx-requests/commit/a92b56f4bb5b9f5326c07ebe3b64dd0ebdf7abb8))
+
+### Breaking
+
+* chain non-HTMX dispatch through super() and check auth-mixin order ([`a92b56f`](https://github.com/yaakovLowenstein/hx-requests/commit/a92b56f4bb5b9f5326c07ebe3b64dd0ebdf7abb8))
+
 ## v0.46.0 (2026-07-07)
 
 ### Feature
