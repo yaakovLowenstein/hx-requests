@@ -1,8 +1,10 @@
 """Tests for HxRequestRegistry: AST discovery, lazy loading, manual registration."""
 
+import logging
+
 import pytest
 
-from hx_requests.hx_registry import HxRequestRegistry
+from hx_requests.hx_registry import DuplicateHxRequestNameError, HxRequestRegistry
 from hx_requests.hx_requests import BaseHxRequest
 
 # --------------------------------------------------------------------------
@@ -100,12 +102,16 @@ def test_parse_file_ignores_non_string_names(clean_registry, tmp_path):
     assert HxRequestRegistry._registry == {}
 
 
-def test_parse_file_skips_unparsable_files(clean_registry, tmp_path):
+def test_parse_file_skips_unparsable_files_with_warning(clean_registry, tmp_path, caplog):
     HxRequestRegistry.reset()
     source = tmp_path / "scratch.py"
     source.write_text("def broken(:\n")
-    HxRequestRegistry._parse_file(str(source), "scratch.module")
+    with caplog.at_level(logging.WARNING, logger="hx_requests.hx_registry"):
+        HxRequestRegistry._parse_file(str(source), "scratch.module")
     assert HxRequestRegistry._registry == {}
+    # The file is skipped, but loudly -- a silent skip resurfaces as a 404.
+    assert "could not parse" in caplog.text
+    assert "scratch.py" in caplog.text
 
 
 def test_duplicate_names_raise(clean_registry, tmp_path):
@@ -113,7 +119,7 @@ def test_duplicate_names_raise(clean_registry, tmp_path):
     source = tmp_path / "scratch.py"
     source.write_text("class Foo:\n    name = 'dup_name'\n")
     HxRequestRegistry._parse_file(str(source), "scratch.module")
-    with pytest.raises(Exception, match="Duplicate HxRequest name found: dup_name"):
+    with pytest.raises(DuplicateHxRequestNameError, match="Duplicate HxRequest name found: dup_name"):
         HxRequestRegistry._parse_file(str(source), "scratch.other_module")
 
 
@@ -135,7 +141,7 @@ def test_manual_registration_rejects_duplicates(clean_registry):
         pass
 
     HxRequestRegistry.register_hx_request("manual_dup", ManualHx)
-    with pytest.raises(Exception, match="Duplicate HxRequest name found: manual_dup"):
+    with pytest.raises(DuplicateHxRequestNameError, match="Duplicate HxRequest name found: manual_dup"):
         HxRequestRegistry.register_hx_request("manual_dup", ManualHx)
 
 

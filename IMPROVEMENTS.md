@@ -336,7 +336,22 @@ silently returns `""` on no match. Consider narrowing accepted shapes / failing 
 
 ---
 
-## 8. 🟡 Remove dead code; improve diagnostics
+## 8. 🟡 Remove dead code; improve diagnostics — ✅ DONE
+
+> **Fixed** on `chore/registry-and-denial-diagnostics`.
+> - **8a.** `django_views.py` (and its unit-test file) removed. Nothing in the
+>   package imported it; the generic-view `get` helpers were scaffolding for the
+>   #10 URL-router direction, which is out of scope. If #10 is ever picked up, these
+>   helpers can be reconstructed then (see the appendix note) rather than carried as
+>   dead weight now.
+> - **8b.** The registry now raises a dedicated `DuplicateHxRequestNameError`
+>   (was a bare `Exception`) with a clearer message, and `_parse_file` logs a
+>   `WARNING` naming the skipped file instead of swallowing `SyntaxError`/`OSError`
+>   silently — so a typo in a user's `hx_requests.py` no longer makes handlers
+>   vanish into a mystifying 404.
+> - **8c.** Every security/token denial in `views.py` now emits a `DEBUG` log line
+>   explaining *why* the request 404'd (no token, tampered token, unknown name, or
+>   policy denial) before raising `Http404`.
 
 **8a.** `django_views.py` is referenced by nothing (package, docs, or tests). Remove
 or wire it up.

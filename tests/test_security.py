@@ -1,5 +1,7 @@
 """Tests for the HtmxViewMixin security policy (is_hx_allowed and friends)."""
 
+import logging
+
 import pytest
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404
@@ -166,3 +168,11 @@ class TestSecurityIntegration:
     def test_strict_view_blocks_unlisted_same_app_request(self):
         with pytest.raises(Http404, match="not allowed here"):
             hx_get(TriggerListHx, StrictAllowListView)
+
+    def test_denial_logs_a_debug_explanation(self, caplog):
+        # A denial is a 404 with no body; the debug log is the only way to tell
+        # "why is my request 404ing" apart from a genuine missing route.
+        with caplog.at_level(logging.DEBUG, logger="hx_requests.views"), pytest.raises(Http404):
+            hx_get(OtherAppHx, BaseView)
+        assert "not allowed" in caplog.text
+        assert "other_app_hx" in caplog.text
