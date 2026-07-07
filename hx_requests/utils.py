@@ -2,6 +2,7 @@ import json
 from urllib.parse import urlencode
 
 from django.apps import apps
+from django.conf import settings
 from django.core import signing
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -155,8 +156,6 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
 
 
 def _handler_binds_to_path(hx_request_name):
-    from django.conf import settings
-
     # Global kill switch (e.g. when a proxy/middleware rewrites request.path).
     if not getattr(settings, "HX_REQUESTS_BIND_TOKEN_TO_PATH", True):
         return False
