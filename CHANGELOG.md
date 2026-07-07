@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.0 (2026-07-07)
+
+### Feature
+
+* Resolve round-trip objects through a scoped get_queryset seam ([`368a92e`](https://github.com/yaakovLowenstein/hx-requests/commit/368a92ee9138a5d888b3b70dcf0553d1723fd983))
+
+### Breaking
+
+* resolve round-trip objects through a scoped get_queryset seam ([`368a92e`](https://github.com/yaakovLowenstein/hx-requests/commit/368a92ee9138a5d888b3b70dcf0553d1723fd983))
+
 ## v0.45.0 (2026-07-07)
 
 ### Feature
