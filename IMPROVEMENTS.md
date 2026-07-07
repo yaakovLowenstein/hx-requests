@@ -366,7 +366,22 @@ debug "why is my request 404ing." Add a debug-level log line explaining the deni
 
 ---
 
-## 9. 🟡 Simplify the security matrix → per-handler authorization
+## 9. 🟡 Simplify the security matrix → per-handler authorization — ✅ DONE
+
+> **Fixed** on `feat/per-handler-auth`. The six-knob matrix is **removed** (no
+> deprecation shim — clean breaking change). Authorization is now per-handler on
+> `BaseHxRequest`, enforced in `dispatch` before `get`/`post`:
+> - `login_required: bool = True` — secure by default; anonymous → `Http404` (leaks nothing).
+> - `permission_required: str | list[str]` — authenticated-but-missing → `PermissionDenied` (403).
+> - `has_permission(self, request)` — overridable seam for row-level/ownership/tenancy logic.
+>
+> Removed: `HtmxViewMixin.is_hx_allowed`, the per-view `allowed_hx_requests` /
+> `use_global_hx_rules`, all `HX_REQUESTS_{REQUIRE_AUTH,UNAUTHENTICATED_ALLOW,
+> ENFORCE_SAME_APP,GLOBAL_ALLOW}` settings, and `security_utils.py`. The
+> app-boundary "which view may invoke this handler" question is intentionally
+> dropped: with per-handler auth, the handler decides regardless of origin. The
+> `hx_requests.W001` mixin-ordering check stays (it still guards the full-page
+> path). Docs (`secure_hx_requests`, `securing_hx_requests`, `config`) rewritten.
 
 **Problem.** `is_hx_allowed` (`views.py:80-128`) combines six knobs:
 `HX_REQUESTS_REQUIRE_AUTH`, `HX_REQUESTS_UNAUTHENTICATED_ALLOW`,

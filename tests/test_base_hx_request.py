@@ -4,6 +4,7 @@ import json
 from urllib.parse import urlencode
 
 import pytest
+from django.contrib.auth.models import User
 from django.http import Http404
 from django.test import RequestFactory, override_settings
 from test_app import hx_requests as hx
@@ -356,6 +357,9 @@ def test_unsupported_method_returns_405():
     request = RequestFactory().patch(f"/?{urlencode({HX_TOKEN_PARAM: token})}")
     request.META["HTTP_HX_REQUEST"] = True
     add_middleware_to_request(request)
+    # Authenticated so the per-handler login gate passes and routing reaches the
+    # method check (auth runs before method routing, as with Django's mixins).
+    request.user = User()
     response = BaseView.as_view()(request)
     assert response.status_code == 405
 
