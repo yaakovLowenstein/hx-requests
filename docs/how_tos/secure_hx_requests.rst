@@ -101,6 +101,31 @@ path must rely on per-handler authorization. A Django system check
 ordering is wrong.
 
 
+Keep mutations on POST
+~~~~~~~~~~~~~~~~~~~~~~~
+
+A :code:`get()` handler must not write to the database. A GET request is not
+CSRF-protected, so a valid GET URL is replayable cross-site (an attacker can
+embed it in an :code:`<img src>`, a prefetch, or a :code:`<link>` and fire it
+from any page the victim visits). Put every mutation in :code:`post()` /
+:code:`form_valid` / :code:`delete`, which carry CSRF protection.
+
+The framework helps enforce this: if a handler's :code:`get()` runs a database
+write, it logs a :code:`WARNING` naming the handler (it never blocks the
+request). For the rare GET write that is genuinely safe — idempotent
+bookkeeping like a "last seen" touch — opt out per-handler:
+
+.. code-block:: python
+
+    class TrackViewHx(BaseHxRequest):
+        name = "track_view"
+        allow_writes_on_get = True  # silence the guard for a known-safe GET write
+
+        def get(self, request, *args, **kwargs):
+            request.user.profile.touch_last_seen()  # idempotent, safe to replay
+            return super().get(request, *args, **kwargs)
+
+
 Summary
 ~~~~~~~
 
@@ -110,6 +135,7 @@ Summary
 :code:`login_required`        Require an authenticated user (default ``True``); anon → 404
 :code:`permission_required`   Require a permission (str or list); authed-but-missing → 403
 :code:`has_permission`        Override for custom / row-level authorization
+:code:`allow_writes_on_get`   Silence the "GET must not mutate" warning for a known-safe GET write
 ============================  ===========================================
 
 .. warning::

@@ -377,3 +377,27 @@ class OwnerOnlyHx(BaseHxRequest):
 
     def has_permission(self, request):
         return getattr(request.user, "username", None) == "owner"
+
+
+# --------------------------------------------------------------------------
+# GET-must-not-mutate guard
+# --------------------------------------------------------------------------
+
+
+class GetWritesHx(BaseHxRequest):
+    """Anti-pattern: mutates the DB inside get(). Exercises the guard that
+    warns when a handler writes on a (CSRF-unprotected) GET."""
+
+    name = "get_writes"
+    GET_template = "simple.html"
+
+    def get(self, request, *args, **kwargs):
+        Widget.objects.create(name="written-during-get")
+        return super().get(request, *args, **kwargs)
+
+
+class GetWritesAllowedHx(GetWritesHx):
+    """Same write, but opts out of the guard via allow_writes_on_get."""
+
+    name = "get_writes_allowed"
+    allow_writes_on_get = True

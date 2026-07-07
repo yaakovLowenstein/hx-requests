@@ -88,6 +88,25 @@ which the secure-by-default :code:`login_required` makes the path of least
 resistance.
 
 
+GET must not mutate
+~~~~~~~~~~~~~~~~~~~~
+
+Signing and per-handler authorization decide *who* may run a handler; they say
+nothing about *which HTTP method* does the writing. That still matters, because
+GET requests are not CSRF-protected. A valid GET URL — signed token and all — is
+replayable cross-site: an attacker embeds it in an :code:`<img src>`, a
+prefetch, or a :code:`<link>`, and the victim's browser fires it automatically
+against any page they visit. If the handler's :code:`get()` performs a write,
+that write happens with no CSRF check and no user intent.
+
+The rule is the ordinary web one: **mutations happen only on POST** (which
+carries CSRF protection), and GET is for rendering. hx-requests nudges you
+toward it — a database write during :code:`get()` logs a warning naming the
+handler — but never blocks the request, since a handful of GET writes (idempotent
+bookkeeping such as a "last seen" touch) are legitimately safe and can opt out
+with :code:`allow_writes_on_get = True`.
+
+
 Summary
 ~~~~~~~
 

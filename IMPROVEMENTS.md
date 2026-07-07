@@ -491,12 +491,22 @@ notably the `use_current_url` feature, which merges arbitrary current-URL params
 remains reachable by raw input. Keep defensive `try/except` around any `json.loads`
 that can see unsigned input; don't retire #6c just because #1 shipped.
 
-**New — GET must not mutate.** Orthogonal to everything above: signing and CSRF-token
-delivery (#6a) don't stop a `get()` override from performing writes, and a signed
-token embedded in a page is still replayable cross-site via `<img src>` etc. because
-GETs aren't CSRF-protected. Add a rule to the plan: **mutations happen only on POST**
-(document it, and ideally assert it — e.g. warn if a handler overrides `get()` and
-also writes). Without this, there's a CSRF gap independent of the token work.
+**New — GET must not mutate. — ✅ DONE.** Orthogonal to everything above: signing and
+CSRF-token delivery (#6a) don't stop a `get()` override from performing writes, and a
+signed token embedded in a page is still replayable cross-site via `<img src>` etc.
+because GETs aren't CSRF-protected. Add a rule to the plan: **mutations happen only on
+POST** (document it, and ideally assert it — e.g. warn if a handler overrides `get()`
+and also writes). Without this, there's a CSRF gap independent of the token work.
+
+> **Fixed** on `feat/warn-on-get-writes`. `BaseHxRequest.dispatch` wraps the GET path
+> in a best-effort DB guard (`_warn_on_get_writes`, via `connection.execute_wrapper`):
+> if a DML write (INSERT/UPDATE/DELETE) runs on the default connection while `get()`
+> executes, it logs a `WARNING` naming the handler and pointing at POST. It never
+> blocks (a warning, per the note's "ideally assert it"), and `allow_writes_on_get =
+> True` opts a known-safe GET write out. Detects the write at runtime rather than
+> statically inspecting whether `get()` is overridden, so it doesn't false-positive on
+> the framework's own render-only `get()` overrides. Docs updated (securing explanation
+> + how-to + summary table).
 
 **Priority within the security work:** the `_default_manager` default (#2) is the one
 to insist on — without it the "scoping hook" is opt-in security, which is the pattern

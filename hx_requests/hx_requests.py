@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import json
+import logging
 from functools import partial
 
 from django.conf import settings
@@ -17,6 +18,49 @@ from django.utils.html import format_html, strip_tags
 from render_block import render_block_to_string
 
 from hx_requests.utils import deserialize, parse_model_ref, resolve_model_ref
+
+logger = logging.getLogger(__name__)
+
+# Leading keywords of DML statements that mutate rows. Used by the
+# GET-must-not-mutate guard to spot a write executed during a handler's get().
+_WRITE_SQL_VERBS = ("insert", "update", "delete")
+
+
+@contextlib.contextmanager
+def _warn_on_get_writes(handler_name):
+    """
+    Best-effort guard around a handler's ``get()``.
+
+    Mutations belong on POST: a GET that writes to the database is replayable
+    cross-site (``<img src>``, prefetch, ``<link>``) because GETs are not
+    CSRF-protected -- a gap independent of the signed round-trip token. This
+    logs a WARNING (it never blocks) when a DML write runs on the default
+    database connection while ``get()`` executes.
+
+    Best-effort by design: it watches the default connection (the common case)
+    and matches on the leading SQL verb; it is a nudge toward the right pattern,
+    not an airtight sandbox.
+    """
+    from django.db import connection
+
+    warned = False
+
+    def wrapper(execute, sql, params, many, context):
+        nonlocal warned
+        if not warned and sql.lstrip()[:6].lower() in _WRITE_SQL_VERBS:
+            warned = True
+            logger.warning(
+                "hx_requests: %s wrote to the database during a GET. Mutations "
+                "belong on POST -- a GET that writes is replayable cross-site "
+                "(GETs aren't CSRF-protected). Move the write to post(), or set "
+                "allow_writes_on_get = True on the handler to silence this if the "
+                "write is known-safe (e.g. idempotent bookkeeping).",
+                handler_name,
+            )
+        return execute(sql, params, many, context)
+
+    with connection.execute_wrapper(wrapper):
+        yield
 
 
 class Renderer:
@@ -115,6 +159,13 @@ class BaseHxRequest:
     #: - Override :meth:`has_permission` for arbitrary per-user/per-object logic.
     login_required: bool = True
     permission_required: str | list[str] | None = None
+
+    #: Mutations belong on POST. By default the framework warns (never blocks)
+    #: when a handler's ``get()`` writes to the database, because a GET that
+    #: writes is replayable cross-site (GETs aren't CSRF-protected). Set this to
+    #: ``True`` on a handler whose GET write is known-safe (e.g. idempotent
+    #: bookkeeping) to silence that warning.
+    allow_writes_on_get: bool = False
 
     #: Maps the friendly phase keys accepted in a dict return from
     #: :meth:`get_triggers` to their HTMX response-header names.
@@ -512,9 +563,14 @@ class BaseHxRequest:
         continue routing.
         """
         self.check_permissions(request)
-        handler = getattr(self, request.method.lower(), None)
+        method = request.method.lower()
+        handler = getattr(self, method, None)
         if handler is None:
             return HttpResponseNotAllowed(["GET", "POST"])
+        if method == "get" and not self.allow_writes_on_get:
+            # Nudge writes onto POST -- see _warn_on_get_writes.
+            with _warn_on_get_writes(type(self).__name__):
+                return handler(request, *args, **kwargs)
         return handler(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
