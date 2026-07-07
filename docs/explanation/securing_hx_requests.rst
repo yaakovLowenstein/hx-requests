@@ -58,6 +58,16 @@ by the scoping controls here — it comes from requiring authentication
 routes through. The scoping controls below are a third axis: which handlers a
 given view or app may run at all.
 
+.. warning::
+
+    None of the layers on this page authorize *individual users*. Signing,
+    path-binding, and app/handler scoping establish that a request is genuine, on
+    its own page, and allowed for the view — **not** that *this user* may perform
+    the action. To restrict who can run a handler you still have to require
+    authentication (:code:`HX_REQUESTS_REQUIRE_AUTH`) and enforce your own
+    permission checks on the view each :code:`HxRequest` routes through, exactly
+    as you would protect any other view.
+
 
 The Threat: Replaying a Valid Token
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
