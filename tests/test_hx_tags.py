@@ -7,14 +7,10 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 from django.template import Context, Template
-from django.test import RequestFactory
 
 from hx_requests.templatetags.hx_tags import hx_get, hx_post, hx_url
 from hx_requests.utils import HX_TOKEN_PARAM, deserialize, deserialize_kwargs, unsign_hx_payload
-
-
-def make_context(path="/page/", **extra):
-    return {"request": RequestFactory().get(path, **extra)}
+from tests.helpers import make_context
 
 
 def attr_value(attr, name):

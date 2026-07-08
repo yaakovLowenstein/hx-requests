@@ -6,13 +6,9 @@ from test_app import hx_requests as hx
 from test_app.models import Widget
 from test_app.views import BaseView
 
-from tests.helpers import hx_get, hx_post
+from tests.helpers import content_of, hx_get, hx_post
 
 pytestmark = pytest.mark.django_db
-
-
-def content_of(response):
-    return response.content.decode()
 
 
 # --------------------------------------------------------------------------
