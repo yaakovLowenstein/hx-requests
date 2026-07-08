@@ -75,3 +75,17 @@ def test_hx_object_to_str(db):
     assert hx.hx_object_to_str() == ""
     hx.hx_object = Widget(name="x")
     assert hx.hx_object_to_str() == "Widget"
+
+
+def test_setup_exposes_args_and_kwargs_like_django_view_setup():
+    # Mirror Django's View.setup: the resolved positional/keyword args are
+    # available on the handler as self.args / self.kwargs after setup, so a
+    # hook can read them without every hook re-threading **kwargs.
+    class _ViewStub:
+        template_name = "simple.html"
+
+    hx = BaseHxRequest()
+    hx.view = _ViewStub()
+    hx._setup_hx_request(RequestFactory().get("/"), "posarg", flavor="spicy")
+    assert hx.args == ("posarg",)
+    assert hx.kwargs == {"flavor": "spicy"}
