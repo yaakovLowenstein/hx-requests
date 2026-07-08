@@ -5,6 +5,7 @@ How Tos
    :maxdepth: 1
 
    register_hx_requests
+   mount_on_urls
    detect_hx_request
    secure_hx_requests
    scope_hx_objects

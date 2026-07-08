@@ -244,8 +244,7 @@ class HxRequestRegistry:
 
         cls.initialize()
         return [
-            path(f"{name}/", HxEndpointView.as_view(hx_name=name), name=name)
-            for name in cls._registry
+            path(f"{name}/", HxEndpointView.as_view(hx_name=name), name=name) for name in cls._registry
         ]
 
     @classmethod

@@ -80,9 +80,7 @@ def _router_query(hx_request, hx_kwargs=None, get_params=None):
 def hx_get_url(client, hx_request, hx_kwargs=None, get_params=None):
     """Drive a GET through the router URL (reverse('hx:<name>'))."""
     url = reverse(f"hx:{hx_request.name}")
-    return client.get(
-        url, data=_router_query(hx_request, hx_kwargs, get_params), HTTP_HX_REQUEST="true"
-    )
+    return client.get(url, data=_router_query(hx_request, hx_kwargs, get_params), HTTP_HX_REQUEST="true")
 
 
 def hx_post_url(client, hx_request, hx_kwargs=None, get_params=None, post_data=None):
