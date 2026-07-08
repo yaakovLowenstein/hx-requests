@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 from django.conf import settings
 from django.http import Http404
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from hx_requests.constants import HX_TOKEN_PARAM, KWARG_PREFIX
@@ -180,3 +181,52 @@ class HtmxViewMixin:
 
     def _use_current_url(self, request):
         return merge_current_url(request)
+
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class HxEndpointView(View):
+    """
+    The router request cycle for one named ``HxRequest``.
+
+    Mounted at ``/hx/<name>/`` by :meth:`HxRequestRegistry.get_urls`. Because the
+    handler name comes from the URL path (not a client query param), a token
+    minted for one handler cannot be replayed against another endpoint -- the
+    endpoint asserts ``token.name == url.name`` (path binding). Per-handler
+    authorization is unchanged: it runs inside ``HxRequest.dispatch`` before
+    ``get`` / ``post``. Because this is a real Django ``View``, Django's own
+    ``login_required`` / ``LoginRequiredMixin`` compose natively on this path.
+    """
+
+    hx_name = None  # set per-path by as_view(hx_name=...)
+
+    def dispatch(self, request, *args, **kwargs):
+        hx_cls = HxRequestRegistry.get_hx_request(self.hx_name)
+        if hx_cls is None:
+            logger.debug(
+                "hx_requests: denied (404) -- no HxRequest registered under the name '%s'.",
+                self.hx_name,
+            )
+            raise Http404(f"No HxRequest found with the name '{self.hx_name}'.")
+
+        request = bind_hx_token(request, expected_name=self.hx_name)
+        kwargs.update(deserialize_kwargs(**getattr(request, "_hx_kwargs", {})))
+
+        hx_request = hx_cls()
+
+        # No page view in the router cycle. A handler opts back into page-view
+        # context with `shares_context_from = SomeView`; the endpoint stands that
+        # view up and assigns it as the context source (the same `view` seam the
+        # legacy path uses), so BaseHxRequest harvests it unchanged.
+        context_view_cls = getattr(hx_cls, "shares_context_from", None)
+        if context_view_cls is not None:
+            context_view = context_view_cls()
+            context_view.setup(request, *args, **kwargs)
+            hx_request.view = context_view
+        else:
+            hx_request.view = None
+
+        if getattr(hx_request, "use_current_url", False):
+            request = merge_current_url(request)
+
+        hx_request._setup_hx_request(request, *args, **kwargs)
+        return hx_request.dispatch(hx_request.request, *args, **kwargs)

@@ -54,3 +54,83 @@ def test_base_hx_request_sets_up_with_no_view():
 
 def test_shares_context_from_defaults_to_none():
     assert BaseHxRequest.shares_context_from is None
+
+
+# --------------------------------------------------------------------------
+# Registry -> urlpatterns
+# --------------------------------------------------------------------------
+
+
+def test_get_urls_returns_one_pattern_per_registered_name(clean_registry):
+    HxRequestRegistry.reset()
+    HxRequestRegistry.initialize()
+    urls = HxRequestRegistry.get_urls()
+
+    names = {pattern.name for pattern in urls}
+    assert "simple_get" in names
+    assert "other_app_hx" in names
+    assert "deep_hx" in names
+    assert len(urls) == len(HxRequestRegistry._registry)
+
+
+def test_get_urls_does_not_import_handler_classes(clean_registry):
+    HxRequestRegistry.reset()
+    HxRequestRegistry.get_urls()
+    # Building URLs must stay lazy: entries remain (module, class) tuples.
+    assert isinstance(HxRequestRegistry._registry["simple_get"], tuple)
+
+
+# --------------------------------------------------------------------------
+# Router endpoint (HxEndpointView) via real resolved URLs
+# --------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def hx_client(db, django_user_model):
+    """A logged-in test client (handlers default to login_required=True)."""
+    from django.test import Client
+
+    user = django_user_model.objects.create_user(username="router", password="pw")
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+def test_router_dispatches_get_to_handler(hx_client, clean_registry):
+    from test_app.hx_requests import SimpleGetHx
+
+    from tests.helpers import hx_get_url
+
+    response = hx_get_url(hx_client, SimpleGetHx)
+    assert response.status_code == 200
+    assert b"simple" in response.content.lower()
+
+
+def test_router_path_binding_rejects_replayed_token(hx_client, clean_registry):
+    from django.urls import reverse
+    from test_app.hx_requests import SimpleGetHx
+
+    # Token minted for simple_get, sent to post_template's URL -> 404.
+    url = reverse("hx:post_template")
+    token = sign_hx_payload(SimpleGetHx.name)
+    response = hx_client.get(url, data={HX_TOKEN_PARAM: token}, HTTP_HX_REQUEST="true")
+    assert response.status_code == 404
+
+
+def test_router_missing_token_404s(hx_client, clean_registry):
+    from django.urls import reverse
+
+    response = hx_client.get(reverse("hx:simple_get"), HTTP_HX_REQUEST="true")
+    assert response.status_code == 404
+
+
+def test_router_enforces_per_handler_auth(db, clean_registry):
+    from django.test import Client
+    from test_app.hx_requests import SimpleGetHx
+
+    from tests.helpers import hx_get_url
+
+    # Anonymous client + login_required default -> 404 (bodiless).
+    anon = Client()
+    response = hx_get_url(anon, SimpleGetHx)
+    assert response.status_code == 404

@@ -8,11 +8,14 @@ checks, form handling, trigger/header assembly, messages).
 
 from __future__ import annotations
 
+from urllib.parse import urlencode
+
 from django.contrib.auth.models import User
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpResponse
 from django.test import RequestFactory
+from django.urls import reverse
 from django.views import View
 
 from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
@@ -63,6 +66,30 @@ def _create_test_request(
     request = set_request_attrs(request)
     add_middleware_to_request(request)
     return request
+
+
+def _router_query(hx_request, hx_kwargs=None, get_params=None):
+    hx_kwargs = dict(hx_kwargs or {})
+    get_params = dict(get_params or {})
+    hx_object = hx_kwargs.pop("object", None)
+    query = {HX_TOKEN_PARAM: sign_hx_payload(hx_request.name, hx_object, **hx_kwargs)}
+    query.update(get_params)
+    return query
+
+
+def hx_get_url(client, hx_request, hx_kwargs=None, get_params=None):
+    """Drive a GET through the router URL (reverse('hx:<name>'))."""
+    url = reverse(f"hx:{hx_request.name}")
+    return client.get(
+        url, data=_router_query(hx_request, hx_kwargs, get_params), HTTP_HX_REQUEST="true"
+    )
+
+
+def hx_post_url(client, hx_request, hx_kwargs=None, get_params=None, post_data=None):
+    """Drive a POST through the router URL (reverse('hx:<name>'))."""
+    url = reverse(f"hx:{hx_request.name}")
+    query = _router_query(hx_request, hx_kwargs, get_params)
+    return client.post(f"{url}?{urlencode(query)}", data=post_data or {}, HTTP_HX_REQUEST="true")
 
 
 def hx_get(

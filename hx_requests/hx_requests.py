@@ -159,7 +159,11 @@ class BaseHxRequest:
             | self as hx_request
         """
         context = RequestContext(self.request)
-        if self.view is not None and self.get_views_context and hasattr(self.view_response, "context_data"):
+        if (
+            getattr(self, "view", None) is not None
+            and self.get_views_context
+            and hasattr(self.view_response, "context_data")
+        ):
             context.update(self.view_response.context_data)
         if self.kwargs_as_context:
             context.update(kwargs)
@@ -190,7 +194,7 @@ class BaseHxRequest:
         if self.hx_object and self.hx_object.pk:
             with contextlib.suppress(ObjectDoesNotExist):
                 self.hx_object.refresh_from_db()
-        if self.refresh_views_context_on_POST and self.view is not None:
+        if self.refresh_views_context_on_POST and getattr(self, "view", None) is not None:
             if hasattr(self.view, "object") and self.view.object:
                 self.view.object.refresh_from_db()
                 context["object"] = self.view.object
