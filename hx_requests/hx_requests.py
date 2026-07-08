@@ -169,11 +169,17 @@ class BaseHxRequest:
         if self.hx_object and self.hx_object.pk:
             with contextlib.suppress(ObjectDoesNotExist):
                 self.hx_object.refresh_from_db()
-        if self.refresh_views_context_on_POST:
-            if hasattr(self.view, "object") and self.view.object:
-                self.view.object.refresh_from_db()
-                context["object"] = self.view.object
-            context.update(self.view.get_context_data(**kwargs))
+        if self.refresh_views_context_on_POST and self.get_views_context:
+            # Re-harvest the page view's context through the same view.get()
+            # path used on GET, so POST refresh and GET go through identical
+            # machinery rather than a divergent get_context_data() call plus an
+            # ad-hoc view.object refresh. Invalidate the cached pre-post
+            # snapshot so the property recomputes against the mutated state;
+            # view.get() re-runs get_object()/get_queryset(), so the fresh
+            # object and querysets land in context automatically.
+            self.__dict__.pop("view_response", None)
+            if hasattr(self.view_response, "context_data"):
+                context.update(self.view_response.context_data)
         context[self.hx_object_name] = self.hx_object
 
         return context
