@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.50.0 (2026-07-08)
+
+### Breaking
+
+* raise Python floor to 3.11, Django to 4.2, refresh classifiers ([`df23265`](https://github.com/yaakovLowenstein/hx-requests/commit/df232655eba965b12757f6c8326b0cf133ebe664))
+
 ## v0.49.0 (2026-07-08)
 
 ### Breaking
