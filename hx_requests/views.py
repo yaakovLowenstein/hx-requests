@@ -19,6 +19,90 @@ from hx_requests.utils import (
 logger = logging.getLogger(__name__)
 
 
+def bind_hx_token(request, expected_name=None):
+    """
+    Verify the signed ``hx`` token and rebuild ``request.GET`` so the rest of
+    the chain reads *trusted* framework data. Everything the framework controls
+    (name, object, kwargs) comes from the signed token; any client-supplied
+    framework params on the raw query string are dropped so they cannot shadow
+    or forge the verified values. Non-framework params (page filters, runtime
+    hx-vals) are left untouched.
+
+    When ``expected_name`` is given (the router path, where the name comes from
+    the URL), the token's ``name`` must equal it -- a token minted for one
+    handler cannot be replayed against another endpoint. Raises ``Http404`` on a
+    missing/tampered token, a name mismatch, or a path-binding mismatch.
+    """
+    if not request.GET.get(HX_TOKEN_PARAM):
+        logger.debug("hx_requests: denied (404) -- request carried no '%s' token.", HX_TOKEN_PARAM)
+        raise Http404("Missing required query param 'hx' for HTMX request.")
+    payload = get_hx_payload(request)
+    if payload is None:
+        logger.debug(
+            "hx_requests: denied (404) -- '%s' token was missing, tampered, or unsigned.",
+            HX_TOKEN_PARAM,
+        )
+        raise Http404("Invalid or tampered hx token.")
+    if expected_name is not None and payload["name"] != expected_name:
+        logger.debug(
+            "hx_requests: denied (404) -- token minted for '%s' replayed against '%s'.",
+            payload["name"],
+            expected_name,
+        )
+        raise Http404("hx token does not match this endpoint.")
+
+    # A path-bound token (bind_to_path handler) only verifies on the path it was
+    # minted for -- replaying it against another view's path is rejected. On the
+    # router this also holds: get_url binds the token to the endpoint URL it
+    # targets, so the check passes there and still blocks cross-path replay. The
+    # global HX_REQUESTS_BIND_TOKEN_TO_PATH switch disables the check so
+    # already-minted bound tokens stop 404ing the moment it is turned off.
+    bound_path = payload.get("path")
+    binding_enabled = getattr(settings, "HX_REQUESTS_BIND_TOKEN_TO_PATH", True)
+    if binding_enabled and bound_path is not None and bound_path != request.path:
+        logger.debug(
+            "hx_requests: denied (404) -- token bound to path '%s' replayed against '%s'.",
+            bound_path,
+            request.path,
+        )
+        raise Http404("hx token is bound to a different path.")
+
+    sanitized = request.GET.copy()
+    for key in list(sanitized.keys()):
+        if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
+            del sanitized[key]
+    sanitized["hx_request_name"] = payload["name"]
+    if payload.get("object"):
+        sanitized["object"] = payload["object"]
+
+    request.GET = sanitized
+    # Verified, serialized kwargs from the token -- the only source of
+    # kwargs-as-context. Raw query params never feed this again.
+    request._hx_kwargs = payload.get("kwargs", {})
+    return request
+
+
+def merge_current_url(request):
+    """
+    Merge non-framework params from the ``HX-Current-URL`` header into
+    ``request.GET`` (the ``use_current_url`` behavior). Framework params
+    (name/object/kwargs/token) are never merged from the current URL: those are
+    trusted only via the signed token, not raw query input.
+    """
+    merged_get = request.GET.copy()
+    hx_current_url = request.headers.get("HX-Current-URL")
+    if hx_current_url:
+        parsed_url = urlparse(hx_current_url)
+        additional_params = parse_qs(parsed_url.query)
+        for key, values in additional_params.items():
+            if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
+                continue
+            if key not in merged_get:
+                merged_get.setlist(key, values)
+    request.GET = merged_get
+    return request
+
+
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class HtmxViewMixin:
     """
@@ -76,47 +160,11 @@ class HtmxViewMixin:
         return hx_request_class()
 
     def _resolve_hx_token(self, request):
-        """
-        Verify the signed ``hx`` token and rebuild ``request.GET`` so the rest
-        of the chain reads *trusted* framework data. Everything the framework
-        controls (name, object, kwargs) comes from the signed token; any
-        client-supplied framework params on the raw query string are dropped so
-        they cannot shadow or forge the verified values. Non-framework params
-        (page filters, runtime hx-vals) are left untouched.
-        """
-        if not request.GET.get(HX_TOKEN_PARAM):
-            logger.debug("hx_requests: denied (404) -- request carried no '%s' token.", HX_TOKEN_PARAM)
-            raise Http404("Missing required query param 'hx' for HTMX request.")
-        payload = get_hx_payload(request)
-        if payload is None:
-            logger.debug(
-                "hx_requests: denied (404) -- '%s' token was missing, tampered, or unsigned.",
-                HX_TOKEN_PARAM,
-            )
-            raise Http404("Invalid or tampered hx token.")
-
-        # A path-bound token (bind_to_path handler) only verifies on the path it
-        # was minted for -- replaying it against another view's path is rejected.
-        # The global HX_REQUESTS_BIND_TOKEN_TO_PATH switch disables the check so
-        # already-minted bound tokens stop 404ing the moment it is turned off.
-        bound_path = payload.get("path")
-        binding_enabled = getattr(settings, "HX_REQUESTS_BIND_TOKEN_TO_PATH", True)
-        if binding_enabled and bound_path is not None and bound_path != request.path:
-            raise Http404("hx token is bound to a different path.")
-
-        sanitized = request.GET.copy()
-        for key in list(sanitized.keys()):
-            if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
-                del sanitized[key]
-        sanitized["hx_request_name"] = payload["name"]
-        if payload.get("object"):
-            sanitized["object"] = payload["object"]
-
-        request.GET = sanitized
-        # Verified, serialized kwargs from the token -- the only source of
-        # kwargs-as-context. Raw query params never feed this again.
-        request._hx_kwargs = payload.get("kwargs", {})
-        return request
+        # The trust boundary is shared with the router endpoint (see
+        # bind_hx_token): token validity + path binding (bind_to_path) apply on
+        # both paths. The legacy page-view path trusts the name inside the token,
+        # so no expected_name (router name binding) is enforced here.
+        return bind_hx_token(request)
 
     def get_hx_extra_kwargs(self, request):
         return deserialize_kwargs(**getattr(request, "_hx_kwargs", {}))
@@ -131,25 +179,4 @@ class HtmxViewMixin:
         return hx_request
 
     def _use_current_url(self, request):
-        # Start with the current GET params
-        merged_get = request.GET.copy()
-
-        # Check if HX-Current-URL is in the headers
-        hx_current_url = request.headers.get("HX-Current-URL")
-        if hx_current_url:
-            # Parse the URL and extract its query parameters
-            parsed_url = urlparse(hx_current_url)
-            additional_params = parse_qs(parsed_url.query)
-
-            # Add each HX param only if not already present. Framework params
-            # (name/object/kwargs/token) are never merged from the current URL:
-            # those are trusted only via the signed token, not raw query input.
-            for key, values in additional_params.items():
-                if key in (HX_TOKEN_PARAM, "hx_request_name", "object") or key.startswith(KWARG_PREFIX):
-                    continue
-                if key not in merged_get:
-                    merged_get.setlist(key, values)
-
-        # Now override request.GET
-        request.GET = merged_get
-        return request
+        return merge_current_url(request)
