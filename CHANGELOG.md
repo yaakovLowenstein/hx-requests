@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.49.0 (2026-07-08)
+
+### Breaking
+
+* the model name shown in success/error messages now derives from the model's Meta.verbose_name (first character upper-cased) instead of the capitalized class name. Handlers on multi-word/CamelCase models, or models with a custom verbose_name, will see the message text change on upgrade (e.g. "Workorder" -> "Work order"); single-word model names such as Widget are unaffected. To preserve the old wording, set the model's Meta.verbose_name or override hx_object_to_str. ([`1dc4863`](https://github.com/yaakovLowenstein/hx-requests/commit/1dc4863966abfde3540c32926ec1fe964aa3dcb6))
+
 ## v0.48.1 (2026-07-08)
 
 ### Performance
