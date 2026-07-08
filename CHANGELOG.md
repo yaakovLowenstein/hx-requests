@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.51.0 (2026-07-08)
+
+### Breaking
+
+* the hx_requests.django_views module is removed. It was never imported by the package, documented, or wired into urls, so this is unlikely to affect any real consumer -- but code that imported hx_requests.django_views (or its list_view_get / update_view_get / ... helpers) directly will now get an ImportError. Reconstruct those helpers locally, or wait for the #10 URL-router work. ([`7745846`](https://github.com/yaakovLowenstein/hx-requests/commit/77458460663261daba37bef1f7a8c47c11918f48))
+
 ## v0.50.0 (2026-07-08)
 
 ### Breaking
