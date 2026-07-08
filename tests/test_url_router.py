@@ -136,16 +136,19 @@ def test_router_enforces_per_handler_auth(db, clean_registry):
     assert response.status_code == 404
 
 
-def test_router_composes_with_bind_to_path(hx_client, clean_registry):
-    from urllib.parse import urlparse
+def test_router_minted_token_is_not_path_bound(hx_client, clean_registry):
+    from urllib.parse import parse_qs, urlparse
 
-    from hx_requests.utils import get_url
+    from hx_requests.utils import get_url, unsign_hx_payload
 
-    # A bind_to_path handler (the default): get_url binds the token to the router
-    # endpoint URL it targets, so dispatching that exact URL through the endpoint
-    # verifies (request.path there == the bound path).
+    # On the router, path-binding is redundant: the handler has its own URL and
+    # the endpoint enforces name-binding, so get_url does NOT path-bind (even for
+    # a bind_to_path=True handler). The token carries no "path" claim, and it
+    # still dispatches through the endpoint.
     url = get_url({"request": RequestFactory().get("/page/")}, "simple_get", None)
     assert urlparse(url).path == "/hx/simple_get/"
+    payload = unsign_hx_payload(parse_qs(urlparse(url).query)[HX_TOKEN_PARAM][0])
+    assert "path" not in payload
     response = hx_client.get(url, HTTP_HX_REQUEST="true")
     assert response.status_code == 200
 

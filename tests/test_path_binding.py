@@ -40,14 +40,20 @@ def _bound_request(path, bound_to):
     return request
 
 
+# Path-binding at mint is a *legacy-dispatch* behavior: it only applies when the
+# /hx/<name>/ router is not installed (the router makes it redundant -- see
+# test_url_router.test_router_minted_token_is_not_path_bound). These mint tests
+# therefore run against a router-less URLconf so they exercise the legacy path.
+
+
+@override_settings(ROOT_URLCONF="urls_no_router")
 def test_tokens_are_path_bound_by_default():
-    # Path-binding is on by default: an ordinary handler binds the URL its token
-    # will be sent to. With the router installed (tests/urls.py), get_url targets
-    # -- and so binds to -- the router endpoint URL rather than the render path.
+    # Path-binding is on by default: an ordinary handler binds its render path.
     out = hx_url({"request": RequestFactory().get("/page/")}, "simple_get")
-    assert _payload_from_url(out).get("path") == "/hx/simple_get/"
+    assert _payload_from_url(out).get("path") == "/page/"
 
 
+@override_settings(ROOT_URLCONF="urls_no_router")
 def test_opted_out_handler_has_no_path():
     # A handler with bind_to_path = False mints an unbound token.
     out = hx_url({"request": RequestFactory().get("/page/")}, "unbound")
@@ -69,7 +75,7 @@ def test_bound_token_on_its_own_path_is_accepted():
     assert request.GET["hx_request_name"] == "simple_get"
 
 
-@override_settings(HX_REQUESTS_BIND_TOKEN_TO_PATH=False)
+@override_settings(ROOT_URLCONF="urls_no_router", HX_REQUESTS_BIND_TOKEN_TO_PATH=False)
 def test_global_setting_disables_binding_at_mint():
     # The global kill switch stops new tokens from being path-bound at all.
     out = hx_url({"request": RequestFactory().get("/page/")}, "simple_get")

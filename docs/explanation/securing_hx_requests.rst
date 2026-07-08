@@ -140,8 +140,12 @@ path it was rendered on, unless a handler opts out with
     remains the primary defense on both the router and the legacy path. Because
     the router endpoint is a real Django :code:`View`, Django's own
     :code:`login_required` / :code:`LoginRequiredMixin` also compose natively
-    with it. Path-binding composes too: :func:`get_url` binds the token to the
-    router endpoint URL it targets, so :code:`bind_to_path` still verifies there.
+    with it. Path-binding (:code:`bind_to_path`) is a *legacy-dispatch* concept
+    and is redundant on the router: the endpoint's name-binding already blocks
+    cross-handler replay and each handler has its own URL, so router-minted
+    tokens are not path-bound. Enforcement still honors a :code:`path` claim if
+    one is present, so a legacy-minted bound token replayed at an endpoint is
+    still rejected.
 
 Continue to :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 for configuration examples.

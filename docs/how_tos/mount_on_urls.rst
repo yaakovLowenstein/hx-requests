@@ -78,6 +78,18 @@ Because the endpoint is a real Django :code:`View`, Django's own
 with it, and the :code:`hx_requests.W001` mixin-ordering trap does not apply on
 this path (there is no page view to short-circuit).
 
+.. note::
+
+    **Path-binding (**:code:`bind_to_path`\ **) is a legacy-dispatch concept and
+    is redundant here.** It exists because query-param dispatch hides the handler
+    behind the page URL, so the token is pinned to its render path to narrow
+    cross-page replay. On the router each handler has its own URL and the endpoint
+    enforces name-binding, so router-minted tokens are simply not path-bound. (A
+    handler's :code:`bind_to_path` setting still applies on the legacy path, and
+    the endpoint still rejects a token that carries a mismatched :code:`path`
+    claim.) When the router eventually becomes the only dispatch path,
+    :code:`bind_to_path` can be retired.
+
 Sharing page-view context
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

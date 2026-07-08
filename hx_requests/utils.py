@@ -182,15 +182,22 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     # keeps working with no template edits.
     try:
         base = reverse(f"hx:{hx_request_name}")
+        on_router = True
     except NoReverseMatch:
         base = request.path
+        on_router = False
 
-    # The token is bound to the path it will actually be sent to (``base``) --
-    # the router endpoint URL when installed, else the current page path -- so a
-    # bind_to_path handler still verifies on the router (request.path there is the
-    # endpoint URL) while cross-path replay stays blocked. Handlers opt out with
-    # bind_to_path = False.
-    bind_path = base if _handler_binds_to_path(hx_request_name) else None
+    # Path-binding is a *legacy-dispatch* concept: query-param routing hides the
+    # handler behind the page URL, so the token is pinned to its render path to
+    # narrow cross-page replay. The router makes that redundant -- the handler has
+    # its own URL and the endpoint enforces name-binding -- so we do NOT path-bind
+    # on the router (binding to the single endpoint path would add nothing).
+    # Enforcement still honors a "path" claim if one is present (see
+    # bind_hx_token), so a legacy-minted bound token replayed at an endpoint is
+    # still rejected.
+    bind_path = None
+    if not on_router and _handler_binds_to_path(hx_request_name):
+        bind_path = request.path
     params[HX_TOKEN_PARAM] = sign_hx_payload(hx_request_name, obj, bind_path=bind_path, **kwargs)
 
     return f"{base}?{urlencode(params, doseq=True)}"
