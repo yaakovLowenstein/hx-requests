@@ -1,8 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 from django.views.generic import ListView, TemplateView, UpdateView
 from test_app.models import Widget
 
 from hx_requests.views import HtmxViewMixin
+
+
+class PlainViewHost(HtmxViewMixin, View):
+    """A plain View with no template_name -- the eager fallback used to
+    AttributeError on it; it should raise ImproperlyConfigured instead."""
+
+
+class GetTemplateNamesHost(HtmxViewMixin, View):
+    """A View that resolves its template only via get_template_names() (as an
+    implicit-naming DetailView/ListView does), not a template_name attribute."""
+
+    def get_template_names(self):
+        return ["second.html"]
 
 
 class BaseView(HtmxViewMixin, TemplateView):

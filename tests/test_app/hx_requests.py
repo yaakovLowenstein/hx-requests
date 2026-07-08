@@ -40,6 +40,13 @@ class ViewTemplateFallbackHx(BaseHxRequest):
     name = "view_template_fallback"
 
 
+class ViewTemplateNamesFallbackHx(BaseHxRequest):
+    # No GET_template and no view context harvest: isolates template
+    # resolution via the host view's get_template_names().
+    name = "view_template_names_fallback"
+    get_views_context = False
+
+
 class PostTemplateHx(BaseHxRequest):
     name = "post_template"
     GET_template = "simple.html"
