@@ -134,3 +134,26 @@ def test_router_enforces_per_handler_auth(db, clean_registry):
     anon = Client()
     response = hx_get_url(anon, SimpleGetHx)
     assert response.status_code == 404
+
+
+# --------------------------------------------------------------------------
+# Template tag get_url(): reverse() with a legacy fallback
+# --------------------------------------------------------------------------
+
+
+def test_get_url_uses_reverse_when_router_installed(rf, clean_registry):
+    from hx_requests.utils import get_url
+
+    request = rf.get("/some/page/")
+    url = get_url({"request": request}, "simple_get", None)
+    # Router installed (tests/urls.py) -> reversed router URL, not request.path.
+    assert url.startswith("/hx/simple_get/?")
+    assert "hx=" in url
+
+
+def test_get_url_falls_back_to_request_path_for_unknown_name(rf, clean_registry):
+    from hx_requests.utils import get_url
+
+    request = rf.get("/some/page/")
+    url = get_url({"request": request}, "not_a_registered_router_name", None)
+    assert url.startswith("/some/page/?")
