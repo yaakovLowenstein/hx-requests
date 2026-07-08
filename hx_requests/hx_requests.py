@@ -478,8 +478,34 @@ class BaseHxRequest:
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
         Method that all POST requests hit.
+
+        Runs :meth:`post_action` and builds the standard response from
+        ``_get_response`` unless the hook returns its own ``HttpResponse``.
         """
-        return self._get_response(**kwargs)
+        response = self.post_action(**kwargs)
+        return response if response is not None else self._get_response(**kwargs)
+
+    def post_action(self, **kwargs) -> HttpResponse | None:
+        """
+        Hook for a non-form POST side effect (toggle / increment / enqueue).
+
+        Override to perform the action. Return ``None`` (default) to let
+        ``post`` build the standard response, or return an ``HttpResponse`` to
+        short-circuit with custom output. Saves the copy-paste ``post``
+        override the common non-form POST used to require.
+
+        Example::
+
+            class ToggleWidgetHx(BaseHxRequest):
+                name = "toggle_widget"
+                POST_template = "widget_row.html"
+
+                def post_action(self, **kwargs):
+                    # Run the side effect; return None so post() renders
+                    # POST_template with the refreshed context as usual.
+                    self.hx_object.toggle()
+        """
+        return None
 
 
 class FormHxRequest(BaseHxRequest):
