@@ -203,14 +203,25 @@ def test_tampered_token_fails_verification():
 def test_handler_name_is_bound_to_the_signature():
     # The name lives inside the signed payload, so it cannot be swapped for
     # another handler without invalidating the token (this is why a per-name
-    # salt is unnecessary).
+    # salt is unnecessary). The token is base64, so a naive str.replace never
+    # touches the name -- decode the payload, swap the name, re-encode with the
+    # original signature, and assert loads() rejects it.
+    import json
+
     from django.core import signing
 
     token = sign_hx_payload("view_user")
-    forged = token.replace("view_user", "delete_user")
-    if forged != token:
-        with pytest.raises(signing.BadSignature):
-            unsign_hx_payload(forged)
+    payload_b64, signed_rest = token.split(":", 1)  # "<payload>:<timestamp>:<sig>"
+    payload = json.loads(signing.b64_decode(payload_b64.encode()))
+    assert payload["name"] == "view_user"
+
+    payload["name"] = "delete_user"
+    forged_b64 = signing.b64_encode(json.dumps(payload).encode()).decode()
+    forged = f"{forged_b64}:{signed_rest}"
+
+    assert forged != token  # the swap really changed the token
+    with pytest.raises(signing.BadSignature):
+        unsign_hx_payload(forged)
 
 
 # --------------------------------------------------------------------------
