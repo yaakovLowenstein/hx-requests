@@ -67,6 +67,21 @@ def test_bound_token_on_its_own_path_is_accepted():
     assert request.hx_payload["name"] == "simple_get"
 
 
+def test_replaying_bound_token_to_another_path_is_rejected_end_to_end():
+    # The same rejection, but exercised through the full view dispatch instead
+    # of the private _resolve_hx_token, so the enforcement is covered on the
+    # real request path a client would hit.
+    request = _bound_request(path="/other/", bound_to="/page/")
+    with pytest.raises(Http404, match="bound to a different path"):
+        BaseView.as_view()(request)
+
+
+def test_bound_token_on_its_own_path_dispatches_end_to_end():
+    request = _bound_request(path="/page/", bound_to="/page/")
+    response = BaseView.as_view()(request)
+    assert response.status_code == 200
+
+
 @override_settings(HX_REQUESTS_BIND_TOKEN_TO_PATH=False)
 def test_global_setting_disables_binding_at_mint():
     # The global kill switch stops new tokens from being path-bound at all.
