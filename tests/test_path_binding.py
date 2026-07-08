@@ -41,9 +41,11 @@ def _bound_request(path, bound_to):
 
 
 def test_tokens_are_path_bound_by_default():
-    # Path-binding is on by default: an ordinary handler binds its render path.
+    # Path-binding is on by default: an ordinary handler binds the URL its token
+    # will be sent to. With the router installed (tests/urls.py), get_url targets
+    # -- and so binds to -- the router endpoint URL rather than the render path.
     out = hx_url({"request": RequestFactory().get("/page/")}, "simple_get")
-    assert _payload_from_url(out).get("path") == "/page/"
+    assert _payload_from_url(out).get("path") == "/hx/simple_get/"
 
 
 def test_opted_out_handler_has_no_path():

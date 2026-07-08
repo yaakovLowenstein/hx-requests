@@ -136,6 +136,38 @@ def test_router_enforces_per_handler_auth(db, clean_registry):
     assert response.status_code == 404
 
 
+def test_router_composes_with_bind_to_path(hx_client, clean_registry):
+    from urllib.parse import urlparse
+
+    from hx_requests.utils import get_url
+
+    # A bind_to_path handler (the default): get_url binds the token to the router
+    # endpoint URL it targets, so dispatching that exact URL through the endpoint
+    # verifies (request.path there == the bound path).
+    url = get_url({"request": RequestFactory().get("/page/")}, "simple_get", None)
+    assert urlparse(url).path == "/hx/simple_get/"
+    response = hx_client.get(url, HTTP_HX_REQUEST="true")
+    assert response.status_code == 200
+
+
+def test_router_rejects_token_bound_to_a_different_path(hx_client, clean_registry):
+    from django.core import signing
+    from django.urls import reverse
+
+    from hx_requests.utils import HX_SIGNING_SALT
+
+    # A token bound to the legacy page path, replayed against the router
+    # endpoint, is rejected by the path-binding check.
+    token = signing.dumps(
+        {"name": "simple_get", "object": None, "kwargs": {}, "path": "/page/"},
+        salt=HX_SIGNING_SALT,
+    )
+    response = hx_client.get(
+        reverse("hx:simple_get"), data={HX_TOKEN_PARAM: token}, HTTP_HX_REQUEST="true"
+    )
+    assert response.status_code == 404
+
+
 # --------------------------------------------------------------------------
 # Template tag get_url(): reverse() with a legacy fallback
 # --------------------------------------------------------------------------
