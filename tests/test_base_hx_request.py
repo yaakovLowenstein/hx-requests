@@ -46,6 +46,26 @@ def test_post_template_falls_back_to_view_template():
     assert "base-view-template" in content_of(response)
 
 
+def test_template_falls_back_to_view_get_template_names():
+    # A host view that only resolves its template via get_template_names()
+    # (implicit-naming DetailView/ListView) is honored lazily.
+    from test_app.views import GetTemplateNamesHost
+
+    response = hx_get(hx.ViewTemplateNamesFallbackHx, GetTemplateNamesHost)
+    assert "second-template" in content_of(response)
+
+
+def test_missing_template_on_plain_view_host_raises_improperly_configured():
+    # A plain View host has no template_name and no get_template_names; when
+    # the handler also sets no template, fail with a clear ImproperlyConfigured
+    # naming the handler instead of a cryptic AttributeError.
+    from django.core.exceptions import ImproperlyConfigured
+    from test_app.views import PlainViewHost
+
+    with pytest.raises(ImproperlyConfigured, match="ViewTemplateFallbackHx"):
+        hx_get(hx.ViewTemplateFallbackHx, PlainViewHost)
+
+
 def test_multiple_get_templates_all_rendered():
     response = hx_get(hx.MultiTemplateHx, BaseView)
     html = content_of(response)

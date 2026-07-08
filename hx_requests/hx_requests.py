@@ -7,7 +7,7 @@ from functools import partial
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.forms import Form
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.template import RequestContext
@@ -244,8 +244,6 @@ class BaseHxRequest:
         self._view_get_args = args
         self._view_get_kwargs = kwargs
         self.renderer = Renderer()
-        self.GET_template = self.GET_template or self.view.template_name
-        self.POST_template = self.POST_template or self.view.template_name
 
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request, **kwargs)
@@ -285,9 +283,39 @@ class BaseHxRequest:
         The template(s) to render for the current request method.
 
         Defaults to :attr:`POST_template` on POST and :attr:`GET_template` on
-        GET. Override to select templates dynamically.
+        GET. When neither is set, falls back to the host view's template,
+        resolved lazily -- ``template_name`` first, then
+        ``get_template_names()`` (implicit-naming ``DetailView``/``ListView``).
+        Raises :class:`~django.core.exceptions.ImproperlyConfigured` naming the
+        handler when nothing resolves, instead of an eager ``AttributeError``
+        at setup or a cryptic ``ValueError`` at render. Override to select
+        templates dynamically.
         """
-        return self.POST_template if self.is_post_request else self.GET_template
+        templates = self.POST_template if self.is_post_request else self.GET_template
+        if templates:
+            return templates
+        return self._view_template_fallback()
+
+    def _view_template_fallback(self):
+        view_template = getattr(self.view, "template_name", None)
+        if not view_template:
+            get_template_names = getattr(self.view, "get_template_names", None)
+            if callable(get_template_names):
+                # get_template_names() raises ImproperlyConfigured when it has
+                # nothing to offer (e.g. TemplateView with template_name=None);
+                # treat that as "no template" and fall through to our error.
+                with contextlib.suppress(ImproperlyConfigured):
+                    names = get_template_names()
+                    if names:
+                        view_template = list(names)
+        if not view_template:
+            raise ImproperlyConfigured(
+                f"{type(self).__name__} sets no GET_template/POST_template and its host "
+                f"view {type(self.view).__name__} provides no template (no template_name "
+                "and no resolvable get_template_names()). Set GET_template/POST_template on "
+                "the handler or template_name on the view."
+            )
+        return view_template
 
     def get_headers(self, **kwargs) -> dict:
         """
@@ -623,7 +651,10 @@ class FormHxRequest(BaseHxRequest):
         now contains the validation errors.)
         """
         if self.is_post_request and self.form.is_valid() is False:
-            return self._render_templates(self.GET_template, self.GET_block, **kwargs)
+            # Render the GET template (now carrying the errors), falling back to
+            # the host view's template the same way get_templates() does.
+            templates = self.GET_template or self._view_template_fallback()
+            return self._render_templates(templates, self.GET_block, **kwargs)
         return super().get_response_html(**kwargs)
 
     def get_form_kwargs(self, **kwargs):
