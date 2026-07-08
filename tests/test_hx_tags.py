@@ -56,9 +56,10 @@ def test_hx_post_renders_quoted_attribute_and_csrf_headers():
     # double quotes are HTML-escaped inside the attribute value.
     headers = json.loads(attr_value(out, "hx-headers"))
     token = headers["X-CSRFTOKEN"]
+    # A non-empty CSRF token string is emitted. The exact length/format is
+    # Django's business (a masked token today) -- don't couple the test to it.
     assert isinstance(token, str)
-    # get_token returns a masked 64-char token regardless of CSRF config.
-    assert len(token) == 64
+    assert token
 
 
 def test_hx_post_always_includes_csrf_headers():
