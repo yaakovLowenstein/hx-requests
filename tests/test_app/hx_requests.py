@@ -341,6 +341,29 @@ class ExtraTriggersFormModalHx(WidgetFormModalHx):
 
 
 # --------------------------------------------------------------------------
+# Extension point: post_action hook
+# --------------------------------------------------------------------------
+
+
+class PostActionShortCircuitHx(BaseHxRequest):
+    name = "post_action_short_circuit"
+    GET_template = "simple.html"
+
+    def post_action(self, **kwargs):
+        return HttpResponse("action-response")
+
+
+class PostActionSideEffectHx(BaseHxRequest):
+    name = "post_action_side_effect"
+    GET_template = "simple.html"
+    POST_template = "post.html"
+
+    def post_action(self, **kwargs):
+        Widget.objects.create(name="from-post-action")
+        return None
+
+
+# --------------------------------------------------------------------------
 # Registry edge case: a class with a `name` that is NOT an HxRequest
 # --------------------------------------------------------------------------
 

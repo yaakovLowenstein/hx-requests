@@ -347,6 +347,22 @@ def test_messages_disabled_globally():
 
 
 # --------------------------------------------------------------------------
+# Extension point: post_action hook
+# --------------------------------------------------------------------------
+
+
+def test_post_action_short_circuits_with_its_response():
+    response = hx_post(hx.PostActionShortCircuitHx, BaseView)
+    assert content_of(response) == "action-response"
+
+
+def test_post_action_returning_none_runs_side_effect_and_renders_normally():
+    response = hx_post(hx.PostActionSideEffectHx, BaseView)
+    assert Widget.objects.filter(name="from-post-action").exists()
+    assert response.status_code == 200
+
+
+# --------------------------------------------------------------------------
 # Dispatch / routing
 # --------------------------------------------------------------------------
 
