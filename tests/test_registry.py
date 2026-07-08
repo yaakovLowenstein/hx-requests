@@ -114,6 +114,16 @@ def test_parse_file_skips_unparsable_files_with_warning(clean_registry, tmp_path
     assert "scratch.py" in caplog.text
 
 
+def test_parse_file_skips_unreadable_file_with_warning(clean_registry, caplog):
+    # A file that cannot be read (missing / unreadable) is skipped loudly
+    # rather than blowing up discovery for the whole app.
+    HxRequestRegistry.reset()
+    with caplog.at_level(logging.WARNING, logger="hx_requests.hx_registry"):
+        HxRequestRegistry._parse_file("/no/such/hx_requests_file.py", "scratch.missing")
+    assert HxRequestRegistry._registry == {}
+    assert "could not read it" in caplog.text
+
+
 def test_duplicate_names_raise(clean_registry, tmp_path):
     HxRequestRegistry.reset()
     source = tmp_path / "scratch.py"
