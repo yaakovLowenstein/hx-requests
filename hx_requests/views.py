@@ -4,6 +4,7 @@ import logging
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -51,7 +52,15 @@ class HtmxViewMixin:
             and request.method.lower() in self.http_method_names
         ):
             request = self._resolve_hx_token(request)
-            kwargs.update(self.get_hx_extra_kwargs(request))
+            extra_kwargs = self.get_hx_extra_kwargs(request)
+            collisions = set(kwargs) & set(extra_kwargs)
+            if collisions:
+                raise ImproperlyConfigured(
+                    f"hx-requests kwarg(s) {sorted(collisions)} collide with URLconf "
+                    f"kwargs on view {self.__class__.__name__}. A signed template-tag "
+                    "kwarg must not shadow a URL kwarg -- rename the template-tag kwarg."
+                )
+            kwargs.update(extra_kwargs)
             hx_request = self._setup_hx_request(request, *args, **kwargs)
 
             # Use request from hx_request, in case use_current_url is set to True

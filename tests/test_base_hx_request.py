@@ -409,6 +409,15 @@ def test_tampered_hx_token_raises_404():
         BaseView.as_view()(request)
 
 
+def test_hx_kwarg_colliding_with_urlconf_kwarg_is_rejected():
+    # A template-tag kwarg must not silently shadow a URLconf kwarg (e.g. a
+    # URL <pk> the page view relies on). The collision is a misconfiguration.
+    from django.core.exceptions import ImproperlyConfigured
+
+    with pytest.raises(ImproperlyConfigured, match="pk"):
+        hx_get(hx.SimpleGetHx, BaseView, view_kwargs={"pk": 1}, hx_kwargs={"pk": 2})
+
+
 def test_unknown_hx_request_name_raises_404():
     request = RequestFactory().get("/", data={HX_TOKEN_PARAM: sign_hx_payload("does_not_exist")})
     request.META["HTTP_HX_REQUEST"] = True
