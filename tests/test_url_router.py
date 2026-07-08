@@ -157,3 +157,49 @@ def test_get_url_falls_back_to_request_path_for_unknown_name(rf, clean_registry)
     request = rf.get("/some/page/")
     url = get_url({"request": request}, "not_a_registered_router_name", None)
     assert url.startswith("/some/page/?")
+
+
+# --------------------------------------------------------------------------
+# Context sharing, plain-htmx fall-through, startup ordering
+# --------------------------------------------------------------------------
+
+
+def test_shares_context_from_reproduces_view_context(hx_client, clean_registry):
+    from test_app.hx_requests import SharesContextHx
+
+    from tests.helpers import hx_get_url
+
+    response = hx_get_url(hx_client, SharesContextHx)
+    assert response.status_code == 200
+    assert b"from-the-view" in response.content
+
+
+def test_no_shares_context_gets_no_view_context(hx_client, clean_registry):
+    from django.urls import reverse
+
+    # simple_get has no shares_context_from; view context is simply absent.
+    # (It renders fine because it declares its own GET_template.)
+    response = hx_client.get(
+        reverse("hx:simple_get"),
+        data={HX_TOKEN_PARAM: sign_hx_payload("simple_get")},
+        HTTP_HX_REQUEST="true",
+    )
+    assert response.status_code == 200
+
+
+def test_plain_htmx_without_token_is_not_a_router_request():
+    # A token-less HTMX request carries no signed payload, so it is not an
+    # hx-requests request -- the page view (legacy path) handles it. The router
+    # only mounts named handlers; it never intercepts token-less htmx.
+    from hx_requests.utils import is_hx_request
+
+    request = RequestFactory().get("/", HTTP_HX_REQUEST="true")
+    assert is_hx_request(request) is False
+
+
+def test_urlconf_builds_without_touching_the_registry(clean_registry):
+    # Importing the URLconf must build patterns without error even if the
+    # registry was reset (initialize() runs inside get_urls()).
+    HxRequestRegistry.reset()
+    urls = HxRequestRegistry.get_urls()
+    assert any(p.name == "simple_get" for p in urls)

@@ -14,6 +14,18 @@ class BaseView(HtmxViewMixin, TemplateView):
         return context
 
 
+class RouterContextView(TemplateView):
+    """A plain view (no HtmxViewMixin) used only as a ``shares_context_from``
+    context source on the router path."""
+
+    template_name = "base_view.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["view_flavor"] = "from-the-view"
+        return context
+
+
 class WidgetListView(HtmxViewMixin, ListView):
     model = Widget
     template_name = "widget_list.html"
