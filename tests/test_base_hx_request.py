@@ -396,6 +396,13 @@ def test_get_templates_hook_selects_the_rendered_template():
     assert "second-template" in content_of(response)
 
 
+def test_form_hx_request_without_form_class_raises_improperly_configured():
+    from django.core.exceptions import ImproperlyConfigured
+
+    with pytest.raises(ImproperlyConfigured, match="NoFormClassHx"):
+        hx_get(hx.NoFormClassHx, BaseView)
+
+
 # --------------------------------------------------------------------------
 # Dispatch / routing
 # --------------------------------------------------------------------------
