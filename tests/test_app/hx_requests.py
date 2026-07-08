@@ -262,6 +262,12 @@ class WidgetFormHx(FormHxRequest):
     POST_template = "form_success.html"
 
 
+class NoFormClassHx(FormHxRequest):
+    # form_class intentionally left as None -- must fail loudly at setup.
+    name = "no_form_class"
+    GET_template = "form.html"
+
+
 class InitialKwargsFormHx(WidgetFormHx):
     name = "initial_kwargs_form"
     set_initial_from_kwargs = True

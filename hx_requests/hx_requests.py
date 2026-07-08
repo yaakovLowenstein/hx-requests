@@ -590,10 +590,18 @@ class FormHxRequest(BaseHxRequest):
         (useful when the form already renders inline field errors).
     """
 
-    form_class: Form = None
+    form_class: type[Form] | None = None
     add_form_errors_to_error_message: bool = False
     set_initial_from_kwargs: bool = False
     show_form_invalid_message: bool = True
+
+    def _setup_hx_request(self, request, *args, **kwargs):
+        if self.form_class is None:
+            raise ImproperlyConfigured(
+                f"{type(self).__name__} is a FormHxRequest but sets no form_class. "
+                "Set form_class to the Form/ModelForm this handler drives."
+            )
+        super()._setup_hx_request(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict:
         """
