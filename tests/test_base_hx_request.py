@@ -374,12 +374,30 @@ def test_non_htmx_request_falls_through_to_the_view():
     assert "view_flavor:from-the-view" in content_of(response)
 
 
-def test_missing_hx_token_raises_404():
+def test_htmx_request_without_token_falls_through_to_the_view():
+    # An htmx request that carries no hx token is plain htmx (a hand-written
+    # hx-get widget, sort/filter/paginate) -- it must reach the page view, not
+    # 404. Only a present-but-invalid token is a hard error.
     request = RequestFactory().get("/")
     request.META["HTTP_HX_REQUEST"] = True
     add_middleware_to_request(request)
-    with pytest.raises(Http404, match="Missing required query param"):
-        BaseView.as_view()(request)
+    response = BaseView.as_view()(request)
+    response.render()
+    assert response.status_code == 200
+    assert "base-view-template" in content_of(response)
+
+
+def test_boosted_request_falls_through_to_the_view():
+    # hx-boost navigation sends the HX-Request (+ HX-Boosted) header but no hx
+    # token; boosting to a mixin view must render the page, not 404.
+    request = RequestFactory().get("/")
+    request.META["HTTP_HX_REQUEST"] = True
+    request.META["HTTP_HX_BOOSTED"] = True
+    add_middleware_to_request(request)
+    response = BaseView.as_view()(request)
+    response.render()
+    assert response.status_code == 200
+    assert "base-view-template" in content_of(response)
 
 
 def test_tampered_hx_token_raises_404():

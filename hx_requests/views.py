@@ -45,7 +45,11 @@ class HtmxViewMixin:
         # handoff runs first and skips them. `check_auth_mixin_ordering`
         # (checks.py) warns at startup when an auth mixin is ordered after this
         # mixin; enforce per-handler authorization on the HxRequest itself.
-        if is_htmx_request(request) and request.method.lower() in self.http_method_names:
+        if (
+            is_htmx_request(request)
+            and request.GET.get(HX_TOKEN_PARAM)
+            and request.method.lower() in self.http_method_names
+        ):
             request = self._resolve_hx_token(request)
             kwargs.update(self.get_hx_extra_kwargs(request))
             hx_request = self._setup_hx_request(request, *args, **kwargs)
@@ -53,9 +57,9 @@ class HtmxViewMixin:
             # Use request from hx_request, in case use_current_url is set to True
             return hx_request.dispatch(hx_request.request, *args, **kwargs)
 
-        # Non-HTMX requests (full page loads, plain-htmx the view handles
-        # itself) chain through super().dispatch() so the page view's own
-        # mixins run normally instead of being short-circuited.
+        # No hx token: fall through to the page view's normal dispatch (full
+        # page loads, hx-boost, and plain htmx all land here). A present-but-
+        # invalid token never reaches this line -- it is rejected above.
         return super().dispatch(request, *args, **kwargs)
 
     def get_hx_request(self, request):
