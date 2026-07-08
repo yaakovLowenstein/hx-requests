@@ -322,6 +322,36 @@ def test_use_current_url_without_header_is_a_noop():
     assert "bar:from-request" in html
 
 
+def test_use_current_url_skips_framework_params_from_the_header():
+    # Framework params tacked onto HX-Current-URL (a forged object=, a fake
+    # token) must never be merged from the current URL -- those are trusted
+    # only via the signed token. Only ordinary params come through. (kwargs
+    # are carried inside the signed token, never as query params, so there is
+    # no kwarg param to forge here.)
+    from test_app.views import BaseView as _BaseView
+
+    request = RequestFactory().get("/page/")
+    request.META["HTTP_HX_CURRENT_URL"] = (
+        "http://testserver/page?foo=ok&object=forged&hx_request_name=evil&"
+        f"{HX_TOKEN_PARAM}=forgedtoken"
+    )
+    result = _BaseView()._use_current_url(request)
+
+    assert result.GET["foo"] == "ok"
+    assert "object" not in result.GET
+    assert "hx_request_name" not in result.GET
+    assert HX_TOKEN_PARAM not in result.GET
+
+
+def test_empty_name_signed_token_is_rejected():
+    # A validly-signed token whose name is empty is not a real handler -> 404.
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: sign_hx_payload("")})
+    request.META["HTTP_HX_REQUEST"] = True
+    add_middleware_to_request(request)
+    with pytest.raises(Http404, match="hx_request_name"):
+        BaseView.as_view()(request)
+
+
 # --------------------------------------------------------------------------
 # Triggers
 # --------------------------------------------------------------------------

@@ -89,3 +89,17 @@ def test_setup_exposes_args_and_kwargs_like_django_view_setup():
     hx._setup_hx_request(RequestFactory().get("/"), "posarg", flavor="spicy")
     assert hx.args == ("posarg",)
     assert hx.kwargs == {"flavor": "spicy"}
+
+
+def test_preset_hx_object_is_not_overwritten_at_setup():
+    # A pre-set hx_object (assigned before setup) is left untouched -- setup
+    # only resolves it from the token when it has not already been provided.
+    class _ViewStub:
+        template_name = "simple.html"
+
+    hx = BaseHxRequest()
+    hx.view = _ViewStub()
+    sentinel = object()
+    hx.hx_object = sentinel
+    hx._setup_hx_request(RequestFactory().get("/"))
+    assert hx.hx_object is sentinel
