@@ -363,6 +363,22 @@ class PostActionSideEffectHx(BaseHxRequest):
         return None
 
 
+class DynamicRedirectHx(BaseHxRequest):
+    name = "dynamic_redirect"
+    GET_template = "simple.html"
+
+    def get_redirect_url(self, **kwargs):
+        return "/computed-target/"
+
+
+class DynamicTemplateHx(BaseHxRequest):
+    name = "dynamic_template"
+    GET_template = "simple.html"
+
+    def get_templates(self):
+        return "second.html"
+
+
 # --------------------------------------------------------------------------
 # Registry edge case: a class with a `name` that is NOT an HxRequest
 # --------------------------------------------------------------------------
