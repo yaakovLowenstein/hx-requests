@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.48.1 (2026-07-08)
+
+### Performance
+
+* Skip the page-view context harvest when a POST renders nothing ([`c7ee1c4`](https://github.com/yaakovLowenstein/hx-requests/commit/c7ee1c425279d1725fc81f29d6e9ec27744cab55))
+
 ## v0.48.0 (2026-07-07)
 
 ### Fix
