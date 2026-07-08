@@ -246,7 +246,9 @@ def token_from_url(url):
 
 def test_get_url_basic():
     url = get_url(make_context(), "simple_get", None)
-    assert url.startswith("/page/?")
+    # simple_get is a registered handler, so get_url reverse()s the router URL
+    # (tests/urls.py mounts it) in preference to the request path.
+    assert url.startswith("/hx/simple_get/?")
     payload = token_from_url(url)
     assert payload["name"] == "simple_get"
     assert payload["object"] is None

@@ -128,5 +128,24 @@ Path-binding adds a *where* constraint on top: a token verifies only on the
 path it was rendered on, unless a handler opts out with
 :code:`bind_to_path = False`.
 
+.. note::
+
+    **On the URL router the replay window narrows further.** When handlers are
+    mounted on their own URLs (see :ref:`How To Mount HxRequests on URLs
+    <how-to-mount-on-urls>`), the handler name comes from the URL path, not the
+    token, and the endpoint rejects a token whose name doesn't match the URL it
+    arrived on (:code:`Http404`). A token for :code:`edit_widget` can no longer
+    even be *replayed against another handler's endpoint* — though per-handler
+    authorization is still what decides whether *this user* may run it, and
+    remains the primary defense on both the router and the legacy path. Because
+    the router endpoint is a real Django :code:`View`, Django's own
+    :code:`login_required` / :code:`LoginRequiredMixin` also compose natively
+    with it. Path-binding (:code:`bind_to_path`) is a *legacy-dispatch* concept
+    and is redundant on the router: the endpoint's name-binding already blocks
+    cross-handler replay and each handler has its own URL, so router-minted
+    tokens are not path-bound. Enforcement still honors a :code:`path` claim if
+    one is present, so a legacy-minted bound token replayed at an endpoint is
+    still rejected.
+
 Continue to :ref:`How To Secure HxRequests <how-to-secure-hxrequests>`
 for configuration examples.

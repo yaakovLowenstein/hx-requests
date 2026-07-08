@@ -32,8 +32,10 @@ def payload_from_attr(attr, name="hx-get"):
 
 
 def test_hx_get_renders_quoted_attribute():
+    # simple_get is a registered handler, so the router is reverse()d
+    # (tests/urls.py mounts it) in preference to the current path.
     out = hx_get(make_context(), "simple_get")
-    assert out.startswith('hx-get="/page/?')
+    assert out.startswith('hx-get="/hx/simple_get/?')
     assert out.endswith('"')
     assert payload_from_attr(out)["name"] == "simple_get"
 
@@ -49,7 +51,7 @@ def test_hx_get_includes_object_and_kwargs(widget):
 
 def test_hx_post_renders_quoted_attribute_and_csrf_headers():
     out = hx_post(make_context(), "simple_get")
-    assert out.startswith('hx-post="/page/?')
+    assert out.startswith('hx-post="/hx/simple_get/?')
     assert payload_from_attr(out, "hx-post")["name"] == "simple_get"
 
     # hx-headers is emitted as a quoted attribute carrying JSON; the JSON's
@@ -71,7 +73,7 @@ def test_hx_post_always_includes_csrf_headers():
 
 def test_hx_url_returns_bare_url():
     out = hx_url(make_context(), "simple_get")
-    assert out.startswith("/page/?")
+    assert out.startswith("/hx/simple_get/?")
     query = parse_qs(urlparse(out).query)
     assert unsign_hx_payload(query[HX_TOKEN_PARAM][0])["name"] == "simple_get"
 
@@ -79,6 +81,6 @@ def test_hx_url_returns_bare_url():
 def test_tags_render_through_the_template_engine():
     template = Template("{% load hx_tags %}{% hx_url 'simple_get' %}")
     rendered = template.render(Context(make_context()))
-    assert rendered.startswith("/page/?")
+    assert rendered.startswith("/hx/simple_get/?")
     query = parse_qs(urlparse(rendered).query)
     assert unsign_hx_payload(query[HX_TOKEN_PARAM][0])["name"] == "simple_get"

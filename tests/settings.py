@@ -19,7 +19,7 @@ sys.path.insert(0, str(BASE_DIR))
 SECRET_KEY = "test-secret-key-not-for-production"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
-ROOT_URLCONF = None
+ROOT_URLCONF = "urls"
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

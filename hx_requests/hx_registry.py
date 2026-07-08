@@ -22,6 +22,7 @@ import os
 import threading
 
 from django.apps import apps
+from django.urls import path
 
 from hx_requests.hx_requests import BaseHxRequest
 
@@ -217,6 +218,34 @@ class HxRequestRegistry:
         # By now, any entries that failed to import or failed subclass check
         # may still be tuples. Filter them out to match typical expectation.
         return {k: v for k, v in cls._registry.items() if isinstance(v, type)}
+
+    @classmethod
+    def get_urls(cls):
+        """
+        Build one ``path()`` per registered handler name, routed to
+        :class:`~hx_requests.views.HxEndpointView`.
+
+        Wire it into a root URLconf once::
+
+            from hx_requests.hx_registry import HxRequestRegistry
+
+            urlpatterns = [
+                path("hx/", include((HxRequestRegistry.get_urls(), "hx_requests"), namespace="hx")),
+            ]
+
+        Patterns are built from names only -- handler classes still import
+        lazily on first request -- so this is cheap and preserves lazy loading.
+        Patterns are a snapshot at URLconf-build time: adding a handler needs a
+        server restart, same as any URLconf change.
+        """
+        # Imported here, not at module scope: views.py imports this module, so a
+        # top-level import would be circular.
+        from hx_requests.views import HxEndpointView
+
+        cls.initialize()
+        return [
+            path(f"{name}/", HxEndpointView.as_view(hx_name=name), name=name) for name in cls._registry
+        ]
 
     @classmethod
     def reset(cls):

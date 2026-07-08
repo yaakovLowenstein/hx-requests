@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from test_app.forms import WidgetForm
 from test_app.models import Gadget, Widget
+from test_app.views import RouterContextView
 
 from hx_requests.hx_requests import (
     BaseHxRequest,
@@ -384,3 +385,16 @@ class OwnerOnlyHx(BaseHxRequest):
 
     def has_permission(self, request):
         return getattr(request.user, "username", None) == "owner"
+
+
+# --------------------------------------------------------------------------
+# Router: context sharing (#10)
+# --------------------------------------------------------------------------
+
+
+class SharesContextHx(BaseHxRequest):
+    """Reproduces page-view context on the router path via shares_context_from."""
+
+    name = "shares_context"
+    GET_template = "view_flavor.html"
+    shares_context_from = RouterContextView

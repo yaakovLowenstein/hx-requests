@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core import signing
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.urls import NoReverseMatch, reverse
 
 from hx_requests.constants import (
     HX_SIGNING_SALT,
@@ -176,12 +177,30 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
                 continue
             params[k] = v[0] if len(v) == 1 else v
 
-    # The token is bound to the path it is rendered on (so it only verifies when
-    # replayed back to this same path) unless the handler opts out.
-    bind_path = request.path if _handler_binds_to_path(hx_request_name) else None
+    # Prefer the router URL when it is installed; fall back to the current path
+    # (legacy page-view dispatch) so a project that has not wired the router
+    # keeps working with no template edits.
+    try:
+        base = reverse(f"hx:{hx_request_name}")
+        on_router = True
+    except NoReverseMatch:
+        base = request.path
+        on_router = False
+
+    # Path-binding is a *legacy-dispatch* concept: query-param routing hides the
+    # handler behind the page URL, so the token is pinned to its render path to
+    # narrow cross-page replay. The router makes that redundant -- the handler has
+    # its own URL and the endpoint enforces name-binding -- so we do NOT path-bind
+    # on the router (binding to the single endpoint path would add nothing).
+    # Enforcement still honors a "path" claim if one is present (see
+    # bind_hx_token), so a legacy-minted bound token replayed at an endpoint is
+    # still rejected.
+    bind_path = None
+    if not on_router and _handler_binds_to_path(hx_request_name):
+        bind_path = request.path
     params[HX_TOKEN_PARAM] = sign_hx_payload(hx_request_name, obj, bind_path=bind_path, **kwargs)
 
-    return f"{request.path}?{urlencode(params, doseq=True)}"
+    return f"{base}?{urlencode(params, doseq=True)}"
 
 
 def _handler_binds_to_path(hx_request_name):
