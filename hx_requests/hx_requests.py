@@ -94,6 +94,14 @@ class BaseHxRequest:
     #: :meth:`get_queryset` resolves the round-trip object through this model's
     #: default manager. Mirrors Django's ``SingleObjectMixin.model``.
     model = None
+    #: Optional Django view class to harvest page-view context from on the
+    #: router path (there is no page view in the request cycle there). When set,
+    #: the endpoint instantiates it, runs ``setup()``, and assigns it as the
+    #: context source -- reproducing the legacy implicit-context behavior with a
+    #: one-line declaration. Leave unset (the explicit, non-surprising default)
+    #: and a router handler simply gets no page-view context;
+    #: ``get_context_on_GET`` / ``get_context_on_POST`` / ``hx_object`` still work.
+    shares_context_from = None
     hx_object_name: str = "hx_object"
     GET_template: str | list = ""
     POST_template: str | list = ""
@@ -151,7 +159,7 @@ class BaseHxRequest:
             | self as hx_request
         """
         context = RequestContext(self.request)
-        if self.get_views_context and hasattr(self.view_response, "context_data"):
+        if self.view is not None and self.get_views_context and hasattr(self.view_response, "context_data"):
             context.update(self.view_response.context_data)
         if self.kwargs_as_context:
             context.update(kwargs)
@@ -182,7 +190,7 @@ class BaseHxRequest:
         if self.hx_object and self.hx_object.pk:
             with contextlib.suppress(ObjectDoesNotExist):
                 self.hx_object.refresh_from_db()
-        if self.refresh_views_context_on_POST:
+        if self.refresh_views_context_on_POST and self.view is not None:
             if hasattr(self.view, "object") and self.view.object:
                 self.view.object.refresh_from_db()
                 context["object"] = self.view.object
@@ -245,16 +253,19 @@ class BaseHxRequest:
         self._view_get_args = args
         self._view_get_kwargs = kwargs
         self.renderer = Renderer()
-        self.GET_template = self.GET_template or self.view.template_name
-        self.POST_template = self.POST_template or self.view.template_name
+        view_template = getattr(self.view, "template_name", None)
+        self.GET_template = self.GET_template or view_template
+        self.POST_template = self.POST_template or view_template
 
         if not hasattr(self, "hx_object"):
             self.hx_object = self.get_hx_object(request, **kwargs)
 
         # POST must snapshot the view context before post() mutates it; skip that
         # work when the POST renders nothing (refresh_page/redirect/return_empty).
+        # With no page view (router path) there is nothing to harvest.
         if (
-            self.get_views_context
+            self.view is not None
+            and self.get_views_context
             and self.is_post_request
             and not (self.refresh_page or self.redirect or self.return_empty)
         ):
