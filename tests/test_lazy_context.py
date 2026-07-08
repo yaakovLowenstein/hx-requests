@@ -38,3 +38,14 @@ def test_view_get_runs_once_when_context_is_rendered():
     CountingView.get_call_count = 0
     hx_get(hx.SimpleGetHx, CountingView)
     assert CountingView.get_call_count == 1
+
+
+@pytest.mark.django_db()
+def test_refresh_context_on_post_reharvests_through_view_get():
+    # refresh_views_context_on_POST rebuilds the view context by re-invoking
+    # the same view.get() harvest path (not a divergent get_context_data call),
+    # so the post-mutation snapshot goes through identical machinery. That is
+    # the pre-post snapshot plus one fresh re-harvest = two view.get() calls.
+    CountingView.get_call_count = 0
+    hx_post(hx.AddWidgetRefreshContextHx, CountingView)
+    assert CountingView.get_call_count == 2
