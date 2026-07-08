@@ -230,6 +230,11 @@ class BaseHxRequest:
 
     def _setup_hx_request(self, request, *args, **kwargs):
         self.request = request
+        # Mirror Django's View.setup: expose the resolved args/kwargs on the
+        # handler so hooks can read self.kwargs directly. Hooks still receive
+        # **kwargs too, so this is purely additive.
+        self.args = args
+        self.kwargs = kwargs
         self._view_get_args = args
         self._view_get_kwargs = kwargs
         self.renderer = Renderer()
