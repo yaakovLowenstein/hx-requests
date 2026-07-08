@@ -23,6 +23,7 @@ from hx_requests.utils import (
     sign_hx_payload,
     unsign_hx_payload,
 )
+from tests.helpers import make_context
 
 # --------------------------------------------------------------------------
 # serialize / deserialize
@@ -275,10 +276,6 @@ def test_is_hx_request_false_on_bad_signature():
 # --------------------------------------------------------------------------
 # get_url
 # --------------------------------------------------------------------------
-
-
-def make_context(path="/page/", **extra):
-    return {"request": RequestFactory().get(path, **extra)}
 
 
 def token_from_url(url):

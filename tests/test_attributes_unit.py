@@ -9,6 +9,7 @@ from hx_requests.hx_requests import (
     FormModalHxRequest,
     ModalHxRequest,
 )
+from tests.helpers import make_hx
 
 
 def test_base_hx_request_defaults():
@@ -46,14 +47,6 @@ def test_form_modal_defaults_and_inheritance():
     assert issubclass(FormModalHxRequest, ModalHxRequest)
     assert issubclass(FormModalHxRequest, FormHxRequest)
     assert issubclass(DeleteHxRequest, BaseHxRequest)
-
-
-def make_hx(**attrs):
-    hx = BaseHxRequest()
-    hx.request = RequestFactory().get("/")
-    for key, value in attrs.items():
-        setattr(hx, key, value)
-    return hx
 
 
 @override_settings(HX_REQUESTS_USE_HX_MESSAGES=True)

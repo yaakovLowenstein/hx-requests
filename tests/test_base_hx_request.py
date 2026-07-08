@@ -11,13 +11,9 @@ from test_app.models import Widget
 from test_app.views import BaseView, WidgetContextView, WidgetListView, WidgetUpdateView
 
 from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
-from tests.helpers import add_middleware_to_request, hx_get, hx_post
+from tests.helpers import add_middleware_to_request, content_of, hx_get, hx_post
 
 pytestmark = pytest.mark.django_db
-
-
-def content_of(response):
-    return response.content.decode()
 
 
 # --------------------------------------------------------------------------

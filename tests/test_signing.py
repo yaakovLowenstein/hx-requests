@@ -15,13 +15,9 @@ from test_app import hx_requests as hx
 from test_app.views import BaseView
 
 from hx_requests.utils import HX_TOKEN_PARAM, sign_hx_payload
-from tests.helpers import add_middleware_to_request, hx_get
+from tests.helpers import add_middleware_to_request, content_of, hx_get
 
 pytestmark = pytest.mark.django_db
-
-
-def content_of(response):
-    return response.content.decode()
 
 
 def test_loose_kwarg_param_is_not_injected_into_context():

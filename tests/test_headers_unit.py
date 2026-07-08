@@ -1,16 +1,6 @@
 """Unit tests for BaseHxRequest.get_headers precedence and method handling."""
 
-from django.test import RequestFactory
-
-from hx_requests.hx_requests import BaseHxRequest
-
-
-def make_hx(method="get", **attrs):
-    hx = BaseHxRequest()
-    hx.request = getattr(RequestFactory(), method)("/")
-    for key, value in attrs.items():
-        setattr(hx, key, value)
-    return hx
+from tests.helpers import make_hx
 
 
 def test_no_flags_no_headers():

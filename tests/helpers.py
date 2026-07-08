@@ -24,6 +24,31 @@ def add_middleware_to_request(request):
     return request
 
 
+def content_of(response):
+    """Decode a response body to text."""
+    return response.content.decode()
+
+
+def make_context(path="/page/", **extra):
+    """A minimal template-tag context wrapping a GET request."""
+    return {"request": RequestFactory().get(path, **extra)}
+
+
+def make_hx(method="get", **attrs):
+    """
+    Instantiate a bare BaseHxRequest with a request and the given attributes,
+    for unit tests that exercise a single method in isolation. (Handlers that
+    need a wired get_triggers or a concrete form subclass build their own.)
+    """
+    from hx_requests.hx_requests import BaseHxRequest
+
+    hx = BaseHxRequest()
+    hx.request = getattr(RequestFactory(), method)("/")
+    for key, value in attrs.items():
+        setattr(hx, key, value)
+    return hx
+
+
 def _create_test_request(
     hx_request,
     request_attrs=None,
