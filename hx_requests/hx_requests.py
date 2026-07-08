@@ -269,6 +269,26 @@ class BaseHxRequest:
         verbose_name = str(self.hx_object._meta.verbose_name)
         return verbose_name[:1].upper() + verbose_name[1:]
 
+    def get_redirect_url(self, **kwargs) -> str | None:
+        """
+        URL to redirect to after a POST (emitted as the ``HX-Redirect``
+        header), or ``None`` for no redirect.
+
+        Defaults to the static :attr:`redirect` attribute. Override to compute
+        a redirect target dynamically instead of mutating ``self.redirect`` in
+        ``form_valid``.
+        """
+        return self.redirect
+
+    def get_templates(self):
+        """
+        The template(s) to render for the current request method.
+
+        Defaults to :attr:`POST_template` on POST and :attr:`GET_template` on
+        GET. Override to select templates dynamically.
+        """
+        return self.POST_template if self.is_post_request else self.GET_template
+
     def get_headers(self, **kwargs) -> dict:
         """
         Prepare the headers for the response.
@@ -277,8 +297,10 @@ class BaseHxRequest:
         if self.is_post_request:
             if self.refresh_page:
                 headers["HX-Refresh"] = "true"
-            elif self.redirect:
-                headers["HX-Redirect"] = self.redirect
+            else:
+                redirect_url = self.get_redirect_url(**kwargs)
+                if redirect_url:
+                    headers["HX-Redirect"] = redirect_url
         if self.no_swap:
             headers["HX-Reswap"] = "none"
 
@@ -371,13 +393,13 @@ class BaseHxRequest:
         Prepare the HTML for the response.
         """
         if self.is_post_request:
-            if self.refresh_page or self.redirect or self.return_empty:
+            if self.refresh_page or self.get_redirect_url(**kwargs) or self.return_empty:
                 html = ""
             else:
-                html = self._render_templates(self.POST_template, self.POST_block, **kwargs)
+                html = self._render_templates(self.get_templates(), self.POST_block, **kwargs)
 
         else:
-            html = self._render_templates(self.GET_template, self.GET_block, **kwargs)
+            html = self._render_templates(self.get_templates(), self.GET_block, **kwargs)
 
         return html
 
@@ -446,7 +468,7 @@ class BaseHxRequest:
         Gets the response.
         """
         html = self.get_response_html(**kwargs)
-        if self.use_messages and not (self.refresh_page or self.redirect):
+        if self.use_messages and not (self.refresh_page or self.get_redirect_url(**kwargs)):
             html += self._get_messages_html(**kwargs)
 
         return HttpResponse(

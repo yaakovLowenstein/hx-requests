@@ -362,6 +362,20 @@ def test_post_action_returning_none_runs_side_effect_and_renders_normally():
     assert response.status_code == 200
 
 
+def test_get_redirect_url_hook_drives_the_redirect_response():
+    # A dynamic redirect can be computed via get_redirect_url instead of
+    # mutating self.redirect. The HX-Redirect header uses the computed URL and
+    # the body is empty (a redirect renders nothing).
+    response = hx_post(hx.DynamicRedirectHx, BaseView)
+    assert response.headers["HX-Redirect"] == "/computed-target/"
+    assert content_of(response) == ""
+
+
+def test_get_templates_hook_selects_the_rendered_template():
+    response = hx_get(hx.DynamicTemplateHx, BaseView)
+    assert "second-template" in content_of(response)
+
+
 # --------------------------------------------------------------------------
 # Dispatch / routing
 # --------------------------------------------------------------------------
