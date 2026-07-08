@@ -207,7 +207,8 @@ class BaseHxRequest:
         queryset raises ``Http404`` (object-level authorization), not a 500.
         Non-model values are deserialized as plain JSON.
         """
-        serialized = request.GET.get("object")
+        payload = getattr(request, "hx_payload", None) or {}
+        serialized = payload.get("object")
         if not serialized:
             return None
 

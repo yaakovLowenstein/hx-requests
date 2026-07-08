@@ -64,7 +64,7 @@ def test_bound_token_on_its_own_path_is_accepted():
     # The legitimate case: the token is used on the path it was bound to.
     request = _bound_request(path="/page/", bound_to="/page/")
     BaseView()._resolve_hx_token(request)
-    assert request.GET["hx_request_name"] == "simple_get"
+    assert request.hx_payload["name"] == "simple_get"
 
 
 @override_settings(HX_REQUESTS_BIND_TOKEN_TO_PATH=False)
@@ -80,4 +80,4 @@ def test_global_setting_disables_enforcement():
     # immediately (e.g. after enabling it to work around path rewriting).
     request = _bound_request(path="/other/", bound_to="/page/")
     BaseView()._resolve_hx_token(request)
-    assert request.GET["hx_request_name"] == "simple_get"
+    assert request.hx_payload["name"] == "simple_get"

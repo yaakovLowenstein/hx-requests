@@ -63,7 +63,8 @@ class HtmxViewMixin:
         return super().dispatch(request, *args, **kwargs)
 
     def get_hx_request(self, request):
-        hx_request_name = request.GET.get("hx_request_name")
+        payload = getattr(request, "hx_payload", None) or {}
+        hx_request_name = payload.get("name")
         if not hx_request_name:
             logger.debug(
                 "hx_requests: denied (404) on %s -- verified token carried no HxRequest name.",
@@ -92,12 +93,13 @@ class HtmxViewMixin:
 
     def _resolve_hx_token(self, request):
         """
-        Verify the signed ``hx`` token and rebuild ``request.GET`` so the rest
-        of the chain reads *trusted* framework data. Everything the framework
-        controls (name, object, kwargs) comes from the signed token; any
-        client-supplied framework params on the raw query string are dropped so
-        they cannot shadow or forge the verified values. Non-framework params
-        (page filters, runtime hx-vals) are left untouched.
+        Verify the signed ``hx`` token and attach its *trusted* contents to the
+        request as ``request.hx_payload`` (``{"name", "object", "kwargs", ...}``).
+        Everything the framework controls (name, object, kwargs) comes from the
+        signed token; any client-supplied framework params on the raw query
+        string are stripped so they cannot shadow or forge the verified values
+        and cannot leak into a page-view template's ``request.GET.urlencode()``.
+        Non-framework params (page filters, runtime hx-vals) are left untouched.
         """
         if not request.GET.get(HX_TOKEN_PARAM):
             logger.debug("hx_requests: denied (404) -- request carried no '%s' token.", HX_TOKEN_PARAM)
@@ -123,11 +125,11 @@ class HtmxViewMixin:
         for key in list(sanitized.keys()):
             if key in (HX_TOKEN_PARAM, "hx_request_name", "object"):
                 del sanitized[key]
-        sanitized["hx_request_name"] = payload["name"]
-        if payload.get("object"):
-            sanitized["object"] = payload["object"]
-
         request.GET = sanitized
+
+        # The verified payload is attached to the request, not smuggled back
+        # through request.GET; get_hx_request / get_hx_object read it here.
+        request.hx_payload = payload
         # Verified, serialized kwargs from the token -- the only source of
         # kwargs-as-context. Raw query params never feed this again.
         request._hx_kwargs = payload.get("kwargs", {})

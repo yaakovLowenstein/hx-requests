@@ -71,8 +71,27 @@ def test_resolve_strips_client_supplied_framework_params():
     BaseView()._resolve_hx_token(request)
 
     assert request.GET.get("object") is None  # loose object dropped, token had none
-    assert request.GET["hx_request_name"] == "simple_get"  # from token, not "other"
+    assert request.hx_payload["name"] == "simple_get"  # from token, not "other"
     assert request.GET["page"] == "2"  # legit loose param preserved
     # A loose param a client invents (whatever its name) is harmless: kwargs are
     # sourced only from the signed token, never from raw query input.
     assert request._hx_kwargs == {}  # kwargs sourced only from the token
+
+
+def test_resolve_does_not_smuggle_framework_data_through_get(widget):
+    # The verified name/object ride on request.hx_payload, never written back
+    # into request.GET. Otherwise a page-view template's
+    # `{{ request.GET.urlencode }}` (e.g. a pagination link) would carry
+    # hx_request_name/object into every link on the page.
+    token = sign_hx_payload("edit_widget", widget, flavor="spicy")
+    request = RequestFactory().get("/", data={HX_TOKEN_PARAM: token, "page": "2"})
+    add_middleware_to_request(request)
+
+    BaseView()._resolve_hx_token(request)
+
+    assert request.hx_payload["name"] == "edit_widget"
+    assert request.hx_payload["object"]  # serialized ref present in the payload
+    assert "hx_request_name" not in request.GET
+    assert "object" not in request.GET
+    assert HX_TOKEN_PARAM not in request.GET
+    assert request.GET.urlencode() == "page=2"  # only the loose param survives
