@@ -2,6 +2,27 @@
 
 <!--next-version-placeholder-->
 
+## v0.55.0 (2026-07-09)
+
+### Feature
+
+* Add get_no_swap and get_return_empty computed hooks ([`b8f73ec`](https://github.com/yaakovLowenstein/hx-requests/commit/b8f73ecbae5d6929b0f2589520eb4740cac94909))
+
+### Documentation
+
+* Align serialization and kwarg docs with the no-prefix token format ([`977ee66`](https://github.com/yaakovLowenstein/hx-requests/commit/977ee66a1676f44dae3671091260efdfa5d88c3f))
+* Document previously-undocumented public features ([`bde05b8`](https://github.com/yaakovLowenstein/hx-requests/commit/bde05b86773f060b713d7e54db761fd0cb40e8ee))
+* Fix an assortment of small doc inaccuracies ([`56c30b0`](https://github.com/yaakovLowenstein/hx-requests/commit/56c30b0e10de4253e33dc7016fb5651569ad61fc))
+* Correct stale DeleteHxRequest and ModalHxRequest docstrings ([`9942295`](https://github.com/yaakovLowenstein/hx-requests/commit/9942295549fa373e7bea97ddb38f53e7b5a63546))
+* Fix modal how-to selector, class name, and broken ref ([`46b8cbe`](https://github.com/yaakovLowenstein/hx-requests/commit/46b8cbe4477e2cb1e6d8a8b59852d2e071c17217))
+* Correct the OOB dict-blocks GET_template warning ([`ab7ed45`](https://github.com/yaakovLowenstein/hx-requests/commit/ab7ed4575915655b3251984bde60db17b38f3542))
+* Use the real context-refresh hook names ([`2e9c23c`](https://github.com/yaakovLowenstein/hx-requests/commit/2e9c23cb41a1f0d08fcb7326315b434d09ac1bb0))
+* Fix the form_invalid example in more_how_tos ([`c29a61f`](https://github.com/yaakovLowenstein/hx-requests/commit/c29a61f640d5487047a7d43a085793afb09796f0))
+* Correct the kwargs_as_context dict name to hx_kwargs ([`9baae0c`](https://github.com/yaakovLowenstein/hx-requests/commit/9baae0c9ffaedfc01833fdb97ae9f3dd71b3af1f))
+* Fix FormHxRequest import in the form tutorial ([`09d1f5e`](https://github.com/yaakovLowenstein/hx-requests/commit/09d1f5e04e03deac5416246741b648859ff51b05))
+* Fix basic tutorial block attribute and get_or_create tuple ([`860df04`](https://github.com/yaakovLowenstein/hx-requests/commit/860df04da1f6afbc5a8c7d9bcd4d8ec1e9cf2625))
+* Make the tutorials work under the default auth gate ([`11cf9e2`](https://github.com/yaakovLowenstein/hx-requests/commit/11cf9e2ac020932cb60d6ce7cc45a1c32e317c7e))
+
 ## v0.54.0 (2026-07-09)
 
 ### Feature
