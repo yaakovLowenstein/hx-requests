@@ -3,7 +3,7 @@ How To Detect And Inspect An HxRequest
 
 The routing data (name, object, kwargs) is signed inside a single :code:`hx`
 token, so it is no longer readable as loose :code:`hx_request_name` /
-:code:`object` / :code:`___kwarg` query parameters. To work with an inbound
+:code:`object` / kwarg query parameters. To work with an inbound
 request from your own view code, use the helpers in :code:`hx_requests.utils`.
 
 Checking If A Request Is An HxRequest

@@ -67,9 +67,10 @@ for one user's page, sent by another) from resolving out-of-scope data.
 Handling kwargs Serialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each keyword argument is prefixed with :code:`___` inside the token so it can be
-told apart from any loose query parameters. When deserializing, the prefix is
-removed, and values are restored to their original form.
+Each keyword argument is serialized by value and stored under its real name in
+the signed token's :code:`kwargs` dict — a dedicated sub-dict, not loose query
+parameters, so no name-mangling prefix is needed. When deserializing, each value
+is restored to its original form.
 
 This allows :code:`hx_requests` to safely pass complex parameters in HTMX requests.
 

@@ -43,7 +43,7 @@ vectors:
     - **Cross-model instance swap** — the serialized object can't be repointed at
       a different model.
     - **Context / kwarg forgery** — a client can't inject kwargs (e.g. a
-      :code:`___can_edit` flag) to force values into the handler's context.
+      :code:`can_edit` flag) to force values into the handler's context.
     - **Handler spoofing** — a client can't hand-craft a token that routes to an
       arbitrary handler name.
     - **Garbage-input 500s** — malformed routing data fails the signature check
