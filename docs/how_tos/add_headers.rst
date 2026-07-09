@@ -7,9 +7,9 @@ HTMX uses specific headers to modify behavior when certain headers are present.
 
 Common HTMX response headers include:
 
-* **`Hx-Triggers`** - Triggers client-side events when the response is returned.
-* **`Hx-Redirect`** - Redirects the user to a new page.
-* **`Hx-Refresh`** - Refreshes the page.
+* **`HX-Trigger`** - Triggers client-side events when the response is returned.
+* **`HX-Redirect`** - Redirects the user to a new page.
+* **`HX-Refresh`** - Refreshes the page.
 
 
 Adding Headers
@@ -105,4 +105,4 @@ If you need to set :code:`refresh_page` or :code:`redirect` dynamically, you can
 
         def form_invalid(self, **kwargs):
             self.refresh_page = False
-            return super().form_invalid(form)
+            return super().form_invalid(**kwargs)

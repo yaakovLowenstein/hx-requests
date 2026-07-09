@@ -24,7 +24,7 @@ Override :code:`get_form_kwargs` in your `HxRequest` to add custom kwargs to the
             kwargs['user'] = self.request.user
             return kwargs
 
-        def get_initial(**kwargs):
+        def get_initial(self, **kwargs):
             initial = super().get_initial(**kwargs)
 
             # Set the initial value of 'created_by' field

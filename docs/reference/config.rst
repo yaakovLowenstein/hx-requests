@@ -75,7 +75,7 @@ by more specific allowlists.
 
 HX_REQUESTS_GLOBAL_ALLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default:** `[]`
+**Default:** `None`
 
 Defines a global allowlist of apps or specific :code:`HxRequests` that may be called
 from anywhere in the project, even across app boundaries.
@@ -121,7 +121,7 @@ in the unauthenticated allowlist below.
 
 HX_REQUESTS_UNAUTHENTICATED_ALLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default:** `{}`
+**Default:** `None`
 
 Defines specific `HxRequests` that may be executed **without authentication**.
 This setting uses the same structure as the global allowlist.
