@@ -42,6 +42,13 @@ Finally, add :code:`hx_requests` to your :code:`settings.py`.
         'hx_requests',
     )
 
+hx_requests requires an authenticated user by default. Because this tutorial
+issues requests as an anonymous user, relax that gate in :code:`settings.py`
+while following along (see :ref:`How To Secure HxRequests` for the real
+options)::
+
+    HX_REQUESTS_REQUIRE_AUTH = False
+
 Step 2: Create The View
 ~~~~~~~~~~~~~~~~~~~~~~~
 
