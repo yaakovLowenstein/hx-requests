@@ -62,7 +62,6 @@ def test_resolve_strips_client_supplied_framework_params():
         data={
             HX_TOKEN_PARAM: token,
             "object": "model_instance__test_app__widget__999",
-            "___evil": '"x"',
             "hx_request_name": "other",
             "page": "2",
         },
@@ -72,7 +71,8 @@ def test_resolve_strips_client_supplied_framework_params():
     BaseView()._resolve_hx_token(request)
 
     assert request.GET.get("object") is None  # loose object dropped, token had none
-    assert "___evil" not in request.GET  # loose kwarg dropped
     assert request.GET["hx_request_name"] == "simple_get"  # from token, not "other"
     assert request.GET["page"] == "2"  # legit loose param preserved
+    # A loose param a client invents (whatever its name) is harmless: kwargs are
+    # sourced only from the signed token, never from raw query input.
     assert request._hx_kwargs == {}  # kwargs sourced only from the token

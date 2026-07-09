@@ -56,6 +56,16 @@ def test_dates_serialize_via_django_json_encoder():
     assert serialize(datetime.date(2020, 1, 2)) == '"2020-01-02"'
 
 
+def test_serialize_unsaved_instance_fails_loudly():
+    # An unsaved instance has pk=None; serializing it produced '...__None',
+    # which later blew up in queryset.get(pk="None"). Fail at serialize time
+    # with a clear error instead.
+    widget = Widget(name="unsaved")
+    assert widget.pk is None
+    with pytest.raises(ValueError, match="unsaved"):
+        serialize(widget)
+
+
 @pytest.mark.django_db()
 def test_deserialize_uses_default_manager():
     # Resolution goes through the *default* manager, so anything the default
@@ -84,6 +94,18 @@ def test_parse_model_ref_returns_none_for_non_model_values(value):
     assert parse_model_ref(value) is None
 
 
+def test_parse_model_ref_pk_may_contain_double_underscore():
+    # A string PK containing '__' is legitimate (server-minted). Splitting
+    # without a maxsplit produced too many segments -> ValueError -> 500.
+    # App label and model name never contain '__', so a left split with
+    # maxsplit 2 keeps the whole tail as the pk.
+    assert parse_model_ref("model_instance__test_app__widget__a__b") == (
+        "test_app",
+        "widget",
+        "a__b",
+    )
+
+
 @pytest.mark.django_db()
 def test_resolve_model_ref_uses_default_manager_by_default():
     gadget = Gadget.objects.create(name="visible")
@@ -107,13 +129,13 @@ def test_resolve_model_ref_honors_a_scoped_queryset(widget):
 # --------------------------------------------------------------------------
 
 
-def test_serialize_kwargs_prefixes_keys():
-    assert serialize_kwargs(flavor="spicy") == {"___flavor": '"spicy"'}
+def test_serialize_kwargs_keys_are_unprefixed():
+    assert serialize_kwargs(flavor="spicy") == {"flavor": '"spicy"'}
 
 
-def test_deserialize_kwargs_strips_prefix_and_ignores_other_keys():
-    result = deserialize_kwargs(___flavor='"spicy"', plain="ignored", hx_request_name="x")
-    assert result == {"flavor": "spicy"}
+def test_deserialize_kwargs_deserializes_every_entry():
+    result = deserialize_kwargs(flavor='"spicy"', count="3")
+    assert result == {"flavor": "spicy", "count": 3}
 
 
 @pytest.mark.django_db()
@@ -125,6 +147,15 @@ def test_kwargs_round_trip_with_model_instance(widget):
 
 def test_none_kwarg_round_trip():
     assert deserialize_kwargs(**serialize_kwargs(maybe=None)) == {"maybe": None}
+
+
+def test_kwarg_name_containing_prefix_sequence_round_trips():
+    # A kwarg whose name contains the '___' sequence must survive the
+    # serialize -> deserialize round trip unchanged. The old prefix-strip
+    # (str.replace) removed *every* occurrence, silently renaming
+    # 'foo___bar' -> 'foobar'.
+    serialized = serialize_kwargs(**{"foo___bar": "x"})
+    assert deserialize_kwargs(**serialized) == {"foo___bar": "x"}
 
 
 # --------------------------------------------------------------------------
@@ -273,12 +304,16 @@ def test_get_url_use_full_path_carries_existing_params():
 
 
 def test_get_url_use_full_path_filters_internal_params():
-    context = make_context("/page/?q=search&hx_request_name=old&object=x&___junk=%22y%22")
+    context = make_context("/page/?q=search&hx_request_name=old&object=x&extra=keep")
     url = get_url(context, "new_name", None, use_full_path=True)
     query = parse_qs(urlparse(url).query)
     assert query["q"] == ["search"]
     # Stale framework params from the current URL are not re-emitted loose.
     assert "hx_request_name" not in query
     assert "object" not in query
-    assert "___junk" not in query
+    # Ordinary loose params (page filters etc.) are carried forward untouched.
+    # There is no longer any '___'-prefixed "framework kwarg" notion: kwargs
+    # travel only inside the signed token, so nothing on the query string is
+    # treated as special beyond the token param and the two legacy names above.
+    assert query["extra"] == ["keep"]
     assert token_from_url(url)["name"] == "new_name"
