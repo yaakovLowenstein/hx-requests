@@ -11,13 +11,15 @@ However, if the form is invalid, you may only want to display error messages wit
 
 .. code-block:: python
 
+    from django.contrib import messages
+
     class MyHxRequest(FormHxRequest):
         ...
 
-        def form_invalid(self,kwargs):
+        def form_invalid(self, **kwargs):
             self.no_swap = True
-            self.messages.error("Sorry there was an error")
-            return super().form_invalid(kwargs)
+            messages.error(self.request, "Sorry there was an error")
+            return super().form_invalid(**kwargs)
 
 
 How Do I Add Form Errors To The Error Message?
