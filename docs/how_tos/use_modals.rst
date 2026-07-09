@@ -47,19 +47,19 @@ To use the built in modal functionality, you need to define a modal template and
 Notes:
     - This is using a bootstrap modal, but any modal can be used.
     - The title, modal_size_classes and body are passed in as context from the :code:`HxRequest` that is being rendered.
-    - The :code:`closeHxModal` (:code:`close-hx-modal` in the Html above) event is used to close the modal - this is triggered by the :code:`HxModalHxRequest` (the code above is using `Alpine.js <https://alpinejs.dev/>`_ to close the modal).
+    - The :code:`closeHxModal` (:code:`close-hx-modal` in the Html above) event is used to close the modal - this is triggered by the :code:`FormModalHxRequest` (the code above is using `Alpine.js <https://alpinejs.dev/>`_ to close the modal).
 
 
 Add Settings to settings.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 | Define :code:`HX_REQUESTS_MODAL_TEMPLATE` in settings to the path of the modal template.
-| Define :code:`HX_REQUESTS_MODAL_BODY_ID` in settings to the id of the modal body (default is :code:`hx_modal_body`)
+| Define :code:`HX_REQUESTS_MODAL_BODY_ID` in settings to the CSS selector of the modal body (default is :code:`#hx_modal_body`). It is used verbatim as the ``HX-Retarget`` selector when re-rendering form errors, so it must be a selector (include the leading :code:`#` for an id).
 
 .. code-block:: python
 
     HX_REQUESTS_MODAL_TEMPLATE = "path/to/your/modal_template.html"
-    HX_REQUESTS_MODAL_BODY_ID = "hx_modal_body" # Default is hx_modal_body
+    HX_REQUESTS_MODAL_BODY_ID = "#hx_modal_body" # A CSS selector; default is #hx_modal_body
 
 Add A Div to the Base Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +103,7 @@ Using Forms in Modals
 ~~~~~~~~~~~~~~~~~~~~~
 
 To use a form in a modal, you can use the :code:`FormModalHxRequest` class. This class is a subclass of :code:`ModalHxRequest`
-and has the same functionality as the :ref:`FormHxRequest<   Tutorial>`.
+and has the same functionality as the :ref:`FormHxRequest <What Are FormHxRequests?>`.
 
 
 .. code-block:: python
