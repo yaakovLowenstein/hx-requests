@@ -52,7 +52,7 @@ However, there are cases where you need to update additional context as well.
 
 There are 2 ways refresh the context on POST:
 
-1. Override :code:`get_post_context_data` to add context only on POST.
+1. Override :code:`get_context_on_POST` to add context only on POST.
 
 .. code-block:: python
 
