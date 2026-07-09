@@ -9,6 +9,14 @@ Demo Website: https://hx-requests-demo.com/
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-blue.svg)](https://docs.astral.sh/ruff/formatter/)
 [![Code style: djlint](https://img.shields.io/badge/html%20style-djlint-blue.svg)](https://www.djlint.com)
 
+## Installation
+
+```bash
+pip install hx-requests
+```
+
+Requires **Python 3.11+** and **Django 4.2+**.
+
 ## Overview
 
 ### What Are hx-requests?

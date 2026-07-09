@@ -47,3 +47,17 @@ data rather than editable query params.
 
     See :ref:`Object Serialization` for more information on how objects and
     kwargs are serialized and packed into the token.
+
+
+hx_url
+~~~~~~
+
+:code:`hx_url` takes the same arguments as :code:`hx_get` / :code:`hx_post` but
+returns only the signed URL (the value of the :code:`hx` query string), not a
+full :code:`hx-get=".."` attribute. Use it when you need to build the request
+attribute yourself -- for example on a non-button element, with a different
+htmx verb, or inside :code:`hx-vals` / JavaScript.
+
+.. code-block:: html+django
+
+    <div hx-get="{% hx_url 'my_hx_request' object=my_instance %}" hx-trigger="revealed"></div>

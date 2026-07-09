@@ -144,3 +144,22 @@ This setting uses the same structure as the global allowlist.
 .. warning::
     Only include safe, read-only, or non-sensitive `HxRequests` here.
     Requests listed in this allowlist can be executed by unauthenticated users.
+
+
+HX_REQUESTS_BIND_TOKEN_TO_PATH
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default:** `True`
+
+When `True` (the default), a handler's signed token is bound to the URL path
+it was rendered on, so it only verifies when replayed back to that same path.
+This narrows the "replay from another page" surface. A handler can opt out per
+class with :code:`bind_to_path = False`.
+
+Set this to `False` globally as a kill switch -- e.g. when a proxy or
+middleware rewrites :code:`request.path` and would otherwise break already-minted
+bound tokens.
+
+.. note::
+
+    Path-binding is origin hardening layered on top of authorization; it is not
+    a replacement for an authorization check on the handler.
