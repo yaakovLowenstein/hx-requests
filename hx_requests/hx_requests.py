@@ -736,7 +736,7 @@ class DeleteHxRequest(BaseHxRequest):
     HxRequest for deleting objects.
 
     The object passed into a DeleteHxRequest is deleted.
-    Override handle_delete for custom behavior.
+    Override ``delete`` for custom behavior.
     """
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -774,9 +774,10 @@ class DeleteHxRequest(BaseHxRequest):
 
 class ModalHxRequest(BaseHxRequest):
     """
-    A generic modal that can be used without needing to create a class that inherits from this one.
-    It can be used by passing in title and body into the template tag as kwargs and passing in
-    'hx-modal' as the name.
+    Base class for a modal HxRequest. Subclass it, give the subclass a unique
+    ``name`` and a ``GET_template`` for the modal body, and register it like any
+    other HxRequest. ``title`` and ``modal_size_classes`` may be set on the
+    class or passed as template-tag kwargs (the kwarg overrides the attribute).
 
     Attributes
     ----------
