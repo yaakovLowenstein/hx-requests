@@ -10,7 +10,6 @@ from django.db import models
 from hx_requests.constants import (
     HX_SIGNING_SALT,
     HX_TOKEN_PARAM,
-    KWARG_PREFIX,
     MODEL_INSTANCE_PREFIX,
 )
 
@@ -19,6 +18,11 @@ __ = "__"
 
 def serialize(value):
     if isinstance(value, models.Model):
+        if value.pk is None:
+            raise ValueError(
+                f"Cannot serialize an unsaved {value._meta.label} instance (pk is None). "
+                "Save the object before passing it to an hx tag."
+            )
         return (
             f"{MODEL_INSTANCE_PREFIX}{value._meta.app_label}{__}{value._meta.model_name}{__}{value.pk}"
         )
@@ -34,7 +38,9 @@ def parse_model_ref(value):
     can't be mangled.
     """
     if isinstance(value, str) and value.startswith(MODEL_INSTANCE_PREFIX):
-        app_label, model_name, pk = value[len(MODEL_INSTANCE_PREFIX) :].split(__)
+        # maxsplit=2: app label and model name never contain '__', so the
+        # remaining tail is kept intact as the pk (which legitimately may).
+        app_label, model_name, pk = value[len(MODEL_INSTANCE_PREFIX) :].split(__, 2)
         return app_label, model_name, pk
     return None
 
@@ -69,21 +75,16 @@ def is_htmx_request(request):
 
 
 def serialize_kwargs(**kwargs):
-    serialized_kwargs = {}
-    for k, v in kwargs.items():
-        prefixed_k = KWARG_PREFIX + k
-        serialized_kwargs[prefixed_k] = serialize(v)
-    return serialized_kwargs
+    # Kwargs live inside the signed token's ``kwargs`` sub-dict, keyed by their
+    # real names -- a dedicated dict, not loose query params.
+    return {k: serialize(v) for k, v in kwargs.items()}
 
 
 def deserialize_kwargs(**kwargs):
-    deserialized_kwargs = {}
-    for k, v in kwargs.items():
-        if not k.startswith(KWARG_PREFIX):
-            continue
-        prefixed_k = k.replace(KWARG_PREFIX, "")
-        deserialized_kwargs[prefixed_k] = deserialize(v)
-    return deserialized_kwargs
+    # The inverse of :func:`serialize_kwargs`. Every entry is a real kwarg
+    # (this is only ever fed the token's verified ``kwargs`` dict), so each is
+    # deserialized as-is with no prefix handling.
+    return {k: deserialize(v) for k, v in kwargs.items()}
 
 
 def sign_hx_payload(hx_request_name, obj=None, bind_path=None, **kwargs):
@@ -172,7 +173,7 @@ def get_url(context, hx_request_name, obj, use_full_path=False, **kwargs):
     params = {}
     if use_full_path:
         for k, v in request.GET.lists():
-            if k in (HX_TOKEN_PARAM, "hx_request_name", "object") or k.startswith(KWARG_PREFIX):
+            if k in (HX_TOKEN_PARAM, "hx_request_name", "object"):
                 continue
             params[k] = v[0] if len(v) == 1 else v
 
