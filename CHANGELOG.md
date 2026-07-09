@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.52.1 (2026-07-09)
+
+### Fix
+
+* Let hx-boost and plain htmx fall through the mixin ([`d0fb5d6`](https://github.com/yaakovLowenstein/hx-requests/commit/d0fb5d69c19c15fa8544d21e2f3dcbb45ca37d85))
+
 ## v0.52.0 (2026-07-09)
 
 ### Fix
