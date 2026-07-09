@@ -16,7 +16,7 @@ If you want to rename it to have it accessible as something else, override the :
 
 
 
-The hx object is the object passed into tmeplate tag
+The hx object is the object passed into the template tag
 
     .. code-block:: html+django
 
@@ -42,11 +42,11 @@ In the template, you can access the kwarg as you would any other context variabl
 
 If you want to prevent possible collisions between kwargs and existing context variables,
 set :code:`kwargs_as_context = False` in your `HxRequest`.
-This will make the kwargs available as a dictionary called :code:`kwargs` in the template.
+This will make the kwargs available as a dictionary called :code:`hx_kwargs` in the template.
 
 .. code-block:: python
 
     from hx_requests.hx_requests import BaseHxRequest
 
     class MyHxRequest(BaseHxRequest):
-        kwargs_as_context = False # in the template: {{ kwargs.my_kwarg }}
+        kwargs_as_context = False # in the template: {{ hx_kwargs.my_kwarg }}
