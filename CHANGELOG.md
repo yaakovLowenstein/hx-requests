@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.54.0 (2026-07-09)
+
+### Feature
+
+* Add get_redirect_url and get_templates computed hooks ([`7b90dd9`](https://github.com/yaakovLowenstein/hx-requests/commit/7b90dd9b56ea62c2aa5c5e457061d01903834d4f))
+* Add a post_action hook for non-form POSTs ([`16f864e`](https://github.com/yaakovLowenstein/hx-requests/commit/16f864e7c5679f2b6e2d220ee10e7df126c2bc83))
+
+### Fix
+
+* Raise ImproperlyConfigured for a FormHxRequest with no form_class ([`ab93d1d`](https://github.com/yaakovLowenstein/hx-requests/commit/ab93d1dfb436799f5f9e9ea0f76b200da1d7a2ad))
+* Resolve the view template fallback lazily with a clear error ([`f3058ec`](https://github.com/yaakovLowenstein/hx-requests/commit/f3058ec86bafd3dbc988b3760c9f2ac30c6c389c))
+
 ## v0.53.0 (2026-07-09)
 
 ### Feature
