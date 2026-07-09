@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local agent / spec working files (not part of the published package)
+.claude/
+docs/superpowers/
