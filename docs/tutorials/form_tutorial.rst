@@ -173,7 +173,7 @@ Create a new file, `hx_requests.py`, in the same directory as your views.py file
 
 .. code-block:: python
 
-    from hx_requests import FormHxRequest
+    from hx_requests.hx_requests import FormHxRequest
     from .forms import UserForm
 
     class UserFormHxRequest(FormHxRequest):
