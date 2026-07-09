@@ -8,7 +8,7 @@ checks, form handling, trigger/header assembly, messages).
 
 from __future__ import annotations
 
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import User
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpResponse
@@ -43,7 +43,11 @@ def _create_test_request(
         request.META["HTTP_HX_REQUEST"] = True
         request.META.update(META)
         if not hasattr(request, "user"):
-            request.user = AnonymousUser()
+            # Handlers require an authenticated user by default (login_required),
+            # so default to one. An unsaved User() is authenticated and holds no
+            # permissions. Auth tests pass an anonymous / unprivileged user via
+            # request_attrs.
+            request.user = User()
         return request
 
     # The framework's routing data (name, object, kwargs) rides in one signed

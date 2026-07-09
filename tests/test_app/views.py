@@ -62,19 +62,6 @@ class CountingView(HtmxViewMixin, TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class AllowListView(BaseView):
-    """View that explicitly allows a cross-app HxRequest (additive rules)."""
-
-    allowed_hx_requests = ["other_app_hx"]
-
-
-class StrictAllowListView(BaseView):
-    """View whose allow list is exclusive (global rules turned off)."""
-
-    allowed_hx_requests = ["simple_get"]
-    use_global_hx_rules = False
-
-
 class AuthAfterHxView(HtmxViewMixin, LoginRequiredMixin, TemplateView):
     """
     Auth mixin ordered *after* HtmxViewMixin -- the trap the system check flags.
