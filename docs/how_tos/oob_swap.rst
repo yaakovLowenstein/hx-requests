@@ -37,7 +37,7 @@ If the HTML snippets are in separate blocks across different templates, the code
 
     class MyHxRequest(BaseHxRequest):
         name ="my_hx_request"
-        GET_template = '' # This is needed because the default is the view's template
+        GET_template = "target_template.html" # rendered in full; the dict blocks are swapped OOB
         GET_block = {
             "template1.html": "block",
             "template2.html": ["oob_block1","oob_block2"]
@@ -45,7 +45,12 @@ If the HTML snippets are in separate blocks across different templates, the code
 
 .. warning::
 
-    You must set :code:`GET_template` to an empty string if you are not intending to return the view's template. This is because the default is the view's template.
+    When :code:`GET_block` is a dict, the resolved :code:`GET_template` is
+    **also** rendered in full and appended after the blocks. A falsy
+    :code:`GET_template` (such as an empty string) does not suppress this -- it
+    falls back to the view's template, which is then appended. Point
+    :code:`GET_template` at the template you want rendered alongside the OOB
+    blocks.
 
 .. note::
 
