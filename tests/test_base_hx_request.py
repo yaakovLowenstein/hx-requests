@@ -422,6 +422,20 @@ def test_get_templates_hook_selects_the_rendered_template():
     assert "second-template" in content_of(response)
 
 
+def test_get_no_swap_hook_drives_the_reswap_header():
+    # no_swap can be computed via get_no_swap instead of mutating self.no_swap
+    # in form_valid/form_invalid.
+    response = hx_get(hx.DynamicNoSwapHx, BaseView)
+    assert response["HX-Reswap"] == "none"
+
+
+def test_get_return_empty_hook_yields_an_empty_body():
+    # return_empty can be computed via get_return_empty instead of a static
+    # attribute.
+    response = hx_post(hx.DynamicReturnEmptyHx, BaseView)
+    assert content_of(response) == ""
+
+
 def test_form_hx_request_without_form_class_raises_improperly_configured():
     from django.core.exceptions import ImproperlyConfigured
 

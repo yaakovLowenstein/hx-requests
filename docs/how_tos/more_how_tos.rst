@@ -9,17 +9,21 @@ When :code:`no_swap` is set, no HTML is swapped into the DOM. A common use case 
 If the form is valid, you may want to swap in updated content to reflect the changes.
 However, if the form is invalid, you may only want to display error messages without modifying the page structure.
 
-.. code-block:: python
+Set it statically with the :code:`no_swap` attribute, or compute it per request
+by overriding :code:`get_no_swap` — cleaner than flipping :code:`self.no_swap`
+inside :code:`form_valid` / :code:`form_invalid` just to change the swap:
 
-    from django.contrib import messages
+.. code-block:: python
 
     class MyHxRequest(FormHxRequest):
         ...
 
-        def form_invalid(self, **kwargs):
-            self.no_swap = True
-            messages.error(self.request, "Sorry there was an error")
-            return super().form_invalid(**kwargs)
+        def get_no_swap(self, **kwargs):
+            # Swap in updated content when the form saves; leave the page
+            # untouched (errors show via messages) when it doesn't.
+            return not self.form.is_valid()
+
+There is a matching :code:`get_return_empty` hook for computing :code:`return_empty` the same way.
 
 
 How Do I Add Form Errors To The Error Message?

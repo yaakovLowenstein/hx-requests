@@ -39,3 +39,19 @@ def test_trigger_headers_are_merged_in():
 def test_is_post_request_property():
     assert make_hx("post").is_post_request is True
     assert make_hx("get").is_post_request is False
+
+
+def test_get_no_swap_defaults_to_the_attribute():
+    assert make_hx().get_no_swap() is False
+    assert make_hx(no_swap=True).get_no_swap() is True
+
+
+def test_get_return_empty_defaults_to_the_attribute():
+    assert make_hx().get_return_empty() is False
+    assert make_hx(return_empty=True).get_return_empty() is True
+
+
+def test_get_no_swap_hook_overrides_the_reswap_header():
+    hx = make_hx("post")
+    hx.get_no_swap = lambda **kwargs: True
+    assert hx.get_headers() == {"HX-Reswap": "none"}

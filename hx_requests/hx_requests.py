@@ -55,9 +55,11 @@ class BaseHxRequest:
     redirect : str, optional
         URL to redirect to after a POST request
     return_empty : bool
-        If True, returns an empty HTTPResponse after a POST request
+        If True, returns an empty HTTPResponse after a POST request.
+        For a per-request decision, override :meth:`get_return_empty` instead.
     no_swap : bool
-        If True, does not do a swap
+        If True, does not do a swap.
+        For a per-request decision, override :meth:`get_no_swap` instead.
     show_messages: bool
         If True and there is a message set and settings.HX_REQUESTS_USE_HX_MESSAGES is True
         then the set message is displayed
@@ -250,6 +252,11 @@ class BaseHxRequest:
 
         # POST must snapshot the view context before post() mutates it; skip that
         # work when the POST renders nothing (refresh_page/redirect/return_empty).
+        # This is a setup-time optimization only, so it reads the static
+        # attributes (like self.redirect above) rather than the get_*() hooks:
+        # the form has not been validated yet here, so a hook keyed on form state
+        # can't run. The hooks stay authoritative at render time; a hook-only
+        # handler simply snapshots context it may not use (harmless).
         if (
             self.get_views_context
             and self.is_post_request
@@ -277,6 +284,26 @@ class BaseHxRequest:
         ``form_valid``.
         """
         return self.redirect
+
+    def get_no_swap(self, **kwargs) -> bool:
+        """
+        Whether to suppress the DOM swap (emitted as ``HX-Reswap: none``).
+
+        Defaults to the static :attr:`no_swap` attribute. Override to decide
+        per request -- e.g. ``return not self.form.is_valid()`` -- instead of
+        mutating ``self.no_swap`` in ``form_valid``/``form_invalid``.
+        """
+        return self.no_swap
+
+    def get_return_empty(self, **kwargs) -> bool:
+        """
+        Whether the POST response body should be empty.
+
+        Defaults to the static :attr:`return_empty` attribute. Override to
+        decide per request instead of mutating ``self.return_empty`` in
+        ``form_valid``/``form_invalid``.
+        """
+        return self.return_empty
 
     def get_templates(self):
         """
@@ -329,7 +356,7 @@ class BaseHxRequest:
                 redirect_url = self.get_redirect_url(**kwargs)
                 if redirect_url:
                     headers["HX-Redirect"] = redirect_url
-        if self.no_swap:
+        if self.get_no_swap(**kwargs):
             headers["HX-Reswap"] = "none"
 
         headers.update(self.get_trigger_headers(**kwargs))
@@ -421,7 +448,7 @@ class BaseHxRequest:
         Prepare the HTML for the response.
         """
         if self.is_post_request:
-            if self.refresh_page or self.get_redirect_url(**kwargs) or self.return_empty:
+            if self.refresh_page or self.get_redirect_url(**kwargs) or self.get_return_empty(**kwargs):
                 html = ""
             else:
                 html = self._render_templates(self.get_templates(), self.POST_block, **kwargs)

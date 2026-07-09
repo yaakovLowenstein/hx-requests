@@ -392,6 +392,24 @@ class DynamicTemplateHx(BaseHxRequest):
         return "second.html"
 
 
+class DynamicNoSwapHx(BaseHxRequest):
+    name = "dynamic_no_swap"
+    GET_template = "simple.html"
+
+    def get_no_swap(self, **kwargs):
+        # Computed per request instead of a static attribute.
+        return True
+
+
+class DynamicReturnEmptyHx(BaseHxRequest):
+    name = "dynamic_return_empty"
+    GET_template = "simple.html"
+
+    def get_return_empty(self, **kwargs):
+        # Computed per request instead of a static attribute.
+        return True
+
+
 # --------------------------------------------------------------------------
 # Registry edge case: a class with a `name` that is NOT an HxRequest
 # --------------------------------------------------------------------------
