@@ -77,6 +77,27 @@ You can also mix plain triggers and triggers with details:
 
 This produces the header: ``HX-Trigger: {"refreshList": true, "showMessage": "Item saved successfully"}``
 
+Targeting Trigger Phases (After-Settle / After-Swap)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default all triggers are emitted on the ``HX-Trigger`` header (fired as soon
+as the response is received). To fire events at a later htmx phase, return a
+**dict** from :code:`get_triggers` keyed by phase. Each value is a list of the
+same shape as above (plain strings and/or detail dicts):
+
+.. code-block:: python
+
+    def get_triggers(self, **kwargs):
+        return {
+            "trigger": ["eventA"],                                  # HX-Trigger
+            "after_settle": ["eventB"],                             # HX-Trigger-After-Settle
+            "after_swap": [{"showMessage": {"message": "Done"}}],   # HX-Trigger-After-Swap
+        }
+
+The recognized phase keys are :code:`trigger`, :code:`after_settle`, and
+:code:`after_swap` (see :code:`BaseHxRequest.trigger_header_map`). Phases with no
+triggers are omitted.
+
 Refresh and Redirect
 ~~~~~~~~~~~~~~~~~~~~
 
