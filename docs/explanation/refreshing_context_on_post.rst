@@ -9,7 +9,7 @@ which occurs before the POST method executes and the form is saved.
 There are ways to refresh the context, but it’s also important to know when it’s not necessary.
 
 If you need to refresh the context on POST, you can override
-:code:`get_post_context_data` or set :code:`refresh_views_context_on_post` to :code:`True`.
+:code:`get_context_on_POST` or set :code:`refresh_views_context_on_POST` to :code:`True`.
 See :ref:`Adding Context Only On POST` for details.
 
 However, you don’t need to refresh the context if the only updated object is
