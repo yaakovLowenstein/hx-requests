@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.52.0 (2026-07-09)
+
+### Fix
+
+* **#4:** Serialization round-trip correctness ([`384335c`](https://github.com/yaakovLowenstein/hx-requests/commit/384335c2f678472f78139a808b980062b53f70df))
+
+### Breaking
+
+* the ``hx_requests.constants.KWARG_PREFIX`` constant is removed, and ``___``-prefixed loose query params are no longer treated specially by the framework. ([`384335c`](https://github.com/yaakovLowenstein/hx-requests/commit/384335c2f678472f78139a808b980062b53f70df))
+
 ## v0.51.0 (2026-07-08)
 
 ### Breaking
