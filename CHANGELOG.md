@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.53.0 (2026-07-09)
+
+### Feature
+
+* Expose self.args/self.kwargs on the handler at setup ([`bbcf68c`](https://github.com/yaakovLowenstein/hx-requests/commit/bbcf68c7d8dd90f92e9905300ae395825c1e6d1c))
+
+### Fix
+
+* Reject signed hx kwargs that collide with URLconf kwargs ([`c458fe5`](https://github.com/yaakovLowenstein/hx-requests/commit/c458fe5e4a785ee4bfa40fe7bf823c3e4224c44a))
+
 ## v0.52.1 (2026-07-09)
 
 ### Fix
