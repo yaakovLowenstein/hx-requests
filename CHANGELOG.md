@@ -72,7 +72,7 @@
 
 ### Breaking
 
-* the template tags' rendered output and CSRF handling changed. To upgrade: ([`762fea7`](https://github.com/yaakovLowenstein/hx-requests/commit/762fea78fe5edd6b515106d8345aedec594d8639))
+* the template tags' rendered output and CSRF handling changed. To upgrade: use the tags as documented and no action is needed; if you parsed or post-processed their raw HTML output, re-check it against the new Django-primitive (escaped attribute + standard CSRF token) output. ([`762fea7`](https://github.com/yaakovLowenstein/hx-requests/commit/762fea78fe5edd6b515106d8345aedec594d8639))
 
 ## v0.47.0 (2026-07-07)
 

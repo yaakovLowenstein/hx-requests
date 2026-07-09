@@ -49,4 +49,14 @@ Of course, there may be cases where this isn’t the behavior you want. If neede
 
 .. warning::
 
+    This depends on mixin ordering. On the HxRequest handoff,
+    :code:`HtmxViewMixin.dispatch` does **not** call :code:`super().dispatch()`,
+    so a dispatch-based auth mixin (:code:`LoginRequiredMixin`,
+    :code:`PermissionRequiredMixin`) only gates the HxRequest when it is placed
+    *before* :code:`HtmxViewMixin` in the class's MRO. hx_requests raises a
+    startup system check (W001) when an auth mixin is ordered after
+    :code:`HtmxViewMixin`. For robust control, authorize on the HxRequest itself.
+
+.. warning::
+
     If an `HxRequest` is used across multiple views, it's permissions depend on the view handling the request.

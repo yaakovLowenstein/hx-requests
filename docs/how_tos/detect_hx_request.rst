@@ -10,7 +10,8 @@ Checking If A Request Is An HxRequest
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :code:`is_hx_request(request)` returns :code:`True` when the request carries a
-valid signed token — i.e. it is bound for a registered :code:`HxRequest`.
+validly-signed :code:`hx` token. It verifies the signature only -- it does not
+check whether the token's name is actually registered.
 
 This is different from :code:`is_htmx_request(request)`, which only checks the
 :code:`HX-Request` header and is :code:`True` for *any* htmx request. The common
