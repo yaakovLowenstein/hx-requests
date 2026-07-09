@@ -158,7 +158,8 @@ What if you want to pass context to the template that is being swapped in? You c
 
         def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
-            context["user"] = get_user_model().objects.get_or_create(username="test_user", email="test@test.com")
+            # get_or_create returns a (user, created) tuple -- keep the user.
+            context["user"], _ = get_user_model().objects.get_or_create(username="test_user", email="test@test.com")
             return context
 
 
@@ -201,4 +202,4 @@ What if you only want to swap some in some of the content from the template? You
         class ReplaceBtn(BaseHxRequest):
             name = "replace_btn"
             GET_template = "replaced.html"
-            blocks = "content" # This will only swap in the content block
+            GET_block = "content" # This will only swap in the content block
