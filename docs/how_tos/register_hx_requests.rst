@@ -1,7 +1,7 @@
 How To Register hx-requests
 ---------------------------
 
-There are two ways to register :code:`hx_requests`.
+There are a few ways to register :code:`hx_requests`.
 
 Using a File
 ~~~~~~~~~~~~
