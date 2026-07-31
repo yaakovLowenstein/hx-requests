@@ -96,3 +96,26 @@ def test_invalid_post_does_not_close_modal():
 def test_modal_body_selector_setting_controls_retarget():
     response = hx_post(hx.WidgetFormModalHx, BaseView, post_data={"name": ""})
     assert response["HX-Retarget"] == "#custom-body"
+
+
+def test_widened_form_is_valid_keeps_the_modal_open():
+    # The form validates but the submission as a whole does not, so the modal has
+    # to stay open with its body retargeted -- closing it would take the errors
+    # and everything typed with it.
+    response = hx_post(
+        hx.ExtraFormsetFormModalHx,
+        BaseView,
+        post_data={"name": "kept", "description": "x", "extra_ok": "0"},
+    )
+    assert not response.has_header("HX-Trigger")
+    assert response["HX-Retarget"] == "#hx_modal_body"
+    assert response["HX-Reswap"] == "innerHTML"
+
+
+def test_widened_form_is_valid_closes_the_modal_when_everything_passes():
+    response = hx_post(
+        hx.ExtraFormsetFormModalHx,
+        BaseView,
+        post_data={"name": "closed", "description": "x", "extra_ok": "1"},
+    )
+    assert "closeHxModal" in response["HX-Trigger"]

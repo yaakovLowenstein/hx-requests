@@ -262,6 +262,28 @@ class WidgetFormHx(FormHxRequest):
     POST_template = "form_success.html"
 
 
+class ExtraFormsetFormHx(FormHxRequest):
+    """A handler that submits more than ``self.form``.
+
+    Stands in for a real formset: ``extra_ok`` in the POST decides whether the
+    rest of the submission validated, so the form can be valid while the
+    submission as a whole is not.
+    """
+
+    name = "extra_formset_form"
+    form_class = WidgetForm
+    GET_template = "form.html"
+    POST_template = "form_success.html"
+
+    def form_is_valid(self, **kwargs) -> bool:
+        extra_ok = self.request.POST.get("extra_ok") == "1"
+        return super().form_is_valid(**kwargs) and extra_ok
+
+    def form_valid(self, **kwargs):
+        self.saved = True
+        return super().form_valid(**kwargs)
+
+
 class NoFormClassHx(FormHxRequest):
     # form_class intentionally left as None -- must fail loudly at setup.
     name = "no_form_class"
@@ -339,6 +361,17 @@ class WidgetFormModalHx(FormModalHxRequest):
     form_class = WidgetForm
     GET_template = "form.html"
     POST_template = "form_success.html"
+
+
+class ExtraFormsetFormModalHx(WidgetFormModalHx):
+    """As :class:`ExtraFormsetFormHx`, in a modal — the modal must stay open and
+    retarget its body when only the extra part failed."""
+
+    name = "extra_formset_form_modal"
+
+    def form_is_valid(self, **kwargs) -> bool:
+        extra_ok = self.request.POST.get("extra_ok") == "1"
+        return super().form_is_valid(**kwargs) and extra_ok
 
 
 class KeepOpenFormModalHx(WidgetFormModalHx):

@@ -645,17 +645,44 @@ class FormHxRequest(BaseHxRequest):
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
         return self._get_response(**kwargs)
 
+    def form_is_valid(self, **kwargs) -> bool:
+        """
+        Whether everything this request submitted validated.
+
+        Defaults to ``self.form.is_valid()``. Override when the handler takes in
+        more than ``self.form`` -- an extra formset, say -- so that one answer
+        drives the whole save path::
+
+            def form_is_valid(self, **kwargs):
+                return super().form_is_valid(**kwargs) and self.formset.is_valid()
+
+        Everything downstream asks this rather than the form directly: ``post``
+        picks ``form_valid`` / ``form_invalid``, ``get_response_html`` decides
+        between the GET and POST templates, and ``FormModalHxRequest`` uses it to
+        close the modal or retarget the errors into it. Without the override those
+        four disagree with the handler, and a submission that failed outside the
+        form reads as a save.
+
+        Called several times while the response is built, so an override should be
+        free of side effects (or memoize them).
+        """
+        return self.form.is_valid()
+
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
-        If the form is valid form_valid.
+        If the submission is valid form_valid.
         If invalid calls form_invalid.
+
+        Validity comes from :meth:`form_is_valid`, which defaults to the form's own.
 
         Builds the response from ``_get_response`` unless ``form_valid`` /
         ``form_invalid`` return their own ``HttpResponse``.
         """
         self.form = self.form_class(**self.get_form_kwargs(**kwargs))
 
-        response = self.form_valid(**kwargs) if self.form.is_valid() else self.form_invalid(**kwargs)
+        response = (
+            self.form_valid(**kwargs) if self.form_is_valid(**kwargs) else self.form_invalid(**kwargs)
+        )
 
         return response if response is not None else self._get_response(**kwargs)
 
@@ -681,11 +708,11 @@ class FormHxRequest(BaseHxRequest):
 
     def get_response_html(self, **kwargs):
         """
-        On POST if the form is invalid instead of returning the
+        On POST if the submission is invalid instead of returning the
         POST_template the GET_template is returned (the form
         now contains the validation errors.)
         """
-        if self.is_post_request and self.form.is_valid() is False:
+        if self.is_post_request and not self.form_is_valid(**kwargs):
             # Render the GET template (now carrying the errors), falling back to
             # the host view's template the same way get_templates() does.
             templates = self.GET_template or self._view_template_fallback()
@@ -874,10 +901,11 @@ class FormModalHxRequest(ModalHxRequest, FormHxRequest):
 
     def get_triggers(self, **kwargs) -> list:
         """
-        If the form is valid and the modal is set to close on save, closeHxModal is added to the triggers.
+        If the submission is valid and the modal is set to close on save, closeHxModal
+        is added to the triggers.
         """
         triggers = super().get_triggers(**kwargs)
-        if self.is_post_request and self.form.is_valid() and self.close_modal_on_save:
+        if self.is_post_request and self.form_is_valid(**kwargs) and self.close_modal_on_save:
             # Support both the list return and the phase-keyed dict return.
             if isinstance(triggers, dict):
                 triggers.setdefault("trigger", []).append("closeHxModal")
@@ -887,11 +915,11 @@ class FormModalHxRequest(ModalHxRequest, FormHxRequest):
 
     def get_headers(self, **kwargs) -> dict:
         """
-        If the form is invalid, headers are set to retarget the innerHTML of the modal body.
-        This is done to show the form errors.
+        If the submission is invalid, headers are set to retarget the innerHTML of the
+        modal body. This is done to show the form errors.
         """
         headers = super().get_headers(**kwargs)
-        if self.is_post_request and self.form.is_valid() is False:
+        if self.is_post_request and not self.form_is_valid(**kwargs):
             headers["HX-Retarget"] = self.modal_body_selector
             headers["HX-Reswap"] = "innerHTML"
         return headers
