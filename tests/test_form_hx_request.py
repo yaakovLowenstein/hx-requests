@@ -133,3 +133,37 @@ def test_form_valid_returning_response_short_circuits():
 def test_form_invalid_returning_response_short_circuits():
     response = hx_post(hx.ShortCircuitFormHx, BaseView, post_data={"name": ""})
     assert content_of(response) == "custom-invalid-response"
+
+
+# --------------------------------------------------------------------------
+# form_is_valid hook
+# --------------------------------------------------------------------------
+
+
+def test_form_is_valid_defaults_to_the_forms_own_verdict():
+    response = hx_post(hx.WidgetFormHx, BaseView, post_data={"name": "ok", "description": "x"})
+    assert Widget.objects.filter(name="ok").exists()
+    assert "FORM-SAVED" in content_of(response)
+
+
+def test_a_widened_form_is_valid_blocks_the_save():
+    # The form itself is valid; the rest of the submission is not.
+    response = hx_post(
+        hx.ExtraFormsetFormHx,
+        BaseView,
+        post_data={"name": "blocked", "description": "x", "extra_ok": "0"},
+    )
+    assert not Widget.objects.filter(name="blocked").exists()
+    # form_invalid ran, so the GET template comes back carrying the form.
+    assert "FORM-TEMPLATE" in content_of(response)
+    assert "FORM-SAVED" not in content_of(response)
+
+
+def test_a_widened_form_is_valid_still_saves_when_everything_passes():
+    response = hx_post(
+        hx.ExtraFormsetFormHx,
+        BaseView,
+        post_data={"name": "allowed", "description": "x", "extra_ok": "1"},
+    )
+    assert Widget.objects.filter(name="allowed").exists()
+    assert "FORM-SAVED" in content_of(response)

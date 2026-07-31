@@ -26,6 +26,41 @@ inside :code:`form_valid` / :code:`form_invalid` just to change the swap:
 There is a matching :code:`get_return_empty` hook for computing :code:`return_empty` the same way.
 
 
+How Do I Submit A Formset Alongside The Form?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A :code:`FormHxRequest` takes in :code:`self.form`, but a handler may submit more
+than that — an extra formset, a second form. Override :code:`form_is_valid` so one
+answer covers the whole submission:
+
+.. code-block:: python
+
+    class MyHxRequest(FormModalHxRequest):
+        ...
+
+        @cached_property
+        def formset(self):
+            return MyFormSet(data=self.request.POST if self.is_post_request else None)
+
+        def form_is_valid(self, **kwargs) -> bool:
+            return super().form_is_valid(**kwargs) and self.formset.is_valid()
+
+        def form_valid(self, **kwargs):
+            response = super().form_valid(**kwargs)
+            self.formset.save()
+            return response
+
+Everything on the save path reads through that hook: :code:`post` picks
+:code:`form_valid` / :code:`form_invalid`, :code:`get_response_html` chooses the GET
+template so the errors come back, and :code:`FormModalHxRequest` decides whether to
+close the modal or retarget the errors into its body. Without the override those
+disagree with the handler, and a submission that failed only in the formset reads as
+a save — the modal closes, taking the errors and everything typed with it.
+
+:code:`form_is_valid` is called several times while the response is built, so keep
+an override free of side effects, or memoize them.
+
+
 How Do I Add Form Errors To The Error Message?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
