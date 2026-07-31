@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.56.0 (2026-07-31)
+
+### Feature
+
+* Add form_is_valid hook for submissions wider than self.form ([`ebd65c6`](https://github.com/yaakovLowenstein/hx-requests/commit/ebd65c6fb894881f15ef437390991ff8aa560b1d))
+
 ## v0.55.0 (2026-07-09)
 
 ### Feature
